@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/itemSearch"
+        android:icon="@drawable/outline_search_24"
+        android:title="Search"
+        android:contentDescription="content_description_search"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/itemLocation"
+        android:icon="@drawable/outline_location_on_24"
+        android:title="Location"
+        android:contentDescription="content_description_location"
+        app:showAsAction="ifRoom" />
+
+</menu>

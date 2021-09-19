@@ -1,0 +1,32 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.Football_Field_Booking" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+    </style>
+    <style name="FontLogo">
+        <item name="android:fontFamily">@font/comfor</item>
+    </style>
+    <style name="imageButton" parent="Widget.AppCompat.ImageButton">
+        <item name="android:layout_marginRight">18dp</item>
+        <item name="android:layout_marginLeft">18dp</item>
+        <item name="android:background">@drawable/rounded_corner</item>
+    </style>
+    <style name="FontText">
+        <item name="android:fontFamily">@font/comfor</item>
+    </style>
+    <style name="TextDecription" parent="Widget.AppCompat.TextView">
+        <item name="android:fontFamily">@font/comfor</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+</resources>
