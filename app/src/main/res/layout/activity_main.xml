@@ -42,7 +42,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_marginBottom="70dp"
+                >
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
@@ -61,6 +63,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
+
                         android:orientation="horizontal">
 
                         <LinearLayout
@@ -71,10 +74,8 @@
                             android:orientation="vertical">
 
                             <ImageButton
-                                style="@style/imageButton"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@drawable/fieldfive" />
+                                style="@style/imageButtonHomeCus"
+                                android:src="@drawable/fieldfive"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -92,9 +93,7 @@
                             android:orientation="vertical">
 
                             <ImageButton
-                                style="@style/imageButton"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                style="@style/imageButtonHomeCus"
                                 android:src="@drawable/fieldseven" />
 
                             <TextView
@@ -113,9 +112,7 @@
                             android:orientation="vertical">
 
                             <ImageButton
-                                style="@style/imageButton"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                style="@style/imageButtonHomeCus"
                                 android:src="@drawable/fieldeleven" />
 
                             <TextView
@@ -155,16 +152,17 @@
                             android:orientation="vertical">
 
                             <ImageButton
-                                style="@style/imageButton"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:id="@+id/imgBtnNearMe"
+                                style="@style/imageButtonHomeCus"
                                 android:src="@drawable/map" />
 
                             <TextView
+
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 style="@style/TextDecription"
                                 android:text="Near me"
+
                                 />
 
                         </LinearLayout>
@@ -177,9 +175,7 @@
                             android:orientation="vertical">
 
                             <ImageButton
-                                style="@style/imageButton"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                style="@style/imageButtonHomeCus"
                                 android:src="@drawable/grassreal" />
 
                             <TextView
@@ -198,9 +194,7 @@
                             android:orientation="vertical">
 
                             <ImageButton
-                                style="@style/imageButton"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                style="@style/imageButtonHomeCus"
                                 android:src="@drawable/grassfake" />
 
                             <TextView
@@ -557,8 +551,8 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:drawableLeft="@drawable/star"
-                                    android:text="4.5" />
+                                    android:text="4.5"
+                                    app:drawableLeftCompat="@drawable/star" />
 
                             </LinearLayout>
 
@@ -620,7 +614,211 @@
 
                 </androidx.cardview.widget.CardView>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:text="All football field"
+                        android:textSize="22dp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:background="@color/white"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp"
+                    app:cardUseCompatPadding="true">
+
+
+                    <androidx.core.widget.NestedScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="10dp"
+                                android:orientation="horizontal">
+
+                                <androidx.cardview.widget.CardView
+                                    android:layout_width="150dp"
+                                    android:layout_height="120dp"
+                                    android:layout_margin="5dp"
+                                    app:cardCornerRadius="10dp">
+                                    <ImageView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:scaleType="centerCrop"
+                                        android:src="@drawable/image_1" />
+
+                                </androidx.cardview.widget.CardView>
+
+                                <LinearLayout
+                                    android:layout_width="200dp"
+                                    android:layout_height="120dp"
+                                    android:layout_margin="5dp"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        style="@style/FontText"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Field Name"
+                                        android:textSize="17dp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        style="@style/FontText"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Price : 5$/h"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        style="@style/FontText"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="34/4e Tan Xuan Hoc Mon HCM "
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:drawableLeft="@drawable/star"
+                                        android:text="4.5" />
+
+                                </LinearLayout>
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="10dp"
+                                android:orientation="horizontal">
+
+                                <androidx.cardview.widget.CardView
+                                    android:layout_width="150dp"
+                                    android:layout_height="120dp"
+                                    android:layout_margin="5dp"
+                                    app:cardCornerRadius="10dp">
+
+                                    <ImageView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:scaleType="centerCrop"
+                                        android:src="@drawable/image_1" />
+
+                                </androidx.cardview.widget.CardView>
+
+                                <LinearLayout
+                                    android:layout_width="200dp"
+                                    android:layout_height="120dp"
+                                    android:layout_margin="5dp"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        style="@style/FontText"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Field Name"
+                                        android:textSize="17dp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        style="@style/FontText"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Price : 5$/h"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        style="@style/FontText"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="34/4e Tan Xuan Hoc Mon HCM "
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:drawableLeft="@drawable/star"
+                                        android:text="4.5" />
+
+                                </LinearLayout>
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="10dp"
+                                android:orientation="horizontal">
+
+                                <androidx.cardview.widget.CardView
+                                    android:layout_width="150dp"
+                                    android:layout_height="120dp"
+                                    android:layout_margin="5dp"
+                                    app:cardCornerRadius="10dp">
+
+                                    <ImageView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:scaleType="centerCrop"
+                                        android:src="@drawable/image_1" />
+
+                                </androidx.cardview.widget.CardView>
+
+                                <LinearLayout
+                                    android:layout_width="200dp"
+                                    android:layout_height="120dp"
+                                    android:layout_margin="5dp"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        style="@style/FontText"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Field Name"
+                                        android:textSize="17dp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        style="@style/FontText"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Price : 5$/h"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        style="@style/FontText"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="34/4e Tan Xuan Hoc Mon HCM "
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:drawableLeft="@drawable/star"
+                                        android:text="4.5" />
+
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </androidx.core.widget.NestedScrollView>
+                </androidx.cardview.widget.CardView>
             </LinearLayout>
 
 
