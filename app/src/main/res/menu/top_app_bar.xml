@@ -5,6 +5,7 @@
         android:id="@+id/itemSearch"
         android:icon="@drawable/outline_search_24"
         android:title="Search"
+        app:actionViewClass="android.widget.SearchView"
         android:contentDescription="content_description_search"
         app:showAsAction="ifRoom" />
 

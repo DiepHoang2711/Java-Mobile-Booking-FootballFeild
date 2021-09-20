@@ -16,9 +16,12 @@
     <style name="FontLogo">
         <item name="android:fontFamily">@font/comfor</item>
     </style>
-    <style name="imageButton" parent="Widget.AppCompat.ImageButton">
-        <item name="android:layout_marginRight">18dp</item>
-        <item name="android:layout_marginLeft">18dp</item>
+    <style name="imageButtonHomeCus" parent="Widget.AppCompat.ImageButton">
+        <item name="android:layout_width">50dp</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:layout_marginRight">25dp</item>
+        <item name="android:layout_marginLeft">25dp</item>
+        <item name="android:scaleType">fitStart</item>
         <item name="android:background">@drawable/rounded_corner</item>
     </style>
     <style name="FontText">
@@ -26,7 +29,7 @@
     </style>
     <style name="TextDecription" parent="Widget.AppCompat.TextView">
         <item name="android:fontFamily">@font/comfor</item>
-        <item name="android:textSize">20dp</item>
+        <item name="android:textSize">16dp</item>
         <item name="android:gravity">center</item>
     </style>
 </resources>
