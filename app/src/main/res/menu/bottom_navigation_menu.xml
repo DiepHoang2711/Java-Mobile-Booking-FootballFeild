@@ -16,7 +16,7 @@
         android:icon="@drawable/outline_event_24"
         android:title="calendar"/>
     <item
-        android:id="@+id/page_4"
+        android:id="@+id/pageAccount"
         android:enabled="true"
         android:icon="@drawable/outline_account_circle_24"
         android:title="Account"/>
