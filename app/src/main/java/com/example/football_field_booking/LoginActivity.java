@@ -93,6 +93,11 @@ public class LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("Google", "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+
+                            if(task.getResult().getAdditionalUserInfo().isNewUser()){
+                                // ADD to database
+
+                            }
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
