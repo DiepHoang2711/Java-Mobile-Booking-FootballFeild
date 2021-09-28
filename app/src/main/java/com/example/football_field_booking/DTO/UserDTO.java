@@ -1,4 +1,4 @@
-package com.example.football_field_booking;
+package com.example.football_field_booking.DTO;
 
 public class UserDTO {
     private String userID;
