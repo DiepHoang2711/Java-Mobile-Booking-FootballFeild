@@ -9,7 +9,7 @@ public class Validation {
         mAuth = FirebaseAuth.getInstance();
     }
 
-    private boolean isUser (){
+    public boolean isUser (){
         return mAuth.getCurrentUser() != null;
     }
 }
