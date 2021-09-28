@@ -18,6 +18,9 @@ public class MainActivity extends AppCompatActivity {
     private MaterialToolbar topAppBar;
     private BottomNavigationView bottomNavigationView;
     private Button btnLogout;
+
+    private Validation validation = new Validation();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,8 +36,12 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.pageAccount:
-                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                        startActivity(intent);
+                        if (validation.isUser()) {
+                            // go to profile page
+                        } else {
+                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                        }
                         break;
 
                 }

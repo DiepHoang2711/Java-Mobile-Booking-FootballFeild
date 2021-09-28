@@ -9,8 +9,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
-import com.example.football_field_booking.dtos.UserDTO;
+import com.example.football_field_booking.DAO.UserDAO;
+import com.example.football_field_booking.DTO.UserDTO;
+import com.example.football_field_booking.Validation.Validation;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -20,6 +23,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,13 +39,14 @@ public class LoginActivity extends AppCompatActivity {
 
     public static final String GOOGLE_LOG = "Google Log:";
     private static final int RC_SIGN_IN = 9001;
-    public static final String COLLECTION_USERS = "users";
 
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public static final String EMAIL_LOG = "Email";
+
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
 
-    private Button btnSignInWithGoogle;
+    private Button btnSignInWithGoogle, btnLogin, btnSignUp;
+    private TextInputLayout txtEmail, txtPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +63,32 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         btnSignInWithGoogle = findViewById(R.id.btnSignInWithGoogle);
+        btnLogin = findViewById(R.id.btnLogin);
+        btnSignUp = findViewById(R.id.btnSignUp);
+        txtEmail = findViewById(R.id.txtEmail);
+        txtPassword = findViewById(R.id.txtPassword);
+
         btnSignInWithGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 signInWithGoogle();
+            }
+        });
+
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String email = txtEmail.getEditText().getText().toString();
+                String password = txtPassword.getEditText().getText().toString();
+                signInWithEmail(email, password);
+            }
+        });
+
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -71,7 +98,13 @@ public class LoginActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
+        Validation validation = new Validation();
+        if(validation.isUser()){
+            updateUI(currentUser);
+        }else {
+            updateUI(null);
+        }
+
     }
 
     @Override
@@ -106,29 +139,11 @@ public class LoginActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
 
                             if (task.getResult().getAdditionalUserInfo().isNewUser()) {
-                                // ADD to database
-                                DocumentReference doc = db.collection(COLLECTION_USERS).document();
-
-                                UserDTO userDTO = new UserDTO(doc.getId(), user.getEmail(),
+                                UserDAO dao = new UserDAO();
+                                UserDTO userDTO = new UserDTO(user.getUid(), user.getEmail(),
                                         user.getDisplayName(), user.getPhoneNumber(), "user",
-                                        "active",user.getPhotoUrl().toString());
-
-                                Map<String, Object> userDB = new HashMap<>();
-                                userDB.put("userInfo", userDTO);
-
-                                doc.set(userDB)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void unused) {
-                                            Log.d(GOOGLE_LOG, "DocumentSnapshot added with ID: " + doc.getId());
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.w(GOOGLE_LOG, "Error adding document", e);
-                                        }
-                                    });
+                                        "active", user.getPhotoUrl().toString());
+                                dao.createUser(userDTO);
                             }
                             updateUI(user);
                         } else {
@@ -144,6 +159,34 @@ public class LoginActivity extends AppCompatActivity {
         mGoogleSignInClient.signOut();
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    private void signInWithEmail(String email, String password) {
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(EMAIL_LOG, "signInWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            if (user.isEmailVerified()) {
+                                updateUI(user);
+                            } else {
+                                Toast.makeText(LoginActivity.this, "Please verify your email address",
+                                        Toast.LENGTH_SHORT).show();
+                                updateUI(null);
+                            }
+
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(EMAIL_LOG, "signInWithEmail:failure", task.getException());
+                            Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                            updateUI(null);
+                        }
+                    }
+                });
     }
 
     private void updateUI(FirebaseUser user) {
