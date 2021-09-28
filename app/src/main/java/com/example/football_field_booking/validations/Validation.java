@@ -1,4 +1,4 @@
-package com.example.football_field_booking.Validation;
+package com.example.football_field_booking.validations;
 
 import com.google.firebase.auth.FirebaseAuth;
 
