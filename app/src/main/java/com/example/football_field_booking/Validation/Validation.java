@@ -1,6 +1,9 @@
 package com.example.football_field_booking.Validation;
 
+import android.util.Log;
+
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class Validation {
     private FirebaseAuth mAuth;
@@ -10,6 +13,7 @@ public class Validation {
     }
 
     public boolean isUser (){
-        return mAuth.getCurrentUser() != null;
+        FirebaseUser user = mAuth.getCurrentUser();
+        return user != null && user.isEmailVerified();
     }
 }

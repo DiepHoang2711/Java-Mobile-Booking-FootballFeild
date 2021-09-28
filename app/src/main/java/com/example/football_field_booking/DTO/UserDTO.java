@@ -8,16 +8,24 @@ public class UserDTO {
     private String phone;
     private String role;
     private String status;
-    private String imageURL;
+    private String photoUri;
 
-    public UserDTO(String userID, String email, String username, String phone, String role, String status, String imageURL) {
+    public UserDTO(String userID, String email, String username, String phone, String role, String status, String photoUri) {
         this.userID = userID;
         this.email = email;
         this.username = username;
         this.phone = phone;
         this.role = role;
         this.status = status;
-        this.imageURL = imageURL;
+        this.photoUri = photoUri;
+    }
+
+    public UserDTO(String userID, String email, String username, String role, String status) {
+        this.userID = userID;
+        this.email = email;
+        this.username = username;
+        this.role = role;
+        this.status = status;
     }
 
     public String getUserID() {
@@ -68,11 +76,11 @@ public class UserDTO {
         this.status = status;
     }
 
-    public String getImageURL() {
-        return imageURL;
+    public String getPhotoUri() {
+        return photoUri;
     }
 
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
+    public void setPhotoUri(String photoUri) {
+        this.photoUri = photoUri;
     }
 }
