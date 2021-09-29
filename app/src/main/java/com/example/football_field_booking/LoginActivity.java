@@ -33,7 +33,6 @@ public class LoginActivity extends AppCompatActivity {
 
     public static final String GOOGLE_LOG = "Google Log:";
     private static final int RC_SIGN_IN = 9001;
-
     public static final String EMAIL_LOG = "Email";
 
     private FirebaseAuth mAuth;

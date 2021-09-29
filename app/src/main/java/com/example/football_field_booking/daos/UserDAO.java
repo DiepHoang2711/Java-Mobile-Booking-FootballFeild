@@ -17,8 +17,11 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class UserDAO {
@@ -27,6 +30,8 @@ public class UserDAO {
     private FirebaseAuth mAuth;
     private static final String COLLECTION_USERS = "users";
     private static final String GOOGLE_LOG = "Google Log:";
+    private UserDTO user;
+    private List<UserDTO> listUser;
 
     public UserDAO() {
         db = FirebaseFirestore.getInstance();
@@ -55,15 +60,31 @@ public class UserDAO {
     }
 
     public UserDTO getUserById(String id){
-        final UserDTO[] user = {null};
+        user = null;
         DocumentReference doc = db.collection(COLLECTION_USERS).document(id);
         doc.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                user[0] = documentSnapshot.toObject(UserDTO.class);
+                user = documentSnapshot.toObject(UserDTO.class);
             }
         });
-        return user[0];
+        return user;
+    }
+
+    public List<UserDTO> getAllUser() {
+        listUser = null;
+        db.collection(COLLECTION_USERS)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        listUser = new ArrayList<>();
+                        for (DocumentSnapshot doc: queryDocumentSnapshots.getDocuments()) {
+                            listUser.add(doc.toObject(UserDTO.class));
+                        }
+                    }
+                });
+        return listUser;
     }
 
     public void updateUser(UserDTO userDTO) {
