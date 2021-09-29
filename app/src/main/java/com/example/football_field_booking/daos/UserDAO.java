@@ -1,11 +1,11 @@
-package com.example.football_field_booking.DAO;
+package com.example.football_field_booking.daos;
 
 import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.example.football_field_booking.DTO.UserDTO;
+import com.example.football_field_booking.dtos.UserDTO;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -52,6 +52,18 @@ public class UserDAO {
                         Log.w(GOOGLE_LOG, "Error adding document", e);
                     }
                 });
+    }
+
+    public UserDTO getUserById(String id){
+        final UserDTO[] user = {null};
+        DocumentReference doc = db.collection(COLLECTION_USERS).document(id);
+        doc.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                user[0] = documentSnapshot.toObject(UserDTO.class);
+            }
+        });
+        return user[0];
     }
 
     public void updateUser(UserDTO userDTO) {

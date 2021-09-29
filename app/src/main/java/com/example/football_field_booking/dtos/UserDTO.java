@@ -1,14 +1,16 @@
-package com.example.football_field_booking.DTO;
+package com.example.football_field_booking.dtos;
 
 public class UserDTO {
     private String userID;
     private String email;
     private String username;
-    private String password;
     private String phone;
     private String role;
     private String status;
     private String photoUrl;
+
+    public UserDTO() {
+    }
 
     public UserDTO(String userID, String email, String username, String phone, String role, String status, String photoUrl) {
         this.userID = userID;
@@ -46,10 +48,6 @@ public class UserDTO {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getPhone() {
