@@ -81,4 +81,5 @@ public class UserDTO {
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
     }
+
 }
