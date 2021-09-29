@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".daos.CreateFootballFieldActivity">
+    tools:context=".CreateFootballFieldActivity">
 
     <TextView
         android:layout_width="match_parent"
@@ -29,7 +29,7 @@
                 android:text="Name: "
                 android:textSize="16dp"/>
             <EditText
-                android:id="@+id/txtFootballFieldName"
+                android:id="@+id/edtFootballFieldName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 />
@@ -45,7 +45,7 @@
                 android:text="Location: "
                 android:textSize="16dp"/>
             <EditText
-                android:id="@+id/txtLocation"
+                android:id="@+id/edtLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 />
@@ -87,6 +87,15 @@
             android:layout_height="200dp"
             android:scaleType="fitStart"
             android:layout_gravity="center"/>
+
+        <Button
+            android:id="@+id/btnCreateNewField"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create"
+            android:layout_gravity="center"
+            android:onClick="clickToCreate"
+            />
     </LinearLayout>
 
 </LinearLayout>

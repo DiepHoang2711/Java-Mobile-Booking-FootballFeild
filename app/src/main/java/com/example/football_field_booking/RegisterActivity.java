@@ -10,11 +10,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.football_field_booking.DAO.UserDAO;
-import com.example.football_field_booking.DTO.UserDTO;
-import com.example.football_field_booking.Validation.Validation;
+import com.example.football_field_booking.daos.UserDAO;
+import com.example.football_field_booking.dtos.UserDTO;
+import com.example.football_field_booking.validations.Validation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;

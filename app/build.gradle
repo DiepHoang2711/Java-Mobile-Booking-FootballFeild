@@ -38,6 +38,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-storage'
     implementation 'com.google.android.gms:play-services-auth:19.2.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
@@ -45,9 +46,6 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
-    //thu vien tedbootmPicker
-    implementation 'gun0912.ted:tedbottompicker:1.2.6'
-    //check permission Camera and Thu vien image
-    implementation 'io.github.ParkSangGwon:tedpermission-normal:3.2.3'
+
 }
 apply plugin: 'com.google.gms.google-services'

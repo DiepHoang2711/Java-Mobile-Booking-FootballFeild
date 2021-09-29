@@ -11,17 +11,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.football_field_booking.DAO.UserDAO;
-import com.example.football_field_booking.DTO.UserDTO;
-import com.example.football_field_booking.Validation.Validation;
+import com.example.football_field_booking.daos.UserDAO;
+import com.example.football_field_booking.dtos.UserDTO;
+import com.example.football_field_booking.validations.Validation;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
@@ -29,11 +27,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -47,6 +40,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private Button btnSignInWithGoogle, btnLogin, btnSignUp;
     private TextInputLayout txtEmail, txtPassword;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,9 +93,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         Validation validation = new Validation();
-        if(validation.isUser()){
+        if (validation.isUser()) {
             updateUI(currentUser);
-        }else {
+        } else {
             updateUI(null);
         }
 
@@ -191,9 +185,22 @@ public class LoginActivity extends AppCompatActivity {
 
     private void updateUI(FirebaseUser user) {
         if (user != null) {
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
-        }
-    }
+//            UserDAO userDAO = new UserDAO();
+//            UserDTO userDTO = userDAO.getUserById(user.getUid());
+//            if (userDAO.getUserById(user.getUid()) != null) {
+//                Intent intent = null;
+//                String role = userDTO.getRole();
+//                Toast.makeText(LoginActivity.this, role, Toast.LENGTH_SHORT).show();
+//                if (role.equals("user")) {
+//                    intent = new Intent(LoginActivity.this, MainActivity.class);
+//                } else if (role.equals("owner")) {
+//                    intent = new Intent(LoginActivity.this, OwnerHomeActivity.class);
+//                }
 
+//            }
+        Intent intent = new Intent(LoginActivity.this, OwnerHomeActivity.class);
+        startActivity(intent);
+        }
+
+    }
 }

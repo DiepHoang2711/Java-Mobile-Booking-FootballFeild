@@ -1,5 +1,7 @@
 package com.example.football_field_booking.daos;
 
-public class FootballFieldDAO {
+import com.example.football_field_booking.dtos.FootballFieldDTO;
 
+public class FootballFieldDAO {
+//    public FootballFieldDTO
 }
