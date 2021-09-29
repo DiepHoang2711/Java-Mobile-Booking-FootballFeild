@@ -3,6 +3,7 @@ package com.example.football_field_booking;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,6 +31,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private Button btnSignUp, btnLogin;
     private TextInputLayout txtEmail, txtUsername, txtPassword, txtConfirm;
+    private ProgressDialog prdRegister;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,13 +46,31 @@ public class RegisterActivity extends AppCompatActivity {
         txtUsername = findViewById(R.id.txtUsername);
         txtPassword = findViewById(R.id.txtPassword);
         txtConfirm = findViewById(R.id.txtConfirm);
+        prdRegister = new ProgressDialog(RegisterActivity.this);
 
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String email = txtEmail.getEditText().getText().toString();
                 String password = txtPassword.getEditText().getText().toString();
-                SignUpWithEmail(email, password);
+                String username = txtUsername.getEditText().getText().toString();
+                String confirm = txtConfirm.getEditText().getText().toString();
+
+                if(isValidRegister(email, password, username, confirm)) {
+                    showProgressDialog(prdRegister, "Register", "Wait for register");
+                    SignUpWithEmail(email, password);
+                }else {
+                    updateUI(null);
+                }
+
+            }
+        });
+
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -98,6 +118,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void updateUI(FirebaseUser user) {
+        prdRegister.cancel();
         if (user != null) {
             Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
             startActivity(intent);
@@ -119,6 +140,51 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private boolean isValidRegister (String email, String password, String username, String confirm) {
+        clearError(txtEmail);
+        clearError(txtPassword);
+        clearError(txtConfirm);
+        clearError(txtUsername);
+
+        boolean result = true;
+
+        if(password.trim().isEmpty() || password.length() < 8) {
+            showError(txtPassword, "Password must be 8 character");
+            result = false;
+        }
+        if(confirm.trim().isEmpty() || !confirm.equals(password)) {
+            showError(txtConfirm, "Confirm must be a match");
+            result = false;
+        }
+        if(username.trim().isEmpty()){
+            showError(txtUsername, "Username must be blank");
+            result = false;
+        }
+        if(email.trim().isEmpty() || !email.contains("@")){
+            showError(txtEmail, "Email is invalid");
+            result = false;
+        }
+        return result;
+    }
+
+    private void showError(TextInputLayout input, String textError) {
+        input.setErrorEnabled(true);
+        input.setError(textError);
+        input.requestFocus();
+    }
+
+    private void clearError(TextInputLayout input){
+        input.setErrorEnabled(false);
+        input.setError(null);
+    }
+
+    private void showProgressDialog(ProgressDialog dialog, String title, String message){
+        dialog.setTitle(title);
+        dialog.setMessage(message);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
     }
 
 }
