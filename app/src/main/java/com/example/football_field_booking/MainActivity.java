@@ -18,7 +18,6 @@ public class MainActivity extends AppCompatActivity {
 
     private MaterialToolbar topAppBar;
     private BottomNavigationView bottomNavigationView;
-    private Button btnLogout;
 
     private Validation validation = new Validation();
 
@@ -38,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()){
                     case R.id.pageAccount:
                         if (validation.isUser()) {
-                            // go to profile page
+                            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+                            startActivity(intent);
                         } else {
                             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                             startActivity(intent);
@@ -47,14 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 return false;
-            }
-        });
-
-        btnLogout = findViewById(R.id.btnLogout);
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FirebaseAuth.getInstance().signOut();
             }
         });
 

@@ -1,9 +1,10 @@
 package com.example.football_field_booking.dtos;
 
 public class UserDTO {
+
     private String userID;
     private String email;
-    private String username;
+    private String fullName;
     private String phone;
     private String role;
     private String status;
@@ -12,20 +13,20 @@ public class UserDTO {
     public UserDTO() {
     }
 
-    public UserDTO(String userID, String email, String username, String phone, String role, String status, String photoUrl) {
+    public UserDTO(String userID, String email, String fullName, String phone, String role, String status, String photoUrl) {
         this.userID = userID;
         this.email = email;
-        this.username = username;
+        this.fullName = fullName;
         this.phone = phone;
         this.role = role;
         this.status = status;
         this.photoUrl = photoUrl;
     }
 
-    public UserDTO(String userID, String email, String username, String role, String status) {
+    public UserDTO(String userID, String email, String fullName, String role, String status) {
         this.userID = userID;
         this.email = email;
-        this.username = username;
+        this.fullName = fullName;
         this.role = role;
         this.status = status;
     }
@@ -42,12 +43,12 @@ public class UserDTO {
         this.email = email;
     }
 
-    public String getUsername() {
-        return username;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getPhone() {
@@ -82,4 +83,16 @@ public class UserDTO {
         this.photoUrl = photoUrl;
     }
 
+    @Override
+    public String toString() {
+        return "UserDTO{" +
+                "userID='" + userID + '\'' +
+                ", email='" + email + '\'' +
+                ", username='" + fullName + '\'' +
+                ", phone='" + phone + '\'' +
+                ", role='" + role + '\'' +
+                ", status='" + status + '\'' +
+                ", photoUrl='" + photoUrl + '\'' +
+                '}';
+    }
 }

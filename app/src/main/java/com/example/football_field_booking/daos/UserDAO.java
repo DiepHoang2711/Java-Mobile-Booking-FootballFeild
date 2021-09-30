@@ -18,6 +18,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,107 +30,50 @@ public class UserDAO {
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private static final String COLLECTION_USERS = "users";
-    private static final String GOOGLE_LOG = "Google Log:";
-    private UserDTO user;
-    private List<UserDTO> listUser;
 
     public UserDAO() {
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
     }
 
-    public void createUser(UserDTO userDTO) {
-
+    public Task<Void> createUser(UserDTO userDTO) {
         DocumentReference doc = db.collection(COLLECTION_USERS).document(userDTO.getUserID());
-        Map<String, Object> data = new HashMap<>();
-        data.put("userInfo", userDTO);
-
-        doc.set(data)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Log.d(GOOGLE_LOG, "DocumentSnapshot added with ID: " + doc.getId());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(GOOGLE_LOG, "Error adding document", e);
-                    }
-                });
+        return doc.set(userDTO);
     }
 
-    public UserDTO getUserById(String id){
-        user = null;
+
+    public Task<DocumentSnapshot> getUserById(String id){
         DocumentReference doc = db.collection(COLLECTION_USERS).document(id);
-        doc.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                user = documentSnapshot.toObject(UserDTO.class);
-            }
-        });
-        return user;
+        return doc.get();
     }
 
-    public List<UserDTO> getAllUser() {
-        listUser = null;
-        db.collection(COLLECTION_USERS)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        listUser = new ArrayList<>();
-                        for (DocumentSnapshot doc: queryDocumentSnapshots.getDocuments()) {
-                            listUser.add(doc.toObject(UserDTO.class));
-                        }
-                    }
-                });
-        return listUser;
+    public Task<QuerySnapshot> getAllUser() {
+        return db.collection(COLLECTION_USERS).get();
     }
 
-    public void updateUser(UserDTO userDTO) {
+    public Task<Void> updateUser(UserDTO userDTO) {
+
         DocumentReference doc = db.collection(COLLECTION_USERS).document(userDTO.getUserID());
         Map<String, Object> data = new HashMap<>();
-        data.put("userInfo", userDTO);
-        FirebaseUser user = mAuth.getCurrentUser();
+        data.put("userID", userDTO.getUserID());
+        data.put("email", userDTO.getEmail());
+        data.put("fullName", userDTO.getFullName());
+        data.put("phone", userDTO.getPhone());
+        data.put("role", userDTO.getUserID());
+        data.put("status", userDTO.getUserID());
+        data.put("photoUrl", userDTO.getUserID());
 
-        doc.update(data)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Log.d(GOOGLE_LOG, "DocumentSnapshot update with ID: " + doc.getId());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(GOOGLE_LOG, "Error update document", e);
-                    }
-                });
-
-
-        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                .setDisplayName(userDTO.getUsername())
-                .setPhotoUri(Uri.parse(userDTO.getPhotoUrl()))
-                .build();
-
-        user.updateProfile(profileUpdates)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(GOOGLE_LOG, "User profile updated.");
-                        }
-                    }
-                });
-        user.updateEmail(userDTO.getEmail())
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(GOOGLE_LOG, "User email address updated.");
-                        }
-                    }
-                });
+        return doc.update(data);
     }
+
+    public Task<Void> updateEmail (String email) {
+        FirebaseUser user = mAuth.getCurrentUser();
+        return user.updateEmail(email);
+    }
+
+    public Task<Void> updatePassword (String password) {
+        FirebaseUser user = mAuth.getCurrentUser();
+        return user.updatePassword(password);
+    }
+
 }
