@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
+import com.example.football_field_booking.utils.Util;
 import com.example.football_field_booking.validations.Validation;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -21,6 +22,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
@@ -28,6 +30,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.auth.User;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -37,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
+    private Util util;
 
     private Button btnSignInWithGoogle, btnLogin, btnSignUp;
     private TextInputLayout txtEmail, txtPassword;
@@ -53,8 +60,8 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
         mAuth = FirebaseAuth.getInstance();
+        util = new Util();
 
         btnSignInWithGoogle = findViewById(R.id.btnSignInWithGoogle);
         btnLogin = findViewById(R.id.btnLogin);
@@ -76,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
                 String email = txtEmail.getEditText().getText().toString();
                 String password = txtPassword.getEditText().getText().toString();
                 if(isValidLogin(email, password)){
-                    showProgressDialog(prdLogin, "Login", "Please wait for login");
+                    util.showProgressDialog(prdLogin, "Login", "Please wait for login");
                     signInWithEmail(email, password);
                 }else {
                     updateUI(null);
@@ -118,7 +125,7 @@ public class LoginActivity extends AppCompatActivity {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 Log.d(GOOGLE_LOG, "firebaseAuthWithGoogle:" + account.getId());
-                showProgressDialog(prdLogin, "Login", "Please wait for login");
+                util.showProgressDialog(prdLogin, "Login", "Please wait for login");
                 firebaseAuthWithGoogle(account.getIdToken());
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
@@ -189,59 +196,48 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private void updateUI(FirebaseUser user) {
         prdLogin.cancel();
         if (user != null) {
-//            UserDAO userDAO = new UserDAO();
-//            UserDTO userDTO = userDAO.getUserById(user.getUid());
-//            if (userDAO.getUserById(user.getUid()) != null) {
-//                Intent intent = null;
-//                String role = userDTO.getRole();
-//                Toast.makeText(LoginActivity.this, role, Toast.LENGTH_SHORT).show();
-//                if (role.equals("user")) {
-//                    intent = new Intent(LoginActivity.this, MainActivity.class);
-//                } else if (role.equals("owner")) {
-//                    intent = new Intent(LoginActivity.this, OwnerHomeActivity.class);
-//                }
+            UserDAO userDAO = new UserDAO();
+            userDAO.getUserById(user.getUid())
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            UserDTO userDTO = documentSnapshot.toObject(UserDTO.class);
+                            String role = userDTO.getRole();
 
-//            }
-        Intent intent = new Intent(LoginActivity.this, OwnerHomeActivity.class);
-        startActivity(intent);
+                            if (role.equals("user")) {
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                startActivity(intent);
+                            } else if (role.equals("owner")) {
+                                Intent intent = new Intent(LoginActivity.this, OwnerHomeActivity.class);
+                                startActivity(intent);
+                            } else {
+                                Toast.makeText(LoginActivity.this, "Your role is invalid",
+                                        Toast.LENGTH_LONG);
+                            }
+
+                        }
+                    });
         }
     }
 
     private boolean isValidLogin (String email, String password) {
-        clearError(txtEmail);
-        clearError(txtPassword);
+        util.clearError(txtEmail);
+        util.clearError(txtPassword);
         boolean result = true;
         if (password.trim().isEmpty() || password.length() < 8){
-            showError(txtPassword, "Password must be 8 character");
+            util.showError(txtPassword, "Password must be 8 character");
             result = false;
         }
         if(email.trim().isEmpty() || !email.contains("@")){
-            showError(txtEmail, "Email is invalid");
+            util.showError(txtEmail, "Email is invalid");
             result = false;
         }
         return result;
-    }
-
-    private void showError(TextInputLayout input, String textError) {
-        input.setErrorEnabled(true);
-        input.setError(textError);
-        input.requestFocus();
-    }
-
-    private void clearError(TextInputLayout input){
-        input.setErrorEnabled(false);
-        input.setError(null);
-    }
-
-    private void showProgressDialog(ProgressDialog dialog, String title, String message){
-        dialog.setTitle(title);
-        dialog.setMessage(message);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
     }
 
 }
