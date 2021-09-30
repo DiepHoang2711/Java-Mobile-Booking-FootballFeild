@@ -89,7 +89,7 @@ public class UserDAO {
 
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                 .setDisplayName(userDTO.getUsername())
-                .setPhotoUri(Uri.parse(userDTO.getPhotoUrl()))
+                .setPhotoUri(Uri.parse(userDTO.getPhotoUri()))
                 .build();
 
         user.updateProfile(profileUpdates)

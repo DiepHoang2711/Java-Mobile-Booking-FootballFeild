@@ -88,14 +88,14 @@
             android:scaleType="fitStart"
             android:layout_gravity="center"/>
 
-        <Button
-            android:id="@+id/btnCreateNewField"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Create"
-            android:layout_gravity="center"
-            android:onClick="clickToCreate"
-            />
+
     </LinearLayout>
+    <Button
+        android:id="@+id/btnCreateNewField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create"
+        android:layout_gravity="center"
+        android:onClick="clickToCreate"/>
 
 </LinearLayout>
