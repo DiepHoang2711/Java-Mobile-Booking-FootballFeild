@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,7 +33,6 @@ public class LoginActivity extends AppCompatActivity {
 
     public static final String GOOGLE_LOG = "Google Log:";
     private static final int RC_SIGN_IN = 9001;
-
     public static final String EMAIL_LOG = "Email";
 
     private FirebaseAuth mAuth;
@@ -40,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private Button btnSignInWithGoogle, btnLogin, btnSignUp;
     private TextInputLayout txtEmail, txtPassword;
-
+    private ProgressDialog prdLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +61,7 @@ public class LoginActivity extends AppCompatActivity {
         btnSignUp = findViewById(R.id.btnSignUp);
         txtEmail = findViewById(R.id.txtEmail);
         txtPassword = findViewById(R.id.txtPassword);
+        prdLogin = new ProgressDialog(LoginActivity.this);
 
         btnSignInWithGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,7 +75,12 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String email = txtEmail.getEditText().getText().toString();
                 String password = txtPassword.getEditText().getText().toString();
-                signInWithEmail(email, password);
+                if(isValidLogin(email, password)){
+                    showProgressDialog(prdLogin, "Login", "Please wait for login");
+                    signInWithEmail(email, password);
+                }else {
+                    updateUI(null);
+                }
             }
         });
 
@@ -112,6 +118,7 @@ public class LoginActivity extends AppCompatActivity {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 Log.d(GOOGLE_LOG, "firebaseAuthWithGoogle:" + account.getId());
+                showProgressDialog(prdLogin, "Login", "Please wait for login");
                 firebaseAuthWithGoogle(account.getIdToken());
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
@@ -184,6 +191,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void updateUI(FirebaseUser user) {
+        prdLogin.cancel();
         if (user != null) {
 //            UserDAO userDAO = new UserDAO();
 //            UserDTO userDTO = userDAO.getUserById(user.getUid());
@@ -201,6 +209,39 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(LoginActivity.this, OwnerHomeActivity.class);
         startActivity(intent);
         }
-
     }
+
+    private boolean isValidLogin (String email, String password) {
+        clearError(txtEmail);
+        clearError(txtPassword);
+        boolean result = true;
+        if (password.trim().isEmpty() || password.length() < 8){
+            showError(txtPassword, "Password must be 8 character");
+            result = false;
+        }
+        if(email.trim().isEmpty() || !email.contains("@")){
+            showError(txtEmail, "Email is invalid");
+            result = false;
+        }
+        return result;
+    }
+
+    private void showError(TextInputLayout input, String textError) {
+        input.setErrorEnabled(true);
+        input.setError(textError);
+        input.requestFocus();
+    }
+
+    private void clearError(TextInputLayout input){
+        input.setErrorEnabled(false);
+        input.setError(null);
+    }
+
+    private void showProgressDialog(ProgressDialog dialog, String title, String message){
+        dialog.setTitle(title);
+        dialog.setMessage(message);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+    }
+
 }
