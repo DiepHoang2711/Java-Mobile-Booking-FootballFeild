@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
+import com.example.football_field_booking.utils.Util;
 import com.example.football_field_booking.validations.Validation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -27,6 +28,7 @@ public class RegisterActivity extends AppCompatActivity {
     public static final String EMAIL_LOG = "Email";
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth mAuth;
+    private Util util;
 
     private Button btnSignUp, btnLogin;
     private TextInputLayout txtEmail, txtUsername, txtPassword, txtConfirm;
@@ -38,6 +40,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         mAuth = FirebaseAuth.getInstance();
+        util = new Util();
 
         btnLogin = findViewById(R.id.btnLogin);
         btnSignUp = findViewById(R.id.btnSignUp);
@@ -56,7 +59,7 @@ public class RegisterActivity extends AppCompatActivity {
                 String confirm = txtConfirm.getEditText().getText().toString();
 
                 if(isValidRegister(email, password, username, confirm)) {
-                    showProgressDialog(prdRegister, "Register", "Wait for register");
+                    util.showProgressDialog(prdRegister, "Register", "Wait for register");
                     SignUpWithEmail(email, password);
                 }else {
                     updateUI(null);
@@ -98,7 +101,8 @@ public class RegisterActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             UserDAO dao = new UserDAO();
                             String username = txtUsername.getEditText().getText().toString();
-                            UserDTO userDTO = new UserDTO(user.getUid(), user.getEmail(), username, "user", "active");
+                            UserDTO userDTO = new UserDTO(user.getUid(), user.getEmail(), username,
+                                    "user", "active");
 
                             dao.createUser(userDTO);
                             sendEmailVerification();
@@ -110,6 +114,7 @@ public class RegisterActivity extends AppCompatActivity {
                             Log.w(EMAIL_LOG, "createUserWithEmail:failure", task.getException());
                             Toast.makeText(RegisterActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
+                            util.showError(txtEmail, "Email is invalid");
                             updateUI(null);
                         }
                     }
@@ -142,48 +147,30 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private boolean isValidRegister (String email, String password, String username, String confirm) {
-        clearError(txtEmail);
-        clearError(txtPassword);
-        clearError(txtConfirm);
-        clearError(txtUsername);
+        util.clearError(txtEmail);
+        util.clearError(txtPassword);
+        util.clearError(txtConfirm);
+        util.clearError(txtUsername);
 
         boolean result = true;
 
         if(password.trim().isEmpty() || password.length() < 8) {
-            showError(txtPassword, "Password must be 8 character");
+            util.showError(txtPassword, "Password must be 8 character");
             result = false;
         }
         if(confirm.trim().isEmpty() || !confirm.equals(password)) {
-            showError(txtConfirm, "Confirm must be a match");
+            util.showError(txtConfirm, "Confirm must be a match");
             result = false;
         }
         if(username.trim().isEmpty()){
-            showError(txtUsername, "Username must be blank");
+            util.showError(txtUsername, "Username must be blank");
             result = false;
         }
         if(email.trim().isEmpty() || !email.contains("@")){
-            showError(txtEmail, "Email is invalid");
+            util.showError(txtEmail, "Email is invalid");
             result = false;
         }
         return result;
-    }
-
-    private void showError(TextInputLayout input, String textError) {
-        input.setErrorEnabled(true);
-        input.setError(textError);
-        input.requestFocus();
-    }
-
-    private void clearError(TextInputLayout input){
-        input.setErrorEnabled(false);
-        input.setError(null);
-    }
-
-    private void showProgressDialog(ProgressDialog dialog, String title, String message){
-        dialog.setTitle(title);
-        dialog.setMessage(message);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
     }
 
 }
