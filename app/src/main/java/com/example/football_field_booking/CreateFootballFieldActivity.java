@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
@@ -21,9 +22,12 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.football_field_booking.daos.FootballFieldDAO;
+import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.google.android.gms.auth.api.signin.internal.Storage;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -38,7 +42,7 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
 
     private Button btnChooseImg;
     private ImageView imgPhoto;
-    private Uri uri;
+    private Uri uriImg;
     private StorageReference storageRef;
     private EditText edtName, edtLocation;
     private Spinner spType;
@@ -74,6 +78,7 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
                 new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, dataSrc);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spType.setAdapter(adapter);
+        type = dataSrc.get(0);
 
     }
 
@@ -81,9 +86,9 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            uri = data.getData();
+            uriImg = data.getData();
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uriImg);
                 imgPhoto.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -91,7 +96,6 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
 
         }
     }
-
 
 
     public void clickToCreate(View view) {
@@ -102,16 +106,33 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 type = spType.getSelectedItem().toString();
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
         });
-        String typeField=type;
-//        String image="";
-//        uploadImageToFirebase("img1");
-        Toast.makeText(CreateFootballFieldActivity.this,name+"-"+location+"-"+type,Toast.LENGTH_SHORT).show();
-
+        String typeField = type;
+        FootballFieldDTO footballFieldDTO = new FootballFieldDTO(name, location, typeField);
+        FootballFieldDAO fieldDAO = new FootballFieldDAO();
+        fieldDAO.createNewFootballField(footballFieldDTO)
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(CreateFootballFieldActivity.this, "Create Faild"+e.getMessage(), Toast.LENGTH_LONG).show();
+                        e.printStackTrace();
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        //thay bằng dialog
+                        Toast.makeText(CreateFootballFieldActivity.this, "Create Successfull", Toast.LENGTH_SHORT).show();
+                        Log.d("CreateFieldActivity", "DocumentSnapshot written with ID: " + documentReference.getId());
+                        uploadImageToFirebase(documentReference.getId());
+                        Intent intent = new Intent(CreateFootballFieldActivity.this,OwnerHomeActivity.class);
+                        startActivity(intent);
+                }
+            });
     }
 
 
@@ -123,7 +144,7 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
 
     private void uploadImageToFirebase(String idPhoto) {
         storageRef = FirebaseStorage.getInstance().getReference("football_field_images");
-        StorageReference imageRef = storageRef.child(idPhoto + "." + getFileExtension(uri));
+        StorageReference imageRef = storageRef.child(idPhoto + "." + getFileExtension(uriImg));
         imgPhoto.setDrawingCacheEnabled(true);
         imgPhoto.buildDrawingCache();
         Bitmap bitmap = ((BitmapDrawable) imgPhoto.getDrawable()).getBitmap();
@@ -143,7 +164,7 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                 // ...
-                Toast.makeText(CreateFootballFieldActivity.this, "Upload Image Success!", Toast.LENGTH_SHORT).show();
+
             }
         });
     }

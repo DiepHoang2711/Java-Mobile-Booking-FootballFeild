@@ -1,6 +1,7 @@
 package com.example.football_field_booking;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.widget.Button;
 public class OwnerHomeActivity extends AppCompatActivity {
 
     private Button btnCreate;
+    private RecyclerView rvListFields;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,5 +25,7 @@ public class OwnerHomeActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        rvListFields=findViewById(R.id.rvListFields);
     }
 }
