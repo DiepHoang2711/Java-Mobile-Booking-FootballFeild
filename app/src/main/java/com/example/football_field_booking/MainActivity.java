@@ -2,17 +2,26 @@ package com.example.football_field_booking;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.example.football_field_booking.daos.UserDAO;
+import com.example.football_field_booking.dtos.UserDTO;
+import com.example.football_field_booking.fragments.ProfileFragment;
+import com.example.football_field_booking.fragments.UserHomeFragment;
 import com.example.football_field_booking.validations.Validation;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,25 +40,67 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
 
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new UserHomeFragment()).commit();
+
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Fragment selectedFragment = null;
                 switch (item.getItemId()){
+                    case R.id.pageHome:
+                        selectedFragment = new UserHomeFragment();
+                        break;
                     case R.id.pageAccount:
                         if (validation.isUser()) {
-                            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-                            startActivity(intent);
+                            selectedFragment = new ProfileFragment();
                         } else {
                             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                             startActivity(intent);
+                            return true;
                         }
                         break;
-
+                    default:
+                        return false;
                 }
-                return false;
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, selectedFragment).commit();
+                return true;
             }
         });
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        updateUI(user);
+    }
+
+    private void updateUI(FirebaseUser user) {
+        if (user != null) {
+            UserDAO userDAO = new UserDAO();
+            userDAO.getUserById(user.getUid())
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            UserDTO userDTO = documentSnapshot.toObject(UserDTO.class);
+                            String role = userDTO.getRole();
+
+                            switch (role) {
+                                case "owner": {
+                                    Intent intent = new Intent(MainActivity.this, OwnerHomeActivity.class);
+                                    startActivity(intent);
+                                    break;
+                                }
+                                case "admin":
+                                    Intent intent = new Intent(MainActivity.this, AdminMainActivity.class);
+                                    startActivity(intent);
+                                    break;
+                            }
+
+                        }
+                    });
+        }
     }
 
 }

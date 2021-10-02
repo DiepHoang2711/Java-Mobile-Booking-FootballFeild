@@ -150,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
                                 UserDAO dao = new UserDAO();
                                 UserDTO userDTO = new UserDTO(user.getUid(), user.getEmail(),
                                         user.getDisplayName(), user.getPhoneNumber(), "user",
-                                        "active", user.getPhotoUrl().toString());
+                                        "active", null);
                                 dao.createUser(userDTO);
                             }
                             updateUI(user);
@@ -196,7 +196,6 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private void updateUI(FirebaseUser user) {
         prdLogin.cancel();
@@ -209,15 +208,25 @@ public class LoginActivity extends AppCompatActivity {
                             UserDTO userDTO = documentSnapshot.toObject(UserDTO.class);
                             String role = userDTO.getRole();
 
-                            if (role.equals("user")) {
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                startActivity(intent);
-                            } else if (role.equals("owner")) {
-                                Intent intent = new Intent(LoginActivity.this, OwnerHomeActivity.class);
-                                startActivity(intent);
-                            } else {
-                                Toast.makeText(LoginActivity.this, "Your role is invalid",
-                                        Toast.LENGTH_LONG);
+                            switch (role) {
+                                case "user": {
+                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    startActivity(intent);
+                                    break;
+                                }
+                                case "owner": {
+                                    Intent intent = new Intent(LoginActivity.this, OwnerHomeActivity.class);
+                                    startActivity(intent);
+                                    break;
+                                }
+                                case "admin":
+                                    Intent intent = new Intent(LoginActivity.this, AdminMainActivity.class);
+                                    startActivity(intent);
+                                    break;
+                                default:
+                                    Toast.makeText(LoginActivity.this, "Your role is invalid",
+                                            Toast.LENGTH_LONG).show();
+                                    break;
                             }
 
                         }
