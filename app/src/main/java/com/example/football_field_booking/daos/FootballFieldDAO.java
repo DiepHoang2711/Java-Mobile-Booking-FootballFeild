@@ -28,8 +28,9 @@ public class FootballFieldDAO {
         db = FirebaseFirestore.getInstance();
     }
 
-    public Task<DocumentReference> createNewFootballField(FootballFieldDTO fieldDTO) {
+    public Task<DocumentReference> createNewFootballField(FootballFieldDTO fieldDTO){
         try{
+
             return db.collection(COLLECTION_FOOTBALL_FIELD).add(fieldDTO);
         }catch (Exception e){
             e.printStackTrace();
