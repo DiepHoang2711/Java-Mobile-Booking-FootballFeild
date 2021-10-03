@@ -44,7 +44,17 @@
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/drawable/outline_sports_soccer_24.xml" value="0.22552083333333334" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/drawable/rounded_corner.xml" value="0.22552083333333334" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_login.xml" value="0.1" />
+        <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_admin_main.xml" value="0.17760416666666667" />
+        <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_create_football_field.xml" value="0.25" />
+        <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_login.xml" value="0.33" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_owner_home.xml" value="0.13269927536231885" />
+        <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_profile.xml" value="0.1" />
+        <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_register.xml" value="0.25" />
+        <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/element_user.xml" value="0.19166666666666668" />
+        <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/fragment_admin_home.xml" value="0.32407407407407407" />
+        <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/fragment_profile.xml" value="0.13134057971014493" />
+        <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/fragment_user_home.xml" value="0.19166666666666668" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.209375" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/menu/top_app_bar.xml" value="0.209375" />
       </map>

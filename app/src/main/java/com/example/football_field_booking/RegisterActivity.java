@@ -31,7 +31,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Util util;
 
     private Button btnSignUp, btnLogin;
-    private TextInputLayout txtEmail, txtUsername, txtPassword, txtConfirm;
+    private TextInputLayout txtEmail, txtFullName, txtPassword, txtConfirm;
     private ProgressDialog prdRegister;
 
     @Override
@@ -45,7 +45,7 @@ public class RegisterActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btnLogin);
         btnSignUp = findViewById(R.id.btnSignUp);
         txtEmail = findViewById(R.id.txtEmail);
-        txtUsername = findViewById(R.id.txtUsername);
+        txtFullName = findViewById(R.id.txtFullName);
         txtPassword = findViewById(R.id.txtPassword);
         txtConfirm = findViewById(R.id.txtConfirm);
         prdRegister = new ProgressDialog(RegisterActivity.this);
@@ -55,7 +55,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String email = txtEmail.getEditText().getText().toString();
                 String password = txtPassword.getEditText().getText().toString();
-                String username = txtUsername.getEditText().getText().toString();
+                String username = txtFullName.getEditText().getText().toString();
                 String confirm = txtConfirm.getEditText().getText().toString();
 
                 if(isValidRegister(email, password, username, confirm)) {
@@ -100,7 +100,7 @@ public class RegisterActivity extends AppCompatActivity {
                             Log.d(EMAIL_LOG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             UserDAO dao = new UserDAO();
-                            String username = txtUsername.getEditText().getText().toString();
+                            String username = txtFullName.getEditText().getText().toString();
                             UserDTO userDTO = new UserDTO(user.getUid(), user.getEmail(), username,
                                     "user", "active");
 
@@ -150,7 +150,7 @@ public class RegisterActivity extends AppCompatActivity {
         util.clearError(txtEmail);
         util.clearError(txtPassword);
         util.clearError(txtConfirm);
-        util.clearError(txtUsername);
+        util.clearError(txtFullName);
 
         boolean result = true;
 
@@ -163,7 +163,7 @@ public class RegisterActivity extends AppCompatActivity {
             result = false;
         }
         if(username.trim().isEmpty()){
-            util.showError(txtUsername, "Username must be blank");
+            util.showError(txtFullName, "Username must be blank");
             result = false;
         }
         if(email.trim().isEmpty() || !email.contains("@")){

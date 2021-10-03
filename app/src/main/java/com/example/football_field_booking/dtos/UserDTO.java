@@ -8,19 +8,19 @@ public class UserDTO {
     private String phone;
     private String role;
     private String status;
-    private String photoUrl;
+    private String photo;
 
     public UserDTO() {
     }
 
-    public UserDTO(String userID, String email, String fullName, String phone, String role, String status, String photoUrl) {
+    public UserDTO(String userID, String email, String fullName, String phone, String role, String status, String photo) {
         this.userID = userID;
         this.email = email;
         this.fullName = fullName;
         this.phone = phone;
         this.role = role;
         this.status = status;
-        this.photoUrl = photoUrl;
+        this.photo = photo;
     }
 
     public UserDTO(String userID, String email, String fullName, String role, String status) {
@@ -33,6 +33,10 @@ public class UserDTO {
 
     public String getUserID() {
         return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
     public String getEmail() {
@@ -75,12 +79,12 @@ public class UserDTO {
         this.status = status;
     }
 
-    public String getPhotoUrl() {
-        return photoUrl;
+    public String getPhoto() {
+        return photo;
     }
 
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
     @Override
@@ -92,7 +96,7 @@ public class UserDTO {
                 ", phone='" + phone + '\'' +
                 ", role='" + role + '\'' +
                 ", status='" + status + '\'' +
-                ", photoUrl='" + photoUrl + '\'' +
+                ", photo='" + photo + '\'' +
                 '}';
     }
 }
