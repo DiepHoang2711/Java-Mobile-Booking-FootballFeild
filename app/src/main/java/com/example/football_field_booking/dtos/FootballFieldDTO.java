@@ -1,7 +1,7 @@
 package com.example.football_field_booking.dtos;
 
 public class FootballFieldDTO {
-    private String id;
+    private String fieldID;
     private String name;
     private String location;
     private String type;
@@ -11,19 +11,19 @@ public class FootballFieldDTO {
 
 
     public FootballFieldDTO(String name, String location, String type) {
-        this.id=id;
+        this.fieldID=fieldID;
         this.name = name;
         this.location = location;
         this.type = type;
 
     }
 
-    public String getId() {
-        return id;
+    public String getFieldID() {
+        return fieldID;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setFieldID(String fieldID) {
+        this.fieldID = fieldID;
     }
 
     public String getName() {

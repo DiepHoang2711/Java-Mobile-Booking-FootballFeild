@@ -15,7 +15,8 @@
             android:id="@+id/imgFootBallField"
             android:layout_width="200dp"
             android:layout_height="150dp"
-            android:scaleType="fitStart" />
+            android:scaleType="fitStart"
+            android:background="@drawable/image_1"/>
 
         <LinearLayout
             android:layout_width="match_parent"

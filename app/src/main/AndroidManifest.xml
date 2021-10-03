@@ -14,18 +14,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Football_Field_Booking">
         <activity
+            android:name=".OwnerFootballFieldDetailActivity"
+            android:exported="true" />
+        <activity
             android:name=".ProfileActivity"
             android:exported="true" />
         <activity
             android:name=".OwnerHomeActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".RegisterActivity"
             android:exported="true" />
         <activity
             android:name=".LoginActivity"
-            android:exported="true">
-        </activity>
+            android:exported="true"></activity>
         <activity
             android:name=".CreateFootballFieldActivity"
             android:exported="true" />

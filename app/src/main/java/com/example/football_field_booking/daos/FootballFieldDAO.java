@@ -14,30 +14,29 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.List;
 
 public class FootballFieldDAO {
-    private FirebaseFirestore db;
-
-    private static final String COLLECTION_FOOTBALL_FIELD = "footballFields";
-
-    private FootballFieldDTO footballFieldDTO;
-
-    private List<FootballFieldDTO> fieldDTOList;
-
-    public static final String FOOTBALL_FIELD_DAO_LOG = "football_field_dao";
-
-    public FootballFieldDAO() {
-        db = FirebaseFirestore.getInstance();
-    }
-
-    public Task<DocumentReference> createNewFootballField(FootballFieldDTO fieldDTO){
-        try{
-
-            return db.collection(COLLECTION_FOOTBALL_FIELD).add(fieldDTO);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return null;
-    }
 
 
+//    private static final String COLLECTION_FOOTBALL_FIELD = "footballFields";
+//
+//    private FootballFieldDTO footballFieldDTO;
+//
+//    private List<FootballFieldDTO> fieldDTOList;
+//
+//    public static final String FOOTBALL_FIELD_DAO_LOG = "football_field_dao";
+//
+//    public FootballFieldDAO() {
+//        db = FirebaseFirestore.getInstance();
+//    }
+//
+//    public Task<Void> createNewFootballField(FootballFieldDTO fieldDTO){
+//        try{
+//            DocumentReference documentReference = db.collection(COLLECTION_FOOTBALL_FIELD).document();
+//            fieldDTO.setId(documentReference.getId());
+//            return db.collection(COLLECTION_FOOTBALL_FIELD).document(documentReference.getId()).set(fieldDTO);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
 
 }

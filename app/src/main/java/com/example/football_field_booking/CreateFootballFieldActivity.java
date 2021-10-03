@@ -28,6 +28,7 @@ import com.google.android.gms.auth.api.signin.internal.Storage;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -47,6 +48,8 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
     private EditText edtName, edtLocation;
     private Spinner spType;
     private String type;
+
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +82,8 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spType.setAdapter(adapter);
         type = dataSrc.get(0);
+
+        db=FirebaseFirestore.getInstance();
 
     }
 
@@ -114,25 +119,26 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         });
         String typeField = type;
         FootballFieldDTO footballFieldDTO = new FootballFieldDTO(name, location, typeField);
-        FootballFieldDAO fieldDAO = new FootballFieldDAO();
-        fieldDAO.createNewFootballField(footballFieldDTO)
+        DocumentReference documentReference = db.collection("footballFields").document();
+        footballFieldDTO.setFieldID(documentReference.getId());
+        db.collection("footballFields").document(documentReference.getId()).set(footballFieldDTO)
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(CreateFootballFieldActivity.this, "Create Faild"+e.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(CreateFootballFieldActivity.this, "Create Faild" + e.getMessage(), Toast.LENGTH_LONG).show();
                         e.printStackTrace();
                     }
-                }).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        //thay bằng dialog
-                        Toast.makeText(CreateFootballFieldActivity.this, "Create Successfull", Toast.LENGTH_SHORT).show();
-                        Log.d("CreateFieldActivity", "DocumentSnapshot written with ID: " + documentReference.getId());
-                        uploadImageToFirebase(documentReference.getId());
-                        Intent intent = new Intent(CreateFootballFieldActivity.this,OwnerHomeActivity.class);
-                        startActivity(intent);
-                }
-            });
+                }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Toast.makeText(CreateFootballFieldActivity.this, "Create Successfull", Toast.LENGTH_SHORT).show();
+                Log.d("CreateFieldActivity", "DocumentSnapshot written with ID: " + documentReference.getId());
+                uploadImageToFirebase(documentReference.getId());
+                Intent intent = new Intent(CreateFootballFieldActivity.this, OwnerHomeActivity.class);
+                startActivity(intent);
+
+            }
+        });
     }
 
 
@@ -156,7 +162,6 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
                 Toast.makeText(CreateFootballFieldActivity.this, "Upload Image Faild!", Toast.LENGTH_SHORT).show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -164,7 +169,7 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                 // ...
-
+                Toast.makeText(CreateFootballFieldActivity.this, "Upload Image Success!", Toast.LENGTH_SHORT).show();
             }
         });
     }
