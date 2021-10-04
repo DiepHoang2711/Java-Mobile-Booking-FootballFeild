@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
@@ -145,15 +147,35 @@ public class LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(GOOGLE_LOG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            UserDAO userDAO = new UserDAO();
 
                             if (task.getResult().getAdditionalUserInfo().isNewUser()) {
-                                UserDAO dao = new UserDAO();
-                                UserDTO userDTO = new UserDTO(user.getUid(), user.getEmail(),
-                                        user.getDisplayName(), user.getPhoneNumber(), "user",
-                                        "active", null);
-                                dao.createUser(userDTO);
+                                try {
+                                    UserDAO dao = new UserDAO();
+                                    UserDTO userDTO = new UserDTO(user.getUid(), user.getEmail(),
+                                            user.getDisplayName(), user.getPhoneNumber(), "user",
+                                            "active", null);
+                                    if(user.getPhotoUrl() != null) {
+                                        userDTO.setPhotoUri(user.getPhotoUrl().toString());
+                                    }
+                                    dao.createUser(userDTO);
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                             }
-                            updateUI(user);
+                            userDAO.getUserById(user.getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    UserDTO userDTO = documentSnapshot.toObject(UserDTO.class);
+                                    SharedPreferences userSPREF = getSharedPreferences(
+                                            getResources().getString(R.string.user_share_pref), MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = userSPREF.edit();
+                                    editor.putString("role", userDTO.getRole()).commit();
+                                    updateUI(user);
+                                }
+                            });
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(GOOGLE_LOG, "signInWithCredential:failure", task.getException());
@@ -175,20 +197,30 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(EMAIL_LOG, "signInWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            if (user.isEmailVerified()) {
-                                updateUI(user);
-                            } else {
-                                Toast.makeText(LoginActivity.this, "Please verify your email address",
-                                        Toast.LENGTH_SHORT).show();
-                                updateUI(null);
-                            }
-
+                                // Sign in success, update UI with the signed-in user's information
+                                Log.d(EMAIL_LOG, "signInWithEmail:success");
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                if (user.isEmailVerified()) {
+                                    UserDAO userDAO = new UserDAO();
+                                    userDAO.getUserById(user.getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            UserDTO userDTO = documentSnapshot.toObject(UserDTO.class);
+                                            SharedPreferences userSPREF = getSharedPreferences(
+                                                    getResources().getString(R.string.user_share_pref), MODE_PRIVATE);
+                                            SharedPreferences.Editor editor = userSPREF.edit();
+                                            editor.putString("role", userDTO.getRole()).apply();
+                                            updateUI(user);
+                                        }
+                                    });
+                                } else {
+                                    Toast.makeText(LoginActivity.this, "Please verify your email address",
+                                            Toast.LENGTH_SHORT).show();
+                                    updateUI(null);
+                                }
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w(EMAIL_LOG, "signInWithEmail:failure", task.getException());
+                            //Log.w(EMAIL_LOG, "signInWithEmail:failure", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                             updateUI(null);
@@ -200,37 +232,32 @@ public class LoginActivity extends AppCompatActivity {
     private void updateUI(FirebaseUser user) {
         prdLogin.cancel();
         if (user != null) {
-            UserDAO userDAO = new UserDAO();
-            userDAO.getUserById(user.getUid())
-                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            UserDTO userDTO = documentSnapshot.toObject(UserDTO.class);
-                            String role = userDTO.getRole();
-
-                            switch (role) {
-                                case "user": {
-                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                    startActivity(intent);
-                                    break;
-                                }
-                                case "owner": {
-                                    Intent intent = new Intent(LoginActivity.this, OwnerHomeActivity.class);
-                                    startActivity(intent);
-                                    break;
-                                }
-                                case "admin":
-                                    Intent intent = new Intent(LoginActivity.this, AdminMainActivity.class);
-                                    startActivity(intent);
-                                    break;
-                                default:
-                                    Toast.makeText(LoginActivity.this, "Your role is invalid",
-                                            Toast.LENGTH_LONG).show();
-                                    break;
-                            }
-
-                        }
-                    });
+            SharedPreferences userSPREF = getSharedPreferences(
+                    getResources().getString(R.string.user_share_pref), MODE_PRIVATE);
+            String role = userSPREF.getString("role", null);
+            Log.d("USER", "role: " +role);
+            if (role != null) {
+                switch (role) {
+                    case "user": {
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        break;
+                    }
+                    case "owner": {
+                        Intent intent = new Intent(LoginActivity.this, OwnerHomeActivity.class);
+                        startActivity(intent);
+                        break;
+                    }
+                    case "admin":
+                        Intent intent = new Intent(LoginActivity.this, AdminMainActivity.class);
+                        startActivity(intent);
+                        break;
+                    default:
+                        Toast.makeText(LoginActivity.this, "Your role is invalid",
+                                Toast.LENGTH_LONG).show();
+                        break;
+                }
+            }
         }
     }
 

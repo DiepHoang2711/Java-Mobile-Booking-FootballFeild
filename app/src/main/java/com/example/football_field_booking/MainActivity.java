@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -35,8 +37,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        updateUI(user);
+
         topAppBar = findViewById(R.id.topAppBar);
         topAppBar.setTitleTextAppearance(this, R.style.FontLogo);
+        View logo = topAppBar.getChildAt(0);
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
 
@@ -67,39 +73,37 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-    }
+        logo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        updateUI(user);
     }
 
     private void updateUI(FirebaseUser user) {
         if (user != null) {
-            UserDAO userDAO = new UserDAO();
-            userDAO.getUserById(user.getUid())
-                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            UserDTO userDTO = documentSnapshot.toObject(UserDTO.class);
-                            String role = userDTO.getRole();
-
-                            switch (role) {
-                                case "owner": {
-                                    Intent intent = new Intent(MainActivity.this, OwnerHomeActivity.class);
-                                    startActivity(intent);
-                                    break;
-                                }
-                                case "admin":
-                                    Intent intent = new Intent(MainActivity.this, AdminMainActivity.class);
-                                    startActivity(intent);
-                                    break;
-                            }
-
-                        }
-                    });
+            SharedPreferences userSPREF = getSharedPreferences(
+                    getResources().getString(R.string.user_share_pref), MODE_PRIVATE);
+            String role = userSPREF.getString("role", null);
+            if (role != null) {
+                switch (role) {
+                    case "owner": {
+                        Intent intent = new Intent(MainActivity.this, OwnerHomeActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        break;
+                    }
+                    case "admin":
+                        Intent intent = new Intent(MainActivity.this, AdminMainActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        break;
+                }
+            }
         }
     }
 
