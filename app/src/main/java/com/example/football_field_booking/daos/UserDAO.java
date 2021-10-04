@@ -6,27 +6,20 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.example.football_field_booking.dtos.UserDTO;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.PhoneAuthCredential;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.SetOptions;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class UserDAO {
 
+    public static final String CONST_OF_PROJECT = "constOfProject";
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private static final String COLLECTION_USERS = "users";
@@ -59,21 +52,29 @@ public class UserDAO {
         data.put("email", userDTO.getEmail());
         data.put("fullName", userDTO.getFullName());
         data.put("phone", userDTO.getPhone());
-        data.put("role", userDTO.getUserID());
-        data.put("status", userDTO.getUserID());
-        data.put("photoUrl", userDTO.getUserID());
+        data.put("role", userDTO.getRole());
+        data.put("status", userDTO.getStatus());
+        data.put("photo", userDTO.getPhotoUri());
 
         return doc.update(data);
-    }
-
-    public Task<Void> updateEmail (String email) {
-        FirebaseUser user = mAuth.getCurrentUser();
-        return user.updateEmail(email);
     }
 
     public Task<Void> updatePassword (String password) {
         FirebaseUser user = mAuth.getCurrentUser();
         return user.updatePassword(password);
+    }
+
+    public Task<Void> deleteUser(String userID) {
+
+        DocumentReference doc = db.collection(COLLECTION_USERS).document(userID);
+        Map<String, Object> data = new HashMap<>();
+        data.put("status", "deleted");
+        return doc.update(data);
+    }
+
+    public Task<DocumentSnapshot> getConstOfUser () {
+        DocumentReference doc = db.collection(CONST_OF_PROJECT).document("const");
+        return doc.get();
     }
 
 }

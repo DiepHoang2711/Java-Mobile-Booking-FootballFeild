@@ -1,6 +1,8 @@
 package com.example.football_field_booking.dtos;
 
-public class UserDTO {
+import java.io.Serializable;
+
+public class UserDTO implements Serializable {
 
     private String userID;
     private String email;
@@ -8,19 +10,19 @@ public class UserDTO {
     private String phone;
     private String role;
     private String status;
-    private String photo;
+    private String photoUri;
 
     public UserDTO() {
     }
 
-    public UserDTO(String userID, String email, String fullName, String phone, String role, String status, String photo) {
+    public UserDTO(String userID, String email, String fullName, String phone, String role, String status, String photoUri) {
         this.userID = userID;
         this.email = email;
         this.fullName = fullName;
         this.phone = phone;
         this.role = role;
         this.status = status;
-        this.photo = photo;
+        this.photoUri = photoUri;
     }
 
     public UserDTO(String userID, String email, String fullName, String role, String status) {
@@ -79,12 +81,12 @@ public class UserDTO {
         this.status = status;
     }
 
-    public String getPhoto() {
-        return photo;
+    public String getPhotoUri() {
+        return photoUri;
     }
 
-    public void setPhoto(String photo) {
-        this.photo = photo;
+    public void setPhotoUri(String photoUri) {
+        this.photoUri = photoUri;
     }
 
     @Override
@@ -96,7 +98,7 @@ public class UserDTO {
                 ", phone='" + phone + '\'' +
                 ", role='" + role + '\'' +
                 ", status='" + status + '\'' +
-                ", photo='" + photo + '\'' +
+                ", photoUri='" + photoUri + '\'' +
                 '}';
     }
 }

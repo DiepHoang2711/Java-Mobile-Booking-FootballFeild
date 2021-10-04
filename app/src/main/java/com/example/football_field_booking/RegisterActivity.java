@@ -97,17 +97,21 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d(EMAIL_LOG, "createUserWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            UserDAO dao = new UserDAO();
-                            String username = txtFullName.getEditText().getText().toString();
-                            UserDTO userDTO = new UserDTO(user.getUid(), user.getEmail(), username,
-                                    "user", "active");
+                            try {
+                                Log.d(EMAIL_LOG, "createUserWithEmail:success");
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                UserDAO dao = new UserDAO();
+                                String username = txtFullName.getEditText().getText().toString();
+                                UserDTO userDTO = new UserDTO(user.getUid(), user.getEmail(), username,
+                                        "user", "active");
 
-                            dao.createUser(userDTO);
-                            sendEmailVerification();
+                                dao.createUser(userDTO);
+                                sendEmailVerification();
 
-                            updateUI(user);
+                                updateUI(user);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
 
                         } else {
                             // If sign in fails, display a message to the user.
