@@ -4,15 +4,18 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -29,6 +32,7 @@ public class ProfileEditByAdminActivity extends AppCompatActivity {
     private TextInputLayout txtFullName, txtPhone;
     private AutoCompleteTextView txtRole, txtStatus;
     private Button btnUpdate, btnDelete;
+    private ImageView imgUser;
     private UserDTO userDTO = null;
     private List<String> roles, status;
 
@@ -45,6 +49,7 @@ public class ProfileEditByAdminActivity extends AppCompatActivity {
         txtStatus = findViewById(R.id.txtStatus);
         btnUpdate = findViewById(R.id.btnUpdateUser);
         btnDelete = findViewById(R.id.btnDeleteUser);
+        imgUser = findViewById(R.id.imgUser);
 
         Intent intent = this.getIntent();
         String userID = intent.getStringExtra("userID");
@@ -69,6 +74,8 @@ public class ProfileEditByAdminActivity extends AppCompatActivity {
                                 ArrayAdapter<String> adapterStatus = new ArrayAdapter<>(ProfileEditByAdminActivity.this, android.R.layout.simple_spinner_item,status);
                                 txtRole.setAdapter(adapterRoles);
                                 txtStatus.setAdapter(adapterStatus);
+                                Log.d("USER", roles.toString());
+                                Log.d("USER", status.toString());
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -88,8 +95,16 @@ public class ProfileEditByAdminActivity extends AppCompatActivity {
                                 txtEmail.setText(userDTO.getEmail());
                                 txtPhone.getEditText().setText(userDTO.getPhone());
                                 txtFullName.getEditText().setText(userDTO.getFullName());
-                                txtRole.setText(userDTO.getRole());
-                                txtStatus.setText(userDTO.getStatus());
+                                txtRole.setText(userDTO.getRole(), false);
+                                txtStatus.setText(userDTO.getStatus(), false);
+                                if (userDTO.getPhotoUri() != null) {
+                                    Uri uri = Uri.parse(userDTO.getPhotoUri());
+                                    Glide.with(imgUser.getContext())
+                                            .load(uri)
+                                            .into(imgUser);
+                                } else {
+                                    imgUser.setImageResource(R.drawable.outline_account_circle_24);
+                                }
 
                             } catch (Exception e) {
                                 Log.d("DAO", e.toString());
@@ -145,6 +160,8 @@ public class ProfileEditByAdminActivity extends AppCompatActivity {
                                 if(task.isSuccessful()) {
                                     Toast.makeText(ProfileEditByAdminActivity.this,
                                             "Delete successful", Toast.LENGTH_SHORT).show();
+                                    finish();
+                                    startActivity(ProfileEditByAdminActivity.this.getIntent());
                                 } else {
                                     Toast.makeText(ProfileEditByAdminActivity.this,
                                             R.string.something_went_wrong, Toast.LENGTH_SHORT).show();
