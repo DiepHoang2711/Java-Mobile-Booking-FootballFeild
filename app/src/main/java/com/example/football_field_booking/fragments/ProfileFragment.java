@@ -3,6 +3,7 @@ package com.example.football_field_booking.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,8 +14,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.football_field_booking.MainActivity;
 import com.example.football_field_booking.ProfileEditActivity;
 import com.example.football_field_booking.R;
@@ -31,6 +34,7 @@ public class ProfileFragment extends Fragment {
     private Button btnLogout;
     private Button btnUpdateUser;
     private TextView txtFullName;
+    private ImageView imgUser;
 
     public ProfileFragment() {
     }
@@ -44,6 +48,7 @@ public class ProfileFragment extends Fragment {
         txtFullName = view.findViewById(R.id.txtFullName);
         btnLogout = view.findViewById(R.id.btnLogout);
         btnUpdateUser = view.findViewById(R.id.btnUpdateUser);
+        imgUser = view.findViewById(R.id.imgUser);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         UserDAO userDAO = new UserDAO();
@@ -53,6 +58,14 @@ public class ProfileFragment extends Fragment {
                 if(task.isSuccessful()){
                     UserDTO userDTO = task.getResult().toObject(UserDTO.class);
                     txtFullName.setText(userDTO.getFullName());
+                    if (userDTO.getPhotoUri() != null) {
+                        Uri uri = Uri.parse(userDTO.getPhotoUri());
+                        Glide.with(imgUser.getContext())
+                                .load(uri)
+                                .into(imgUser);
+                    } else {
+                        imgUser.setImageResource(R.drawable.outline_account_circle_24);
+                    }
                 }
             }
         });

@@ -27,7 +27,8 @@
                 app:layout_scrollFlags="scroll|enterAlways|snap"
                 app:liftOnScroll="true"
                 app:logo="@drawable/logo"
-                app:title="Fast Field">
+                app:titleCentered="true"
+                app:title="User's Detail">
 
             </com.google.android.material.appbar.MaterialToolbar>
 
@@ -47,7 +48,8 @@
                     android:id="@+id/imgUser"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:scaleType="centerCrop"/>
+                    android:scaleType="centerCrop"
+                    android:layout_gravity="center"/>
 
                 <TextView
                     android:id="@+id/txtUserID"
@@ -144,7 +146,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:text="Update"/>
+                    android:text="Delete"/>
 
 
             </LinearLayout>

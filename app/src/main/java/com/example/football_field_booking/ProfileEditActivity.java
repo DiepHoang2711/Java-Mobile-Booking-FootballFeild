@@ -4,13 +4,16 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.example.football_field_booking.validations.Validation;
@@ -28,6 +31,7 @@ public class ProfileEditActivity extends AppCompatActivity {
     private TextView txtUserId, txtEmail;
     private TextInputLayout txtFullName, txtPhone;
     private Button btnUpdate;
+    private ImageView imgUser;
     private UserDTO userDTO = null;
     private Validation val;
 
@@ -41,6 +45,7 @@ public class ProfileEditActivity extends AppCompatActivity {
         txtFullName = findViewById(R.id.txtFullName);
         txtPhone = findViewById(R.id.txtPhone);
         btnUpdate = findViewById(R.id.btnUpdateUser);
+        imgUser = findViewById(R.id.imgUser);
         val = new Validation();
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -67,6 +72,14 @@ public class ProfileEditActivity extends AppCompatActivity {
                             txtEmail.setText(userDTO.getEmail());
                             txtPhone.getEditText().setText(userDTO.getPhone());
                             txtFullName.getEditText().setText(userDTO.getFullName());
+                            if (userDTO.getPhotoUri() != null) {
+                                Uri uri = Uri.parse(userDTO.getPhotoUri());
+                                Glide.with(imgUser.getContext())
+                                        .load(uri)
+                                        .into(imgUser);
+                            } else {
+                                imgUser.setImageResource(R.drawable.outline_account_circle_24);
+                            }
 
                         } catch (Exception e) {
                             Log.d("DAO", e.toString());

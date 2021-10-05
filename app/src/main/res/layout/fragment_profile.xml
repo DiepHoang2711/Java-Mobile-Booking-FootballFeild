@@ -26,10 +26,11 @@
                 >
 
                 <ImageView
+                    android:id="@+id/imgUser"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:src="@drawable/image_1"
-                    android:scaleType="centerCrop"/>
+                    android:scaleType="centerCrop"
+                    />
 
             </androidx.cardview.widget.CardView>
 
