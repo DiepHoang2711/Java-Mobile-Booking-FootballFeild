@@ -1,8 +1,10 @@
 package com.example.football_field_booking;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
+import com.example.football_field_booking.utils.Util;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
@@ -28,6 +31,8 @@ import java.util.List;
 
 public class ProfileEditByAdminActivity extends AppCompatActivity {
 
+    public static final int RC_IMAGE_PICKER = 1000;
+
     private TextView txtUserId, txtEmail;
     private TextInputLayout txtFullName, txtPhone;
     private AutoCompleteTextView txtRole, txtStatus;
@@ -35,6 +40,7 @@ public class ProfileEditByAdminActivity extends AppCompatActivity {
     private ImageView imgUser;
     private UserDTO userDTO = null;
     private List<String> roles, status;
+    private Util util;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +56,7 @@ public class ProfileEditByAdminActivity extends AppCompatActivity {
         btnUpdate = findViewById(R.id.btnUpdateUser);
         btnDelete = findViewById(R.id.btnDeleteUser);
         imgUser = findViewById(R.id.imgUser);
+        util = new Util();
 
         Intent intent = this.getIntent();
         String userID = intent.getStringExtra("userID");
@@ -97,6 +104,7 @@ public class ProfileEditByAdminActivity extends AppCompatActivity {
                                 txtFullName.getEditText().setText(userDTO.getFullName());
                                 txtRole.setText(userDTO.getRole(), false);
                                 txtStatus.setText(userDTO.getStatus(), false);
+                                Log.d("USER", userDTO.getPhotoUri());
                                 if (userDTO.getPhotoUri() != null) {
                                     Uri uri = Uri.parse(userDTO.getPhotoUri());
                                     Glide.with(imgUser.getContext())
@@ -171,5 +179,65 @@ public class ProfileEditByAdminActivity extends AppCompatActivity {
             }
         });
 
+        imgUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(intent, RC_IMAGE_PICKER);
+            }
+        });
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_IMAGE_PICKER) {
+            if (resultCode == RESULT_OK) {
+
+                try {
+                    Uri uri = data.getData();
+                    UserDAO userDAO = new UserDAO();
+                    ProgressDialog progressDialog = new ProgressDialog(ProfileEditByAdminActivity.this);
+                    util.showProgressDialog(progressDialog, "Uploading ....", "Please wait for uploading image");
+                    userDAO.uploadImgUserToFirebase(uri)
+                            .addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Uri> task) {
+                                    try {
+                                        if (task.isSuccessful()) {
+                                            Log.d("USER", task.getResult().toString());
+                                            userDTO.setPhotoUri(task.getResult().toString());
+                                            userDAO.updateUser(userDTO).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    progressDialog.cancel();
+                                                    if (task.isSuccessful()) {
+                                                        Toast.makeText(ProfileEditByAdminActivity.this, "Update Success"
+                                                                , Toast.LENGTH_SHORT).show();
+                                                        finish();
+                                                        startActivity(ProfileEditByAdminActivity.this.getIntent());
+                                                    } else {
+                                                        Toast.makeText(ProfileEditByAdminActivity.this, "Update fail"
+                                                                , Toast.LENGTH_SHORT).show();
+                                                    }
+                                                }
+                                            });
+                                        } else {
+                                            Toast.makeText(ProfileEditByAdminActivity.this, "Update fail"
+                                                    , Toast.LENGTH_SHORT).show();
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }
