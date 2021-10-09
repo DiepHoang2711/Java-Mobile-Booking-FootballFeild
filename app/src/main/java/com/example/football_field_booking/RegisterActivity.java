@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
-import com.example.football_field_booking.utils.Util;
+import com.example.football_field_booking.utils.Utils;
 import com.example.football_field_booking.validations.Validation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -28,7 +28,8 @@ public class RegisterActivity extends AppCompatActivity {
     public static final String EMAIL_LOG = "Email";
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth mAuth;
-    private Util util;
+    private Utils util;
+    private Validation val;
 
     private Button btnSignUp, btnLogin;
     private TextInputLayout txtEmail, txtFullName, txtPassword, txtConfirm;
@@ -40,7 +41,8 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         mAuth = FirebaseAuth.getInstance();
-        util = new Util();
+        util = new Utils();
+        val = new Validation();
 
         btnLogin = findViewById(R.id.btnLogin);
         btnSignUp = findViewById(R.id.btnSignUp);
@@ -55,10 +57,10 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String email = txtEmail.getEditText().getText().toString();
                 String password = txtPassword.getEditText().getText().toString();
-                String username = txtFullName.getEditText().getText().toString();
+                String fullName = txtFullName.getEditText().getText().toString();
                 String confirm = txtConfirm.getEditText().getText().toString();
 
-                if(isValidRegister(email, password, username, confirm)) {
+                if(isValidRegister(email, password, fullName, confirm)) {
                     util.showProgressDialog(prdRegister, "Register", "Wait for register");
                     SignUpWithEmail(email, password);
                 }else {
@@ -101,8 +103,8 @@ public class RegisterActivity extends AppCompatActivity {
                                 Log.d(EMAIL_LOG, "createUserWithEmail:success");
                                 FirebaseUser user = mAuth.getCurrentUser();
                                 UserDAO dao = new UserDAO();
-                                String username = txtFullName.getEditText().getText().toString();
-                                UserDTO userDTO = new UserDTO(user.getUid(), user.getEmail(), username,
+                                String fullName = txtFullName.getEditText().getText().toString();
+                                UserDTO userDTO = new UserDTO(user.getUid(), user.getEmail(), fullName,
                                         "user", "active");
 
                                 dao.createUser(userDTO);
@@ -150,7 +152,7 @@ public class RegisterActivity extends AppCompatActivity {
                 });
     }
 
-    private boolean isValidRegister (String email, String password, String username, String confirm) {
+    private boolean isValidRegister (String email, String password, String fullName, String confirm) {
         util.clearError(txtEmail);
         util.clearError(txtPassword);
         util.clearError(txtConfirm);
@@ -158,19 +160,19 @@ public class RegisterActivity extends AppCompatActivity {
 
         boolean result = true;
 
-        if(password.trim().isEmpty() || password.length() < 8) {
+        if(!val.isValidPassword(password)) {
             util.showError(txtPassword, "Password must be 8 character");
             result = false;
         }
-        if(confirm.trim().isEmpty() || !confirm.equals(password)) {
+        if(val.isEmpty(confirm) || !confirm.equals(password)) {
             util.showError(txtConfirm, "Confirm must be a match");
             result = false;
         }
-        if(username.trim().isEmpty()){
+        if(val.isEmpty(fullName)){
             util.showError(txtFullName, "Username must be blank");
             result = false;
         }
-        if(email.trim().isEmpty() || !email.contains("@")){
+        if(!val.isValidEmail(email)){
             util.showError(txtEmail, "Email is invalid");
             result = false;
         }

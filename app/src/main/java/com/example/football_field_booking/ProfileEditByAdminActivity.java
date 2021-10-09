@@ -8,6 +8,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -20,13 +21,13 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
-import com.example.football_field_booking.utils.Util;
+import com.example.football_field_booking.utils.Utils;
+import com.example.football_field_booking.validations.Validation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileEditByAdminActivity extends AppCompatActivity {
@@ -34,13 +35,14 @@ public class ProfileEditByAdminActivity extends AppCompatActivity {
     public static final int RC_IMAGE_PICKER = 1000;
 
     private TextView txtUserId, txtEmail;
-    private TextInputLayout txtFullName, txtPhone;
+    private TextInputLayout txtFullName, txtPhone, tilRole, tilStatus;
     private AutoCompleteTextView txtRole, txtStatus;
     private Button btnUpdate, btnDelete;
     private ImageView imgUser;
     private UserDTO userDTO = null;
     private List<String> roles, status;
-    private Util util;
+    private Utils util;
+    private Validation val;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +56,12 @@ public class ProfileEditByAdminActivity extends AppCompatActivity {
         txtRole = findViewById(R.id.txtRole);
         txtStatus = findViewById(R.id.txtStatus);
         btnUpdate = findViewById(R.id.btnUpdateUser);
+        tilRole = findViewById(R.id.tilRole);
+        tilStatus = findViewById(R.id.tilStatus);
         btnDelete = findViewById(R.id.btnDeleteUser);
         imgUser = findViewById(R.id.imgUser);
-        util = new Util();
+        util = new Utils();
+        val = new Validation();
 
         Intent intent = this.getIntent();
         String userID = intent.getStringExtra("userID");
@@ -133,24 +138,27 @@ public class ProfileEditByAdminActivity extends AppCompatActivity {
                     String role = txtRole.getText().toString();
                     String status = txtStatus.getText().toString();
 
-                    userDTO.setFullName(fullName);
-                    userDTO.setPhone(phone);
-                    userDTO.setRole(role);
-                    userDTO.setStatus(status);
+                    if(isValidUpdate(fullName, phone, role, status)) {
+                        userDTO.setFullName(fullName);
+                        userDTO.setPhone(phone);
+                        userDTO.setRole(role);
+                        userDTO.setStatus(status);
 
-                    userDAO.updateUser(userDTO)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        finish();
-                                        startActivity(ProfileEditByAdminActivity.this.getIntent());
-                                    } else {
-                                        Toast.makeText(ProfileEditByAdminActivity.this,
-                                                "Fail to update User", Toast.LENGTH_SHORT).show();
+                        userDAO.updateUser(userDTO)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            finish();
+                                            startActivity(ProfileEditByAdminActivity.this.getIntent());
+                                        } else {
+                                            Toast.makeText(ProfileEditByAdminActivity.this,
+                                                    "Fail to update User", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
-                                }
-                            });
+                                });
+                    }
+
                 }else {
                     Toast.makeText(ProfileEditByAdminActivity.this,
                             R.string.something_went_wrong, Toast.LENGTH_SHORT).show();
@@ -182,10 +190,9 @@ public class ProfileEditByAdminActivity extends AppCompatActivity {
         imgUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(intent, RC_IMAGE_PICKER);
+                Intent gallery = new Intent(Intent.ACTION_PICK,
+                        MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                startActivityForResult(gallery, RC_IMAGE_PICKER);
             }
         });
 
@@ -240,4 +247,34 @@ public class ProfileEditByAdminActivity extends AppCompatActivity {
             }
         }
     }
+
+
+    private boolean isValidUpdate ( String fullName,String phone,String role,String status) {
+        util.clearError(txtFullName);
+        util.clearError(txtPhone);
+        util.clearError(tilRole);
+        util.clearError(tilStatus);
+
+        boolean result = true;
+        if(val.isEmpty(status)) {
+            util.showError(tilStatus, "Status must not be blank");
+            result = false;
+        }
+        if(val.isEmpty(role)) {
+            util.showError(tilRole, "Role must not be blank");
+            result = false;
+        }
+        if(!val.isEmpty(phone)) {
+            if(!val.isValidPhoneNumber(phone) ) {
+                util.showError(txtPhone, "Phone must be between 8 and 11 number");
+                result = false;
+            }
+        }
+        if(val.isEmpty(fullName)){
+            util.showError(txtFullName, "Username must not be blank");
+            result = false;
+        }
+        return result;
+    }
+
 }

@@ -8,18 +8,18 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
-import com.example.football_field_booking.utils.Util;
+import com.example.football_field_booking.utils.Utils;
 import com.example.football_field_booking.validations.Validation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -29,7 +29,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.storage.UploadTask;
 
 public class ProfileEditActivity extends AppCompatActivity {
 
@@ -40,7 +39,7 @@ public class ProfileEditActivity extends AppCompatActivity {
     private ImageView imgUser;
     private UserDTO userDTO = null;
     private Validation val;
-    private Util util;
+    private Utils util;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +53,7 @@ public class ProfileEditActivity extends AppCompatActivity {
         btnUpdate = findViewById(R.id.btnUpdateUser);
         imgUser = findViewById(R.id.imgUser);
         val = new Validation();
-        util = new Util();
+        util = new Utils();
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -68,10 +67,9 @@ public class ProfileEditActivity extends AppCompatActivity {
         imgUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(intent, RC_IMAGE_PICKER);
+                Intent gallery = new Intent(Intent.ACTION_PICK,
+                        MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                startActivityForResult(gallery, RC_IMAGE_PICKER);
             }
         });
 
@@ -120,22 +118,24 @@ public class ProfileEditActivity extends AppCompatActivity {
                     String fullName = txtFullName.getEditText().getText().toString();
                     String phone = txtPhone.getEditText().getText().toString();
 
-                    userDTO.setFullName(fullName);
-                    userDTO.setPhone(phone);
-
-                    userDAO.updateUser(userDTO)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        finish();
-                                        startActivity(ProfileEditActivity.this.getIntent());
-                                    } else {
-                                        Toast.makeText(ProfileEditActivity.this,
-                                                "Fail to update User", Toast.LENGTH_SHORT).show();
+                    if(isValidUpdate(fullName, phone)) {
+                        userDTO.setFullName(fullName);
+                        userDTO.setPhone(phone);
+                        userDAO.updateUser(userDTO)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            finish();
+                                            startActivity(ProfileEditActivity.this.getIntent());
+                                        } else {
+                                            Toast.makeText(ProfileEditActivity.this,
+                                                    "Fail to update User", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
-                                }
-                            });
+                                });
+                    }
+
                 }else {
                     Toast.makeText(ProfileEditActivity.this,
                             R.string.something_went_wrong, Toast.LENGTH_SHORT).show();
@@ -193,5 +193,23 @@ public class ProfileEditActivity extends AppCompatActivity {
 
             }
         }
+    }
+
+    private boolean isValidUpdate ( String fullName,String phone) {
+        util.clearError(txtFullName);
+        util.clearError(txtPhone);
+
+        boolean result = true;
+        if(!val.isEmpty(phone)) {
+            if(!val.isValidPhoneNumber(phone) ) {
+                util.showError(txtPhone, "Phone must be between 8 and 11 number");
+                result = false;
+            }
+        }
+        if(val.isEmpty(fullName)){
+            util.showError(txtFullName, "Username must not be blank");
+            result = false;
+        }
+        return result;
     }
 }

@@ -4,8 +4,8 @@ import android.app.ProgressDialog;
 
 import com.google.android.material.textfield.TextInputLayout;
 
-public class Util {
-    public Util() {
+public class Utils {
+    public Utils() {
     }
 
     public void showError(TextInputLayout input, String textError) {

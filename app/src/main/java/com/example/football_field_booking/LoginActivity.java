@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
-import com.example.football_field_booking.utils.Util;
+import com.example.football_field_booking.utils.Utils;
 import com.example.football_field_booking.validations.Validation;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -23,7 +23,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
@@ -32,10 +31,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.auth.User;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -45,7 +41,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
-    private Util util;
+    private Utils util;
+    private Validation val;
 
     private Button btnSignInWithGoogle, btnLogin, btnSignUp;
     private TextInputLayout txtEmail, txtPassword;
@@ -63,7 +60,8 @@ public class LoginActivity extends AppCompatActivity {
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         mAuth = FirebaseAuth.getInstance();
-        util = new Util();
+        util = new Utils();
+        val = new Validation();
 
         btnSignInWithGoogle = findViewById(R.id.btnSignInWithGoogle);
         btnLogin = findViewById(R.id.btnLogin);
@@ -265,11 +263,11 @@ public class LoginActivity extends AppCompatActivity {
         util.clearError(txtEmail);
         util.clearError(txtPassword);
         boolean result = true;
-        if (password.trim().isEmpty() || password.length() < 8){
+        if (!val.isValidPassword(password)){
             util.showError(txtPassword, "Password must be 8 character");
             result = false;
         }
-        if(email.trim().isEmpty() || !email.contains("@")){
+        if(!val.isValidEmail(email)){
             util.showError(txtEmail, "Email is invalid");
             result = false;
         }
