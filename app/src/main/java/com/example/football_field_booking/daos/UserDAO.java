@@ -1,11 +1,11 @@
 package com.example.football_field_booking.daos;
 
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.example.football_field_booking.dtos.UserDTO;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -13,6 +13,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +23,7 @@ import java.util.Map;
 public class UserDAO {
 
     public static final String CONST_OF_PROJECT = "constOfProject";
+    public static final String USER_IMAGES_FOLDER = "user_images";
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private static final String COLLECTION_USERS = "users";
@@ -54,7 +58,7 @@ public class UserDAO {
         data.put("phone", userDTO.getPhone());
         data.put("role", userDTO.getRole());
         data.put("status", userDTO.getStatus());
-        data.put("photo", userDTO.getPhotoUri());
+        data.put("photoUri", userDTO.getPhotoUri());
 
         return doc.update(data);
     }
@@ -75,6 +79,19 @@ public class UserDAO {
     public Task<DocumentSnapshot> getConstOfUser () {
         DocumentReference doc = db.collection(CONST_OF_PROJECT).document("const");
         return doc.get();
+    }
+
+    public Task<Uri> uploadImgUserToFirebase(Uri uri) throws Exception{
+
+        StorageReference mStoreRef = FirebaseStorage.getInstance().getReference(USER_IMAGES_FOLDER)
+                .child(System.currentTimeMillis() + ".png");
+        UploadTask uploadTask = mStoreRef.putFile(uri);
+        return uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                return mStoreRef.getDownloadUrl();
+            }
+        });
     }
 
 }

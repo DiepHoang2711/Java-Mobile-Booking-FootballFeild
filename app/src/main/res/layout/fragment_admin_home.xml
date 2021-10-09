@@ -6,6 +6,12 @@
     tools:context=".fragments.AdminHomeFragment"
     android:orientation="vertical">
 
+    <Button
+        android:id="@+id/btnCreateUser"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="create user"/>
+
     <ListView
         android:id="@+id/listViewUser"
         android:layout_width="match_parent"
