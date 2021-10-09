@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".AdminMainActivity">
+
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
 
@@ -36,7 +37,8 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:fillViewport="true">
 
             <FrameLayout
                 android:id="@+id/fragmentContainer"
@@ -57,6 +59,5 @@
         android:background="@drawable/green"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/bottom_navigation_menu" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
