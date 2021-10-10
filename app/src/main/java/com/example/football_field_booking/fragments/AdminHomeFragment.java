@@ -11,8 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 
+import com.example.football_field_booking.CreateUserActivity;
 import com.example.football_field_booking.ProfileEditActivity;
 import com.example.football_field_booking.ProfileEditByAdminActivity;
 import com.example.football_field_booking.R;
@@ -30,6 +32,7 @@ import java.util.List;
 public class AdminHomeFragment extends Fragment {
 
     private ListView listViewUser;
+    private Button btnCreateUser;
 
     public AdminHomeFragment() {
     }
@@ -41,6 +44,7 @@ public class AdminHomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_admin_home, container, false);
 
         listViewUser = view.findViewById(R.id.listViewUser);
+        btnCreateUser = view.findViewById(R.id.btnCreateUser);
 
         UserDAO userDAO = new UserDAO();
         List<UserDTO> listUser = new ArrayList<>();
@@ -72,6 +76,14 @@ public class AdminHomeFragment extends Fragment {
                     e.printStackTrace();
                 }
 
+            }
+        });
+
+        btnCreateUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), CreateUserActivity.class);
+                startActivity(intent);
             }
         });
 

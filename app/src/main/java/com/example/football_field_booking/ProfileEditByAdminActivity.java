@@ -1,11 +1,14 @@
 package com.example.football_field_booking;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -18,23 +21,28 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
+import com.example.football_field_booking.utils.Utils;
+import com.example.football_field_booking.validations.Validation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileEditByAdminActivity extends AppCompatActivity {
 
+    public static final int RC_IMAGE_PICKER = 1000;
+
     private TextView txtUserId, txtEmail;
-    private TextInputLayout txtFullName, txtPhone;
+    private TextInputLayout txtFullName, txtPhone, tilRole, tilStatus;
     private AutoCompleteTextView txtRole, txtStatus;
     private Button btnUpdate, btnDelete;
     private ImageView imgUser;
     private UserDTO userDTO = null;
     private List<String> roles, status;
+    private Utils util;
+    private Validation val;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +56,12 @@ public class ProfileEditByAdminActivity extends AppCompatActivity {
         txtRole = findViewById(R.id.txtRole);
         txtStatus = findViewById(R.id.txtStatus);
         btnUpdate = findViewById(R.id.btnUpdateUser);
+        tilRole = findViewById(R.id.tilRole);
+        tilStatus = findViewById(R.id.tilStatus);
         btnDelete = findViewById(R.id.btnDeleteUser);
         imgUser = findViewById(R.id.imgUser);
+        util = new Utils();
+        val = new Validation();
 
         Intent intent = this.getIntent();
         String userID = intent.getStringExtra("userID");
@@ -97,6 +109,7 @@ public class ProfileEditByAdminActivity extends AppCompatActivity {
                                 txtFullName.getEditText().setText(userDTO.getFullName());
                                 txtRole.setText(userDTO.getRole(), false);
                                 txtStatus.setText(userDTO.getStatus(), false);
+                                Log.d("USER", userDTO.getPhotoUri());
                                 if (userDTO.getPhotoUri() != null) {
                                     Uri uri = Uri.parse(userDTO.getPhotoUri());
                                     Glide.with(imgUser.getContext())
@@ -125,24 +138,27 @@ public class ProfileEditByAdminActivity extends AppCompatActivity {
                     String role = txtRole.getText().toString();
                     String status = txtStatus.getText().toString();
 
-                    userDTO.setFullName(fullName);
-                    userDTO.setPhone(phone);
-                    userDTO.setRole(role);
-                    userDTO.setStatus(status);
+                    if(isValidUpdate(fullName, phone, role, status)) {
+                        userDTO.setFullName(fullName);
+                        userDTO.setPhone(phone);
+                        userDTO.setRole(role);
+                        userDTO.setStatus(status);
 
-                    userDAO.updateUser(userDTO)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        finish();
-                                        startActivity(ProfileEditByAdminActivity.this.getIntent());
-                                    } else {
-                                        Toast.makeText(ProfileEditByAdminActivity.this,
-                                                "Fail to update User", Toast.LENGTH_SHORT).show();
+                        userDAO.updateUser(userDTO)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            finish();
+                                            startActivity(ProfileEditByAdminActivity.this.getIntent());
+                                        } else {
+                                            Toast.makeText(ProfileEditByAdminActivity.this,
+                                                    "Fail to update User", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
-                                }
-                            });
+                                });
+                    }
+
                 }else {
                     Toast.makeText(ProfileEditByAdminActivity.this,
                             R.string.something_went_wrong, Toast.LENGTH_SHORT).show();
@@ -171,5 +187,94 @@ public class ProfileEditByAdminActivity extends AppCompatActivity {
             }
         });
 
+        imgUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent gallery = new Intent(Intent.ACTION_PICK,
+                        MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                startActivityForResult(gallery, RC_IMAGE_PICKER);
+            }
+        });
+
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_IMAGE_PICKER) {
+            if (resultCode == RESULT_OK) {
+
+                try {
+                    Uri uri = data.getData();
+                    UserDAO userDAO = new UserDAO();
+                    ProgressDialog progressDialog = new ProgressDialog(ProfileEditByAdminActivity.this);
+                    util.showProgressDialog(progressDialog, "Uploading ....", "Please wait for uploading image");
+                    userDAO.uploadImgUserToFirebase(uri)
+                            .addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Uri> task) {
+                                    try {
+                                        if (task.isSuccessful()) {
+                                            Log.d("USER", task.getResult().toString());
+                                            userDTO.setPhotoUri(task.getResult().toString());
+                                            userDAO.updateUser(userDTO).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    progressDialog.cancel();
+                                                    if (task.isSuccessful()) {
+                                                        Toast.makeText(ProfileEditByAdminActivity.this, "Update Success"
+                                                                , Toast.LENGTH_SHORT).show();
+                                                        finish();
+                                                        startActivity(ProfileEditByAdminActivity.this.getIntent());
+                                                    } else {
+                                                        Toast.makeText(ProfileEditByAdminActivity.this, "Update fail"
+                                                                , Toast.LENGTH_SHORT).show();
+                                                    }
+                                                }
+                                            });
+                                        } else {
+                                            Toast.makeText(ProfileEditByAdminActivity.this, "Update fail"
+                                                    , Toast.LENGTH_SHORT).show();
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
+    private boolean isValidUpdate ( String fullName,String phone,String role,String status) {
+        util.clearError(txtFullName);
+        util.clearError(txtPhone);
+        util.clearError(tilRole);
+        util.clearError(tilStatus);
+
+        boolean result = true;
+        if(val.isEmpty(status)) {
+            util.showError(tilStatus, "Status must not be blank");
+            result = false;
+        }
+        if(val.isEmpty(role)) {
+            util.showError(tilRole, "Role must not be blank");
+            result = false;
+        }
+        if(!val.isEmpty(phone)) {
+            if(!val.isValidPhoneNumber(phone) ) {
+                util.showError(txtPhone, "Phone must be between 8 and 11 number");
+                result = false;
+            }
+        }
+        if(val.isEmpty(fullName)){
+            util.showError(txtFullName, "Username must not be blank");
+            result = false;
+        }
+        return result;
+    }
+
 }
