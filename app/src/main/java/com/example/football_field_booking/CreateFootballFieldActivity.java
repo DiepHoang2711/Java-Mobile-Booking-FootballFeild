@@ -4,13 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,7 +23,6 @@ import android.widget.Toast;
 
 import com.example.football_field_booking.adapters.TimePickerAdapter;
 import com.example.football_field_booking.daos.FootballFieldDAO;
-import com.example.football_field_booking.daos.TypeFootballFIeldDAO;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.TimePickerDTO;
@@ -42,7 +39,6 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
@@ -91,9 +87,9 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         });
 
         //load list type tu database
-        TypeFootballFIeldDAO typeFootballFIeldDAO = new TypeFootballFIeldDAO();
+        FootballFieldDAO footballFieldDAO = new FootballFieldDAO();
         try {
-            typeFootballFIeldDAO.getTypeOfFootballField()
+            footballFieldDAO.getTypeOfFootballField()
                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
