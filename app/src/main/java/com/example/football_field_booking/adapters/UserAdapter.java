@@ -24,7 +24,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
-public class userAdapter extends BaseAdapter {
+public class UserAdapter extends BaseAdapter {
 
     private Context context;
     private List<UserDTO> listUser;
@@ -32,7 +32,7 @@ public class userAdapter extends BaseAdapter {
     public static final String USER_FOLDER_IMAGES = "user_images";
     private FirebaseStorage storage;
 
-    public userAdapter(Context context, List<UserDTO> listUser) {
+    public UserAdapter(Context context, List<UserDTO> listUser) {
         this.context = context;
         this.listUser = listUser;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

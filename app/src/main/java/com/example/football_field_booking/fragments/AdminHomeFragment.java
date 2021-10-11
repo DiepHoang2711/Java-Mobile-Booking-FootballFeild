@@ -3,7 +3,6 @@ package com.example.football_field_booking.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -15,16 +14,14 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.example.football_field_booking.CreateUserActivity;
-import com.example.football_field_booking.ProfileEditActivity;
 import com.example.football_field_booking.ProfileEditByAdminActivity;
 import com.example.football_field_booking.R;
-import com.example.football_field_booking.adapters.userAdapter;
+import com.example.football_field_booking.adapters.UserAdapter;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +53,7 @@ public class AdminHomeFragment extends Fragment {
                     Log.d("USER", "Add : " + doc.toObject(UserDTO.class).toString());
 
                 }
-                userAdapter adapter = new userAdapter(getActivity(),listUser );
+                UserAdapter adapter = new UserAdapter(getActivity(),listUser );
                 listViewUser.setAdapter(adapter);
                 Log.d("USER", "LIST : " + listUser.toString());
                 Log.d("USER", "adapter : " + adapter.getCount());
