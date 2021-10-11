@@ -194,8 +194,7 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
                                             fieldDAO.addOwnerToFootballFieldsCollection(userDTO, documentReference);
                                             fieldDAO.addFootFiledInfoToUsersCollection(userDTO.getUserID(), Objects.requireNonNull(documentReference.get().getResult().toObject(FootballFieldDTO.class)));
                                             Toast.makeText(CreateFootballFieldActivity.this, "Create Successfull", Toast.LENGTH_SHORT).show();
-                                            Intent intent = new Intent(CreateFootballFieldActivity.this, OwnerHomeActivity.class);
-                                            startActivity(intent);
+                                            finish();
                                         } catch (Exception e) {
                                             Log.d("DAO", e.toString());
                                         }

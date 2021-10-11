@@ -162,17 +162,7 @@ public class LoginActivity extends AppCompatActivity {
                                     e.printStackTrace();
                                 }
                             }
-                            userDAO.getUserById(user.getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    UserDTO userDTO = documentSnapshot.toObject(UserDTO.class);
-                                    SharedPreferences userSPREF = getSharedPreferences(
-                                            getResources().getString(R.string.user_share_pref), MODE_PRIVATE);
-                                    SharedPreferences.Editor editor = userSPREF.edit();
-                                    editor.putString("role", userDTO.getRole()).commit();
-                                    updateUI(user);
-                                }
-                            });
+                            updateUI(user);
 
                         } else {
                             // If sign in fails, display a message to the user.
@@ -199,18 +189,7 @@ public class LoginActivity extends AppCompatActivity {
                                 Log.d(EMAIL_LOG, "signInWithEmail:success");
                                 FirebaseUser user = mAuth.getCurrentUser();
                                 if (user.isEmailVerified()) {
-                                    UserDAO userDAO = new UserDAO();
-                                    userDAO.getUserById(user.getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                            UserDTO userDTO = documentSnapshot.toObject(UserDTO.class);
-                                            SharedPreferences userSPREF = getSharedPreferences(
-                                                    getResources().getString(R.string.user_share_pref), MODE_PRIVATE);
-                                            SharedPreferences.Editor editor = userSPREF.edit();
-                                            editor.putString("role", userDTO.getRole()).apply();
-                                            updateUI(user);
-                                        }
-                                    });
+                                    updateUI(user);
                                 } else {
                                     Toast.makeText(LoginActivity.this, "Please verify your email address",
                                             Toast.LENGTH_SHORT).show();
@@ -230,32 +209,41 @@ public class LoginActivity extends AppCompatActivity {
     private void updateUI(FirebaseUser user) {
         prdLogin.cancel();
         if (user != null) {
-            SharedPreferences userSPREF = getSharedPreferences(
-                    getResources().getString(R.string.user_share_pref), MODE_PRIVATE);
-            String role = userSPREF.getString("role", null);
-            Log.d("USER", "role: " +role);
-            if (role != null) {
-                switch (role) {
-                    case "user": {
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        break;
+            UserDAO userDAO = new UserDAO();
+            userDAO.getUserById(user.getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    String role = documentSnapshot.getString("role");
+                    if (role != null) {
+                        switch (role) {
+                            case "user": {
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                                LoginActivity.this.finish();
+                                break;
+                            }
+                            case "owner": {
+                                Intent intent = new Intent(LoginActivity.this, OwnerMainActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                                LoginActivity.this.finish();
+                                break;
+                            }
+                            case "admin":
+                                Intent intent = new Intent(LoginActivity.this, AdminMainActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                                LoginActivity.this.finish();
+                                break;
+                            default:
+                                Toast.makeText(LoginActivity.this, "Your role is invalid",
+                                        Toast.LENGTH_LONG).show();
+                                break;
+                        }
                     }
-                    case "owner": {
-                        Intent intent = new Intent(LoginActivity.this, OwnerHomeActivity.class);
-                        startActivity(intent);
-                        break;
-                    }
-                    case "admin":
-                        Intent intent = new Intent(LoginActivity.this, AdminMainActivity.class);
-                        startActivity(intent);
-                        break;
-                    default:
-                        Toast.makeText(LoginActivity.this, "Your role is invalid",
-                                Toast.LENGTH_LONG).show();
-                        break;
                 }
-            }
+            });
         }
     }
 

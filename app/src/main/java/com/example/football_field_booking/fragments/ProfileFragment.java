@@ -73,10 +73,6 @@ public class ProfileFragment extends Fragment {
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences userSPREF = getActivity().getSharedPreferences(
-                        getResources().getString(R.string.user_share_pref), Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = userSPREF.edit();
-                editor.remove("role").apply();
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(getActivity(), MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
