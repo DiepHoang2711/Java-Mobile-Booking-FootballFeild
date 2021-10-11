@@ -7,11 +7,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
+
+import com.example.football_field_booking.adapters.FootballFieldAdapter;
+import com.example.football_field_booking.dtos.FootballFieldDTO;
+
+import java.util.List;
 
 public class OwnerHomeActivity extends AppCompatActivity {
 
     private Button btnCreate;
-    private RecyclerView rvListFields;
+    private ListView lvFootballFieldOwner;
+    private FootballFieldAdapter fieldAdapter;
+    private List<FootballFieldDTO> fieldDTOList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +34,14 @@ public class OwnerHomeActivity extends AppCompatActivity {
             }
         });
 
-        rvListFields=findViewById(R.id.rvListFields);
+        lvFootballFieldOwner=findViewById(R.id.lvFootballFieldOwner);
+
+
+    }
+
+    private void loadData(){
+
+
+//        fieldAdapter=new FootballFieldAdapter(OwnerHomeActivity.this,)
     }
 }
