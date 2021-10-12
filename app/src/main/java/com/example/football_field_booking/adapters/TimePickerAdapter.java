@@ -32,6 +32,7 @@ public class TimePickerAdapter extends BaseAdapter {
     List<TimePickerDTO> timePickerDTOList;
     private LayoutInflater layoutInflater;
     private int startTime, endTime;
+    private float price;
 
     public List<TimePickerDTO> getTimePickerDTOList() {
         return timePickerDTOList;
@@ -39,6 +40,7 @@ public class TimePickerAdapter extends BaseAdapter {
 
     public void setTimePickerDTOList(List<TimePickerDTO> timePickerDTOList) {
         this.timePickerDTOList = timePickerDTOList;
+
     }
 
     public TimePickerAdapter(Context context) {
@@ -64,34 +66,37 @@ public class TimePickerAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        View timePickerView = view;
-        if (timePickerView == null) {
-            timePickerView = layoutInflater.inflate(R.layout.item_time_picker, viewGroup, false);
-        }
-        TextView txtStartTime = timePickerView.findViewById(R.id.txtStartTime);
-        TextView txtEndTime = timePickerView.findViewById(R.id.txtEndTime);
-        EditText edtPrice = timePickerView.findViewById(R.id.edtPrice);
-        ImageButton imgButtonRemoveTP = timePickerView.findViewById(R.id.imgBtnRemoveTP);
+        ViewHolder timePickerHolder;
 
-        txtStartTime.setTag(i);
-        txtEndTime.setTag(i);
-        edtPrice.setTag(i);
-        imgButtonRemoveTP.setTag(i);
+        timePickerHolder = new ViewHolder();
+        view = layoutInflater.inflate(R.layout.item_time_picker, viewGroup, false);
+
+        timePickerHolder.txtStartTime = (TextView) view.findViewById(R.id.txtStartTime);
+        timePickerHolder.txtEndTime = (TextView) view.findViewById(R.id.txtEndTime);
+        timePickerHolder.edtPrice = (EditText) view.findViewById(R.id.edtPrice);
+        timePickerHolder.imgButtonRemoveTP = (ImageButton) view.findViewById(R.id.imgBtnRemoveTP);
+
 
         TimePickerDTO timePickerDTO = timePickerDTOList.get(i);
 
-        edtPrice.setText(timePickerDTO.getPrice() + "");
-        txtStartTime.setText(timePickerDTO.getStart() + ":00");
-        txtEndTime.setText(timePickerDTO.getEnd() + ":00");
+        timePickerHolder.edtPrice.setText(timePickerDTO.getPrice() + "");
+        timePickerHolder.txtStartTime.setText(timePickerDTO.getStart() + ":00");
+        timePickerHolder.txtEndTime.setText(timePickerDTO.getEnd() + ":00");
 
-        imgButtonRemoveTP.setOnClickListener(new View.OnClickListener() {
+        timePickerHolder.imgButtonRemoveTP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                timePickerDTOList.remove(i);
+                try {
+                    timePickerDTOList.remove(i);
+                    TimePickerAdapter.this.notifyDataSetChanged();
+                } catch (Exception e) {
+                    Log.d("Remove error", e.getMessage());
+                }
+
             }
         });
 
-        txtStartTime.setOnClickListener(new View.OnClickListener() {
+        timePickerHolder.txtStartTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 TimePickerDialog timePickerDialog = new TimePickerDialog(context,
@@ -100,7 +105,7 @@ public class TimePickerAdapter extends BaseAdapter {
                             @Override
                             public void onTimeSet(android.widget.TimePicker timePicker, int hourOfDay, int minute) {
                                 startTime = hourOfDay;
-                                txtStartTime.setText(startTime + ":00");
+                                timePickerHolder.txtStartTime.setText(startTime + ":00");
                                 timePickerDTO.setStart(startTime);
                             }
                         }, 0, 0, true);
@@ -110,7 +115,7 @@ public class TimePickerAdapter extends BaseAdapter {
             }
         });
 
-        txtEndTime.setOnClickListener(new View.OnClickListener() {
+        timePickerHolder.txtEndTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 TimePickerDialog timePickerDialog = new TimePickerDialog(context,
@@ -119,7 +124,7 @@ public class TimePickerAdapter extends BaseAdapter {
                             @Override
                             public void onTimeSet(android.widget.TimePicker timePicker, int hourOfDay, int minute) {
                                 endTime = hourOfDay;
-                                txtEndTime.setText(endTime + ":00");
+                                timePickerHolder.txtEndTime.setText(endTime + ":00");
                                 timePickerDTO.setEnd(endTime);
                             }
                         }, startTime + 1, 0, true);
@@ -129,7 +134,8 @@ public class TimePickerAdapter extends BaseAdapter {
             }
         });
 
-        edtPrice.addTextChangedListener(new TextWatcher() {
+
+        timePickerHolder.edtPrice.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -137,14 +143,22 @@ public class TimePickerAdapter extends BaseAdapter {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                timePickerDTO.setPrice(Float.parseFloat(edtPrice.getText().toString()));
+
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-
+                price = Float.parseFloat(editable.toString());
+                timePickerDTO.setPrice(price);
             }
         });
-        return timePickerView;
+        return view;
+    }
+
+    class ViewHolder {
+        TextView txtStartTime;
+        TextView txtEndTime;
+        EditText edtPrice;
+        ImageButton imgButtonRemoveTP;
     }
 }
