@@ -1,6 +1,6 @@
 package com.example.football_field_booking.fragments;
 
-import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,30 +10,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import com.example.football_field_booking.CreateUserActivity;
+import com.example.football_field_booking.ProfileEditByAdminActivity;
 import com.example.football_field_booking.R;
-import com.example.football_field_booking.adapters.userAdapter;
+import com.example.football_field_booking.adapters.UserAdapter;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AdminHomeFragment extends Fragment {
 
-    public static final String USER_FOLDER_IMAGES = "user_images";
-    private FirebaseStorage storage;
     private ListView listViewUser;
+    private Button btnCreateUser;
 
     public AdminHomeFragment() {
     }
@@ -41,15 +37,12 @@ public class AdminHomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_admin_home, container, false);
-    }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        storage = FirebaseStorage.getInstance();
-        listViewUser = getActivity().findViewById(R.id.listViewUser);
+        View view = inflater.inflate(R.layout.fragment_admin_home, container, false);
+
+        listViewUser = view.findViewById(R.id.listViewUser);
+        btnCreateUser = view.findViewById(R.id.btnCreateUser);
+
         UserDAO userDAO = new UserDAO();
         List<UserDTO> listUser = new ArrayList<>();
         userDAO.getAllUser().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -60,7 +53,7 @@ public class AdminHomeFragment extends Fragment {
                     Log.d("USER", "Add : " + doc.toObject(UserDTO.class).toString());
 
                 }
-                userAdapter adapter = new userAdapter(getActivity(),listUser );
+                UserAdapter adapter = new UserAdapter(getActivity(),listUser );
                 listViewUser.setAdapter(adapter);
                 Log.d("USER", "LIST : " + listUser.toString());
                 Log.d("USER", "adapter : " + adapter.getCount());
@@ -71,10 +64,28 @@ public class AdminHomeFragment extends Fragment {
         listViewUser.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                try {
+                    UserDTO userDTO = (UserDTO) listViewUser.getItemAtPosition(i);
+                    Intent intent = new Intent(getActivity(), ProfileEditByAdminActivity.class);
+                    intent.putExtra("userID", userDTO.getUserID());
+                    startActivity(intent);
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
 
             }
         });
 
+        btnCreateUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), CreateUserActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // Inflate the layout for this fragment
+        return view;
     }
 
 }

@@ -4,39 +4,44 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Spinner;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.football_field_booking.adapters.TimePickerAdapter;
 import com.example.football_field_booking.daos.FootballFieldDAO;
+import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
-import com.google.android.gms.auth.api.signin.internal.Storage;
+import com.example.football_field_booking.dtos.TimePickerDTO;
+import com.example.football_field_booking.dtos.UserDTO;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class CreateFootballFieldActivity extends AppCompatActivity {
@@ -46,10 +51,16 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
     private Uri uriImg;
     private StorageReference storageRef;
     private EditText edtName, edtLocation;
-    private Spinner spType;
+    private AutoCompleteTextView auComTxtType;
     private String type;
+    private EditText  edtPrice;
+    private TextView  txtStartTime,txtEndTime;
+    private ImageButton imgBtnAdd;
+    private List<TimePickerDTO> timePickerDTOList;
+    private TimePickerAdapter timePickerAdapter;
+    private ListView lvTimePickerWorking;
+    private List<String> listTypeField;
 
-    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +69,11 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
 
         edtName = findViewById(R.id.edtFootballFieldName);
         edtLocation = findViewById(R.id.edtLocation);
-        spType = findViewById(R.id.spType);
+        auComTxtType = findViewById(R.id.auComTxtType);
         imgPhoto = findViewById(R.id.img_photo);
         btnChooseImg = findViewById(R.id.btnChooseImage);
+        imgBtnAdd = findViewById(R.id.imgBtnAdd);
+        lvTimePickerWorking = findViewById(R.id.lvTimePickerWorking);
 
         btnChooseImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,18 +86,51 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         });
 
         //load list type tu database
-        List<String> dataSrc = new ArrayList<>();
-        dataSrc.add("5 people");
-        dataSrc.add("7 people");
-        dataSrc.add("11 people");
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, dataSrc);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spType.setAdapter(adapter);
-        type = dataSrc.get(0);
+        FootballFieldDAO footballFieldDAO = new FootballFieldDAO();
+        try {
+            footballFieldDAO.getTypeOfFootballField()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            listTypeField = (ArrayList<String>) task.getResult().get("TypeFootBallFIeld");
+                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(CreateFootballFieldActivity.this, R.layout.item_type_football_field, listTypeField);
+                            auComTxtType.setAdapter(adapter);
+                            auComTxtType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                @Override
+                                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                                    type = adapterView.getItemAtPosition(i).toString();
+                                }
 
-        db=FirebaseFirestore.getInstance();
+                                @Override
+                                public void onNothingSelected(AdapterView<?> adapterView) {
+                                    type = listTypeField.get(0);
+                                }
+                            });
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        timePickerAdapter = new TimePickerAdapter(CreateFootballFieldActivity.this);
+        loadTimePickerWorking();
+        imgBtnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("timePicker",timePickerAdapter.getTimePickerDTOList().size()+"");
+                loadTimePickerWorking();
+            }
+        });
+    }
 
+    private void loadTimePickerWorking(){
+        TimePickerDTO timePickerDTO = new TimePickerDTO();
+        timePickerDTO.setPrice(0);
+        timePickerAdapter.getTimePickerDTOList().add(timePickerDTO);
+        lvTimePickerWorking.setAdapter(timePickerAdapter);
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     @Override
@@ -106,72 +152,57 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
     public void clickToCreate(View view) {
         String name = edtName.getText().toString();
         String location = edtLocation.getText().toString();
-        spType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                type = spType.getSelectedItem().toString();
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+        FootballFieldDTO footballFieldDTO = new FootballFieldDTO();
+        footballFieldDTO.setName(name);
+        footballFieldDTO.setType(type);
+        footballFieldDTO.setLocation(location);
+        FootballFieldDAO fieldDAO = new FootballFieldDAO();
+        try {
+            fieldDAO.createNewFootballField(footballFieldDTO, uriImg)
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(CreateFootballFieldActivity.this, "Create Faild" + e.getMessage(), Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                @Override
+                public void onSuccess(DocumentReference documentReference) {
+                    //thay bằng dialog
+                    try {
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        UserDAO userDAO = new UserDAO();
+                        userDAO.getUserById(user.getUid())
+                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                        try {
+                                            UserDTO userDTO = documentSnapshot.toObject(UserDTO.class);
+                                            fieldDAO.addOwnerToFootballFieldsCollection(userDTO, documentReference);
+                                            fieldDAO.addFootFiledInfoToUsersCollection(userDTO.getUserID(), Objects.requireNonNull(documentReference.get().getResult().toObject(FootballFieldDTO.class)));
+                                            Toast.makeText(CreateFootballFieldActivity.this, "Create Successfull", Toast.LENGTH_SHORT).show();
+                                            finish();
+                                        } catch (Exception e) {
+                                            Log.d("DAO", e.toString());
+                                        }
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(CreateFootballFieldActivity.this,
+                                                "Fail to get user on server", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
 
-            }
-        });
-        String typeField = type;
-        FootballFieldDTO footballFieldDTO = new FootballFieldDTO(name, location, typeField);
-        DocumentReference documentReference = db.collection("footballFields").document();
-        footballFieldDTO.setFieldID(documentReference.getId());
-        db.collection("footballFields").document(documentReference.getId()).set(footballFieldDTO)
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(CreateFootballFieldActivity.this, "Create Faild" + e.getMessage(), Toast.LENGTH_LONG).show();
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                Toast.makeText(CreateFootballFieldActivity.this, "Create Successfull", Toast.LENGTH_SHORT).show();
-                Log.d("CreateFieldActivity", "DocumentSnapshot written with ID: " + documentReference.getId());
-                uploadImageToFirebase(documentReference.getId());
-                Intent intent = new Intent(CreateFootballFieldActivity.this, OwnerHomeActivity.class);
-                startActivity(intent);
-
-            }
-        });
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-
-
-    private String getFileExtension(Uri uri) {
-        ContentResolver resolver = getContentResolver();
-        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
-        return mimeTypeMap.getExtensionFromMimeType(resolver.getType(uri));
-    }
-
-    private void uploadImageToFirebase(String idPhoto) {
-        storageRef = FirebaseStorage.getInstance().getReference("football_field_images");
-        StorageReference imageRef = storageRef.child(idPhoto + "." + getFileExtension(uriImg));
-        imgPhoto.setDrawingCacheEnabled(true);
-        imgPhoto.buildDrawingCache();
-        Bitmap bitmap = ((BitmapDrawable) imgPhoto.getDrawable()).getBitmap();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
-
-        UploadTask uploadTask = imageRef.putBytes(data);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                Toast.makeText(CreateFootballFieldActivity.this, "Upload Image Faild!", Toast.LENGTH_SHORT).show();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                // ...
-                Toast.makeText(CreateFootballFieldActivity.this, "Upload Image Success!", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
 }

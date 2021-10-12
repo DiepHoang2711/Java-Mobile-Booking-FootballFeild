@@ -5,18 +5,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
-import com.example.football_field_booking.fragments.AdminHomeFragment;
+import com.example.football_field_booking.daos.UserDAO;
+import com.example.football_field_booking.fragments.OwnerAllFieldFragment;
+import com.example.football_field_booking.fragments.OwnerHomeFragment;
 import com.example.football_field_booking.fragments.ProfileFragment;
 import com.example.football_field_booking.fragments.UserHomeFragment;
 import com.example.football_field_booking.validations.Validation;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 
-public class AdminMainActivity extends AppCompatActivity {
+public class OwnerMainActivity extends AppCompatActivity {
 
     private MaterialToolbar topAppBar;
     private BottomNavigationView bottomNavigationView;
@@ -26,14 +33,15 @@ public class AdminMainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_admin_main);
+        setContentView(R.layout.activity_owner_main);
 
         topAppBar = findViewById(R.id.topAppBar);
         topAppBar.setTitleTextAppearance(this, R.style.FontLogo);
+        View logo = topAppBar.getChildAt(0);
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new AdminHomeFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new OwnerHomeFragment()).commit();
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -41,22 +49,28 @@ public class AdminMainActivity extends AppCompatActivity {
                 Fragment selectedFragment = null;
                 switch (item.getItemId()){
                     case R.id.pageHome:
-                        selectedFragment = new AdminHomeFragment();
+                        selectedFragment = new OwnerHomeFragment();
+                        break;
+                    case R.id.pageField:
+                        selectedFragment = new OwnerAllFieldFragment();
                         break;
                     case R.id.pageAccount:
-                        if (validation.isUser()) {
-                            selectedFragment = new ProfileFragment();
-                        } else {
-                            Intent intent = new Intent(AdminMainActivity.this, LoginActivity.class);
-                            startActivity(intent);
-                            return true;
-                        }
+                        selectedFragment = new ProfileFragment();
                         break;
                     default:
                         return false;
                 }
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, selectedFragment).commit();
                 return true;
+            }
+        });
+
+        logo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(OwnerMainActivity.this, OwnerMainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         });
     }
