@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.football_field_booking.adapters.TimePickerAdapter;
@@ -52,7 +53,8 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
     private EditText edtName, edtLocation;
     private AutoCompleteTextView auComTxtType;
     private String type;
-    private EditText edtStartTime, edtEndTime, edtPrice;
+    private EditText  edtPrice;
+    private TextView  txtStartTime,txtEndTime;
     private ImageButton imgBtnAdd;
     private List<TimePickerDTO> timePickerDTOList;
     private TimePickerAdapter timePickerAdapter;
@@ -70,9 +72,6 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         auComTxtType = findViewById(R.id.auComTxtType);
         imgPhoto = findViewById(R.id.img_photo);
         btnChooseImg = findViewById(R.id.btnChooseImage);
-        edtStartTime = findViewById(R.id.edtStartTime);
-        edtEndTime = findViewById(R.id.edtEndTime);
-        edtPrice = findViewById(R.id.edtPrice);
         imgBtnAdd = findViewById(R.id.imgBtnAdd);
         lvTimePickerWorking = findViewById(R.id.lvTimePickerWorking);
 
@@ -112,37 +111,26 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        timePickerDTOList = new ArrayList<>();
-        TimePickerDTO timePickerDTO = new TimePickerDTO();
-        loadTimePickerWorking(timePickerDTO);
+        timePickerAdapter = new TimePickerAdapter(CreateFootballFieldActivity.this);
+        loadTimePickerWorking();
         imgBtnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TimePickerDTO timePickerDTO = new TimePickerDTO();
-                int startTime = Integer.parseInt(edtStartTime.getText().toString().split(":")[0]);
-                int endTime = Integer.parseInt(edtStartTime.getText().toString().split(":")[0]);
-                float price = Float.parseFloat(edtStartTime.getText().toString());
-                timePickerDTO.setStart(startTime);
-                timePickerDTO.setEnd(endTime);
-                timePickerDTO.setPrice(price);
-                loadTimePickerWorking(timePickerDTO);
+                Log.d("timePicker",timePickerAdapter.getTimePickerDTOList().size()+"");
+                loadTimePickerWorking();
             }
         });
     }
 
+    private void loadTimePickerWorking(){
+        TimePickerDTO timePickerDTO = new TimePickerDTO();
+        timePickerDTO.setPrice(0);
+        timePickerAdapter.getTimePickerDTOList().add(timePickerDTO);
+        lvTimePickerWorking.setAdapter(timePickerAdapter);
+    }
     @Override
     protected void onStart() {
         super.onStart();
-
-    }
-
-    private void loadTimePickerWorking(TimePickerDTO timePickerDTO) {
-        timePickerDTOList.add(timePickerDTO);
-        timePickerAdapter = new TimePickerAdapter(CreateFootballFieldActivity.this, timePickerDTOList);
-        lvTimePickerWorking.setAdapter(timePickerAdapter);
-
-
     }
 
     @Override
