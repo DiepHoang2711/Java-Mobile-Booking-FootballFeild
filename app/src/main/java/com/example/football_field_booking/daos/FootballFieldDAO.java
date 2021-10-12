@@ -14,6 +14,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -28,7 +29,7 @@ public class FootballFieldDAO {
 
     public static final String FIELD_IMAGES_FOLDER = "football_field_images";
 
-    public static final String SUB_COLLECTION_FOOTBALL_FIELD_INFO="footballFiledInfos";
+    public static final String SUB_COLLECTION_FOOTBALL_FIELD_INFO="footballFieldInfos";
 
     private static final String SUB_COLLECTION_OWNER_INFO= "ownerInfo";
 
@@ -75,5 +76,9 @@ public class FootballFieldDAO {
     public Task<DocumentSnapshot> getTypeOfFootballField () throws Exception {
         DocumentReference doc = db.collection(CONST_OF_PROJECT).document("const");
         return doc.get();
+    }
+
+    public Task<QuerySnapshot> getAllFootballFieldOfOwner (String ownerID) {
+        return db.collection(COLLECTION_USERS).document(ownerID).collection(SUB_COLLECTION_FOOTBALL_FIELD_INFO).get();
     }
 }
