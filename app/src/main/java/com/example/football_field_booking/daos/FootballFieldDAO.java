@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.football_field_booking.dtos.FootballFieldDTO;
+import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,11 +36,14 @@ public class FootballFieldDAO {
 
     public static final String SUB_COLLECTION_FOOTBALL_FIELD_INFO = "footballFieldInfos";
 
+    public static final String SUB_COLLECTION_TIME_PICKER="time_picker";
+
     private static final String SUB_COLLECTION_OWNER_INFO = "ownerInfo";
 
     private static final String COLLECTION_USERS = "users";
 
     public static final String CONST_OF_PROJECT = "constOfProject";
+
 
 
     public FootballFieldDAO() {
@@ -84,5 +88,22 @@ public class FootballFieldDAO {
 
     public Task<QuerySnapshot> getAllFootballFieldOfOwner(String ownerID) {
         return db.collection(COLLECTION_USERS).document(ownerID).collection(SUB_COLLECTION_FOOTBALL_FIELD_INFO).get();
+    }
+
+    public void createTimePickerForFootballField(TimePickerDTO dto, DocumentReference parent) throws Exception {
+        DocumentReference reference=  parent.collection(SUB_COLLECTION_TIME_PICKER).document();
+        dto.setTimePickerID(reference.getId());
+        reference.getParent().add(dto)
+                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentReference> task) {
+                        System.out.println("createTimePickerForFootballField SUCCESS");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                System.out.println("createTimePickerForFootballField ERROR:"+e.getMessage());
+            }
+        });
     }
 }

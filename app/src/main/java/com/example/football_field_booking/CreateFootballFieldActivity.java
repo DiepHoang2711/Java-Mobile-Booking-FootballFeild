@@ -5,21 +5,17 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.football_field_booking.adapters.TimePickerAdapter;
@@ -39,10 +35,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 
 public class CreateFootballFieldActivity extends AppCompatActivity {
@@ -104,13 +98,13 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         imgBtnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("timePicker",timePickerAdapter.getTimePickerDTOList().size()+"");
+                Log.d("timePicker", timePickerAdapter.getTimePickerDTOList().size() + "");
                 loadTimePickerWorking();
             }
         });
     }
 
-    private void loadTimePickerWorking(){
+    private void loadTimePickerWorking() {
         TimePickerDTO timePickerDTO = new TimePickerDTO();
         timePickerDTO.setStart(-1);
         timePickerDTO.setEnd(-1);
@@ -118,6 +112,7 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         timePickerAdapter.getTimePickerDTOList().add(timePickerDTO);
         lvTimePickerWorking.setAdapter(timePickerAdapter);
     }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -126,8 +121,8 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == RC_GALLERY) {
-            if(resultCode == RESULT_OK) {
+        if (requestCode == RC_GALLERY) {
+            if (resultCode == RESULT_OK) {
                 try {
                     uriImg = data.getData();
                     imgPhoto.setImageURI(uriImg);
@@ -144,7 +139,7 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
     public void clickToCreate(View view) {
         String name = txtName.getEditText().getText().toString();
         String location = txtLocation.getEditText().getText().toString();
-        String type=auComTxtType.getText().toString();
+        String type = auComTxtType.getText().toString();
 
         footballFieldDTO = new FootballFieldDTO();
         footballFieldDTO.setName(name);
@@ -152,15 +147,15 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         footballFieldDTO.setLocation(location);
         footballFieldDTO.setStatus(ACTIVE);
 
-        List<TimePickerDTO> list=new ArrayList<>();
-        for(TimePickerDTO dto:timePickerAdapter.getTimePickerDTOList()){
-            if(dto.getPrice()>-1 && dto.getStart() >-1 && dto.getEnd() > -1){
+        List<TimePickerDTO> list = new ArrayList<>();
+        for (TimePickerDTO dto : timePickerAdapter.getTimePickerDTOList()) {
+            if (dto.getPrice() > -1 && dto.getStart() > -1 && dto.getEnd() > -1) {
                 list.add(dto);
             }
         }
         FootballFieldDAO fieldDAO = new FootballFieldDAO();
         try {
-            if(uriImg!=null){
+            if (uriImg != null) {
                 uploadImageToStorage();
             }
             fieldDAO.createNewFootballField(footballFieldDTO, uriImg)
@@ -187,14 +182,17 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
                                             documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                    FootballFieldDTO fieldDTO=task.getResult().toObject(FootballFieldDTO.class);
+                                                    FootballFieldDTO fieldDTO = task.getResult().toObject(FootballFieldDTO.class);
                                                     try {
-                                                        fieldDAO.addFootFiledInfoToUsersCollection(userDTO.getUserID(),fieldDTO);
+                                                        fieldDAO.addFootFiledInfoToUsersCollection(userDTO.getUserID(), fieldDTO);
                                                     } catch (Exception e) {
                                                         e.printStackTrace();
                                                     }
                                                 }
                                             });
+                                            for (TimePickerDTO dto : list) {
+                                                fieldDAO.createTimePickerForFootballField(dto, documentReference);
+                                            }
                                             Toast.makeText(CreateFootballFieldActivity.this, "Create Successfull", Toast.LENGTH_SHORT).show();
 //                                            finish();
                                         } catch (Exception e) {
@@ -217,12 +215,13 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
                     }
                 }
             });
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void uploadImageToStorage () {
+    private void uploadImageToStorage() {
         try {
             FootballFieldDAO dao = new FootballFieldDAO();
             dao.uploadImgFootballFieldToFirebase(uriImg)
@@ -233,7 +232,7 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     Uri uri = task.getResult();
                                     footballFieldDTO.setImage(uri.toString());
-                                    System.out.println(("URL IMAGE "+ footballFieldDTO.getImage()));
+                                    System.out.println(("URL IMAGE " + footballFieldDTO.getImage()));
                                 } else {
                                     Toast.makeText(CreateFootballFieldActivity.this, "Update fail"
                                             , Toast.LENGTH_SHORT).show();
