@@ -26,12 +26,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class TimePickerAdapter extends BaseAdapter{
+public class TimePickerAdapter extends BaseAdapter {
 
     private Context context;
     List<TimePickerDTO> timePickerDTOList;
     private LayoutInflater layoutInflater;
-    private int startTime,endTime;
+    private int startTime, endTime;
 
     public List<TimePickerDTO> getTimePickerDTOList() {
         return timePickerDTOList;
@@ -64,14 +64,14 @@ public class TimePickerAdapter extends BaseAdapter{
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        View timePickerView=view;
-        if(timePickerView == null) {
+        View timePickerView = view;
+        if (timePickerView == null) {
             timePickerView = layoutInflater.inflate(R.layout.item_time_picker, viewGroup, false);
         }
-        TextView txtStartTime=timePickerView.findViewById(R.id.txtStartTime);
-        TextView txtEndTime=timePickerView.findViewById(R.id.txtEndTime);
-        EditText edtPrice=timePickerView.findViewById(R.id.edtPrice);
-        ImageButton imgButtonRemoveTP=timePickerView.findViewById(R.id.imgBtnRemoveTP);
+        TextView txtStartTime = timePickerView.findViewById(R.id.txtStartTime);
+        TextView txtEndTime = timePickerView.findViewById(R.id.txtEndTime);
+        EditText edtPrice = timePickerView.findViewById(R.id.edtPrice);
+        ImageButton imgButtonRemoveTP = timePickerView.findViewById(R.id.imgBtnRemoveTP);
 
         txtStartTime.setTag(i);
         txtEndTime.setTag(i);
@@ -79,37 +79,32 @@ public class TimePickerAdapter extends BaseAdapter{
         imgButtonRemoveTP.setTag(i);
 
         TimePickerDTO timePickerDTO = timePickerDTOList.get(i);
-        if(timePickerDTO.getPrice()>0){
-            txtStartTime.setText(timePickerDTO.getStart()+":00");
-            txtEndTime.setText(timePickerDTO.getEnd()+":00");
-            edtPrice.setText(timePickerDTO.getPrice()+"");
-            imgButtonRemoveTP.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    timePickerDTOList.remove(i);
-                }
-            });
-        }else{
-            txtStartTime.setText("");
-            txtEndTime.setText("");
-            edtPrice.setText(0+"");
-            imgButtonRemoveTP.setVisibility(View.INVISIBLE);
-        }
+
+        edtPrice.setText(timePickerDTO.getPrice() + "");
+        txtStartTime.setText(timePickerDTO.getStart() + ":00");
+        txtEndTime.setText(timePickerDTO.getEnd() + ":00");
+
+        imgButtonRemoveTP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                timePickerDTOList.remove(i);
+            }
+        });
 
         txtStartTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TimePickerDialog timePickerDialog=new TimePickerDialog(context,
+                TimePickerDialog timePickerDialog = new TimePickerDialog(context,
                         android.R.style.Theme_Holo_Light_Dialog_MinWidth,
                         new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(android.widget.TimePicker timePicker, int hourOfDay, int minute) {
-                        startTime =hourOfDay;
-                        txtStartTime.setText(startTime+":00");
-                        timePickerDTO.setStart(startTime);
-                    }
-                },0,0,true);
-                timePickerDialog.updateTime(startTime,0);
+                            @Override
+                            public void onTimeSet(android.widget.TimePicker timePicker, int hourOfDay, int minute) {
+                                startTime = hourOfDay;
+                                txtStartTime.setText(startTime + ":00");
+                                timePickerDTO.setStart(startTime);
+                            }
+                        }, 0, 0, true);
+                timePickerDialog.updateTime(startTime, 0);
                 timePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 timePickerDialog.show();
             }
@@ -118,17 +113,17 @@ public class TimePickerAdapter extends BaseAdapter{
         txtEndTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TimePickerDialog timePickerDialog=new TimePickerDialog(context,
+                TimePickerDialog timePickerDialog = new TimePickerDialog(context,
                         android.R.style.Theme_Holo_Light_Dialog_MinWidth,
                         new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(android.widget.TimePicker timePicker, int hourOfDay, int minute) {
-                        endTime =hourOfDay;
-                        txtEndTime.setText(endTime+":00");
-                        timePickerDTO.setEnd(endTime);
-                    }
-                },startTime+1,0,true);
-                timePickerDialog.updateTime(endTime,0);
+                            @Override
+                            public void onTimeSet(android.widget.TimePicker timePicker, int hourOfDay, int minute) {
+                                endTime = hourOfDay;
+                                txtEndTime.setText(endTime + ":00");
+                                timePickerDTO.setEnd(endTime);
+                            }
+                        }, startTime + 1, 0, true);
+                timePickerDialog.updateTime(endTime, 0);
                 timePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 timePickerDialog.show();
             }

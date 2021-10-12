@@ -46,6 +46,7 @@ import java.util.Objects;
 
 public class CreateFootballFieldActivity extends AppCompatActivity {
 
+    public static final int RC_GALLERY = 1;
     private Button btnChooseImg;
     private ImageView imgPhoto;
     private Uri uriImg;
@@ -78,10 +79,9 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         btnChooseImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(intent, 1);
+                Intent gallery = new Intent(Intent.ACTION_PICK,
+                        MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                startActivityForResult(gallery, RC_GALLERY);
             }
         });
 
@@ -124,6 +124,8 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
 
     private void loadTimePickerWorking(){
         TimePickerDTO timePickerDTO = new TimePickerDTO();
+        timePickerDTO.setStart(0);
+        timePickerDTO.setEnd(0);
         timePickerDTO.setPrice(0);
         timePickerAdapter.getTimePickerDTOList().add(timePickerDTO);
         lvTimePickerWorking.setAdapter(timePickerAdapter);
@@ -136,15 +138,17 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            uriImg = data.getData();
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uriImg);
-                imgPhoto.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        if(requestCode == RC_GALLERY) {
+            if(resultCode == RESULT_OK) {
+                try {
+                    uriImg = data.getData();
+                    imgPhoto.setImageURI(uriImg);
+                    Log.d("USER", "Success");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
+            }
         }
     }
 
