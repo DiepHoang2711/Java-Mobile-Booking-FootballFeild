@@ -34,6 +34,8 @@ public class FootballFieldDAO {
 
     private static final String COLLECTION_USERS = "users";
 
+    public static final String CONST_OF_PROJECT = "constOfProject";
+
 
     public FootballFieldDAO() {
         db = FirebaseFirestore.getInstance();
@@ -70,13 +72,8 @@ public class FootballFieldDAO {
         });
     }
 
-
-
-//    public Task<DocumentSnapshot> getAllFootballFieldByOwner(String ownerID) throws Exception{
-//
-//        return db.collection(COLLECTION_OWNER_INFO).getParent()
-//
-//    }
-
-
+    public Task<DocumentSnapshot> getTypeOfFootballField () throws Exception {
+        DocumentReference doc = db.collection(CONST_OF_PROJECT).document("const");
+        return doc.get();
+    }
 }
