@@ -2,33 +2,48 @@ package com.example.football_field_booking.adapters;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.football_field_booking.R;
 import com.example.football_field_booking.dtos.TimePickerDTO;
 
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class TimePickerAdapter extends BaseAdapter {
+public class TimePickerAdapter extends BaseAdapter{
 
     private Context context;
     List<TimePickerDTO> timePickerDTOList;
     private LayoutInflater layoutInflater;
-    private int hour;
+    private int startTime,endTime;
 
-    public TimePickerAdapter(Context context, List<TimePickerDTO> timePickerDTOList) {
-        this.context = context;
+    public List<TimePickerDTO> getTimePickerDTOList() {
+        return timePickerDTOList;
+    }
+
+    public void setTimePickerDTOList(List<TimePickerDTO> timePickerDTOList) {
         this.timePickerDTOList = timePickerDTOList;
+    }
+
+    public TimePickerAdapter(Context context) {
+        this.context = context;
+        this.timePickerDTOList = new ArrayList<>();
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -53,15 +68,20 @@ public class TimePickerAdapter extends BaseAdapter {
         if(timePickerView == null) {
             timePickerView = layoutInflater.inflate(R.layout.item_time_picker, viewGroup, false);
         }
-        EditText edtStartTime=timePickerView.findViewById(R.id.edtStartTime);
-        EditText edtEndTime=timePickerView.findViewById(R.id.edtEndTime);
+        TextView txtStartTime=timePickerView.findViewById(R.id.txtStartTime);
+        TextView txtEndTime=timePickerView.findViewById(R.id.txtEndTime);
         EditText edtPrice=timePickerView.findViewById(R.id.edtPrice);
         ImageButton imgButtonRemoveTP=timePickerView.findViewById(R.id.imgBtnRemoveTP);
 
+        txtStartTime.setTag(i);
+        txtEndTime.setTag(i);
+        edtPrice.setTag(i);
+        imgButtonRemoveTP.setTag(i);
+
         TimePickerDTO timePickerDTO = timePickerDTOList.get(i);
-        if(timePickerDTO.getPrice()!=0){
-            edtStartTime.setText(timePickerDTO.getStart()+"");
-            edtEndTime.setText(timePickerDTO.getEnd()+"");
+        if(timePickerDTO.getPrice()>0){
+            txtStartTime.setText(timePickerDTO.getStart()+":00");
+            txtEndTime.setText(timePickerDTO.getEnd()+":00");
             edtPrice.setText(timePickerDTO.getPrice()+"");
             imgButtonRemoveTP.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -70,44 +90,64 @@ public class TimePickerAdapter extends BaseAdapter {
                 }
             });
         }else{
-            edtStartTime.setText("");
-            edtEndTime.setText("");
-            edtPrice.setText("");
+            txtStartTime.setText("");
+            txtEndTime.setText("");
+            edtPrice.setText(0+"");
+            imgButtonRemoveTP.setVisibility(View.INVISIBLE);
         }
-//        edtStartTime.setTag(i);
 
-        edtStartTime.setOnClickListener(new View.OnClickListener() {
+        txtStartTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                TimePickerDialog timePickerDialog=new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
+                TimePickerDialog timePickerDialog=new TimePickerDialog(context,
+                        android.R.style.Theme_Holo_Light_Dialog_MinWidth,
+                        new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(android.widget.TimePicker timePicker, int hourOfDay, int minute) {
-                        hour = hourOfDay;
-                        Calendar calendar=Calendar.getInstance();
-                        calendar.set(0,0,0,hourOfDay,0);
-                        edtStartTime.setText(DateFormat.format("hh:mm aa",calendar));
+                        startTime =hourOfDay;
+                        txtStartTime.setText(startTime+":00");
+                        timePickerDTO.setStart(startTime);
                     }
-                },12,0,false);
-                timePickerDialog.updateTime(hour, 0);
+                },0,0,true);
+                timePickerDialog.updateTime(startTime,0);
+                timePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 timePickerDialog.show();
-                Toast.makeText(context, "Success click", Toast.LENGTH_SHORT).show();
             }
         });
 
-        edtEndTime.setOnClickListener(new View.OnClickListener() {
+        txtEndTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TimePickerDialog timePickerDialog=new TimePickerDialog(view.getContext(), new TimePickerDialog.OnTimeSetListener() {
+                TimePickerDialog timePickerDialog=new TimePickerDialog(context,
+                        android.R.style.Theme_Holo_Light_Dialog_MinWidth,
+                        new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(android.widget.TimePicker timePicker, int hourOfDay, int minute) {
-                        Calendar calendar=Calendar.getInstance();
-                        calendar.set(0,0,0,hourOfDay,minute);
-                        edtStartTime.setText(DateFormat.format("hh:mm aa",calendar));
+                        endTime =hourOfDay;
+                        txtEndTime.setText(endTime+":00");
+                        timePickerDTO.setEnd(endTime);
                     }
-                },24,0,false);
-                timePickerDialog.updateTime(hour, 0);
+                },startTime+1,0,true);
+                timePickerDialog.updateTime(endTime,0);
+                timePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 timePickerDialog.show();
+            }
+        });
+
+        edtPrice.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                timePickerDTO.setPrice(Float.parseFloat(edtPrice.getText().toString()));
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
         return timePickerView;
