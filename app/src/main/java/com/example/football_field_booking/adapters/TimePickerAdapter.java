@@ -79,9 +79,24 @@ public class TimePickerAdapter extends BaseAdapter {
 
         TimePickerDTO timePickerDTO = timePickerDTOList.get(i);
 
-        timePickerHolder.edtPrice.setText(timePickerDTO.getPrice() + "");
-        timePickerHolder.txtStartTime.setText(timePickerDTO.getStart() + ":00");
-        timePickerHolder.txtEndTime.setText(timePickerDTO.getEnd() + ":00");
+
+        if(timePickerDTO.getStart()==-1){
+            timePickerHolder.txtStartTime.setText("Start");
+        }else{
+            timePickerHolder.txtStartTime.setText(timePickerDTO.getStart() + ":00");
+        }
+
+        if(timePickerDTO.getEnd()==-1){
+            timePickerHolder.txtEndTime.setText("End");
+        }else{
+            timePickerHolder.txtEndTime.setText(timePickerDTO.getEnd() + ":00");
+        }
+
+        if(timePickerDTO.getPrice()>-1){
+            timePickerHolder.edtPrice.setText(timePickerDTO.getPrice() + "");
+        }
+
+
 
         timePickerHolder.imgButtonRemoveTP.setOnClickListener(new View.OnClickListener() {
             @Override
