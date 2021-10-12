@@ -24,6 +24,7 @@ public class TimePickerAdapter extends BaseAdapter {
     private Context context;
     List<TimePickerDTO> timePickerDTOList;
     private LayoutInflater layoutInflater;
+    private int hour;
 
     public TimePickerAdapter(Context context, List<TimePickerDTO> timePickerDTOList) {
         this.context = context;
@@ -73,18 +74,24 @@ public class TimePickerAdapter extends BaseAdapter {
             edtEndTime.setText("");
             edtPrice.setText("");
         }
+//        edtStartTime.setTag(i);
 
         edtStartTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TimePickerDialog timePickerDialog=new TimePickerDialog(view.getContext(), new TimePickerDialog.OnTimeSetListener() {
+
+                TimePickerDialog timePickerDialog=new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(android.widget.TimePicker timePicker, int hourOfDay, int minute) {
+                        hour = hourOfDay;
                         Calendar calendar=Calendar.getInstance();
-                        calendar.set(0,0,0,hourOfDay,minute);
+                        calendar.set(0,0,0,hourOfDay,0);
                         edtStartTime.setText(DateFormat.format("hh:mm aa",calendar));
                     }
                 },12,0,false);
+                timePickerDialog.updateTime(hour, 0);
+                timePickerDialog.show();
+                Toast.makeText(context, "Success click", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -99,6 +106,8 @@ public class TimePickerAdapter extends BaseAdapter {
                         edtStartTime.setText(DateFormat.format("hh:mm aa",calendar));
                     }
                 },24,0,false);
+                timePickerDialog.updateTime(hour, 0);
+                timePickerDialog.show();
             }
         });
         return timePickerView;

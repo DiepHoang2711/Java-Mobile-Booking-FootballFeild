@@ -3,31 +3,31 @@ package com.example.football_field_booking.dtos;
 import java.io.Serializable;
 
 public class FootballFieldDTO implements Serializable {
+    private String fieldID;
     private String name;
     private String location;
     private String type;
-    private String fieldID;
     private String image;
-    private boolean status;
+    private String status;
 
 
     public FootballFieldDTO() {
     }
 
-    public FootballFieldDTO(String name, String location, String type, String fieldID, String image, boolean status) {
+    public FootballFieldDTO(String fieldID, String name, String location, String type, String image, String status) {
+        this.fieldID = fieldID;
         this.name = name;
         this.location = location;
         this.type = type;
-        this.fieldID = fieldID;
         this.image = image;
         this.status = status;
     }
 
-    public boolean isStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(boolean status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -69,5 +69,17 @@ public class FootballFieldDTO implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return "FootballFieldDTO{" +
+                "fieldID='" + fieldID + '\'' +
+                ", name='" + name + '\'' +
+                ", location='" + location + '\'' +
+                ", type='" + type + '\'' +
+                ", image='" + image + '\'' +
+                ", status='" + status + '\'' +
+                '}';
     }
 }

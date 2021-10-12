@@ -30,7 +30,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 
-public class ProfileEditActivity extends AppCompatActivity {
+public class UpdateProfileActivity extends AppCompatActivity {
 
     public static final int RC_IMAGE_PICKER = 1000;
     private TextView txtUserId, txtEmail;
@@ -44,7 +44,7 @@ public class ProfileEditActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile_edit);
+        setContentView(R.layout.activity_update_profile);
 
         txtUserId = findViewById(R.id.txtUserID);
         txtEmail = findViewById(R.id.txtEmail);
@@ -106,7 +106,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(ProfileEditActivity.this,
+                        Toast.makeText(UpdateProfileActivity.this,
                                 "Fail to get user on server", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -127,9 +127,9 @@ public class ProfileEditActivity extends AppCompatActivity {
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             finish();
-                                            startActivity(ProfileEditActivity.this.getIntent());
+                                            startActivity(UpdateProfileActivity.this.getIntent());
                                         } else {
-                                            Toast.makeText(ProfileEditActivity.this,
+                                            Toast.makeText(UpdateProfileActivity.this,
                                                     "Fail to update User", Toast.LENGTH_SHORT).show();
                                         }
                                     }
@@ -137,7 +137,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                     }
 
                 }else {
-                    Toast.makeText(ProfileEditActivity.this,
+                    Toast.makeText(UpdateProfileActivity.this,
                             R.string.something_went_wrong, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -153,7 +153,7 @@ public class ProfileEditActivity extends AppCompatActivity {
               try {
                   Uri uri = data.getData();
                   UserDAO userDAO = new UserDAO();
-                  ProgressDialog progressDialog = new ProgressDialog(ProfileEditActivity.this);
+                  ProgressDialog progressDialog = new ProgressDialog(UpdateProfileActivity.this);
                   util.showProgressDialog(progressDialog, "Uploading ....", "Please wait for uploading image");
                   userDAO.uploadImgUserToFirebase(uri)
                           .addOnCompleteListener(new OnCompleteListener<Uri>() {
@@ -167,19 +167,19 @@ public class ProfileEditActivity extends AppCompatActivity {
                                               public void onComplete(@NonNull Task<Void> task) {
                                                   progressDialog.cancel();
                                                   if (task.isSuccessful()) {
-                                                      Toast.makeText(ProfileEditActivity.this, "Update Success"
+                                                      Toast.makeText(UpdateProfileActivity.this, "Update Success"
                                                               , Toast.LENGTH_SHORT).show();
                                                       finish();
-                                                      startActivity(ProfileEditActivity.this.getIntent());
+                                                      startActivity(UpdateProfileActivity.this.getIntent());
                                                       overridePendingTransition(0, 0);
                                                   }else {
-                                                      Toast.makeText(ProfileEditActivity.this, "Update fail"
+                                                      Toast.makeText(UpdateProfileActivity.this, "Update fail"
                                                               , Toast.LENGTH_SHORT).show();
                                                   }
                                               }
                                           });
                                       } else {
-                                          Toast.makeText(ProfileEditActivity.this, "Update fail"
+                                          Toast.makeText(UpdateProfileActivity.this, "Update fail"
                                                   , Toast.LENGTH_SHORT).show();
                                       }
                                   }catch (Exception e) {

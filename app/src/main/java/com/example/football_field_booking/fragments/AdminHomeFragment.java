@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.example.football_field_booking.CreateUserActivity;
-import com.example.football_field_booking.ProfileEditByAdminActivity;
+import com.example.football_field_booking.UpdateProfileByAdminActivity;
 import com.example.football_field_booking.R;
 import com.example.football_field_booking.adapters.UserAdapter;
 import com.example.football_field_booking.daos.UserDAO;
@@ -66,7 +66,7 @@ public class AdminHomeFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
                     UserDTO userDTO = (UserDTO) listViewUser.getItemAtPosition(i);
-                    Intent intent = new Intent(getActivity(), ProfileEditByAdminActivity.class);
+                    Intent intent = new Intent(getActivity(), UpdateProfileByAdminActivity.class);
                     intent.putExtra("userID", userDTO.getUserID());
                     startActivity(intent);
                 }catch (Exception e) {

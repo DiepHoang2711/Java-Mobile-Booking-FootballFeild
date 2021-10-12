@@ -53,7 +53,7 @@ public class FootballFieldAdapter extends BaseAdapter {
             rowView = layoutInflater.inflate(R.layout.item_football_field_owner, viewGroup, false);
         }
         ImageView imgField = rowView.findViewById(R.id.imgFootBallField);
-        TextView txtFieldName = rowView.findViewById(R.id.txtFullName);
+        TextView txtFieldName = rowView.findViewById(R.id.txtFieldName);
         TextView txtLocation = rowView.findViewById(R.id.txtLocation);
         TextView txtType=rowView.findViewById(R.id.txtType);
 
