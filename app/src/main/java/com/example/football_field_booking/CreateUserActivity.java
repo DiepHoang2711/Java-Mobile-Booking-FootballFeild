@@ -24,6 +24,8 @@ import com.example.football_field_booking.validations.Validation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,10 +44,11 @@ public class CreateUserActivity extends AppCompatActivity {
     private List<String> roles, status;
     private Utils util;
     private Uri imgUri = null;
-    private FirebaseAuth mAuth;
+    private FirebaseAuth mAuth, authCreate;
     private ProgressDialog progressDialog;
     private UserDTO userDTO = null;
     private Validation val;
+    private String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +71,16 @@ public class CreateUserActivity extends AppCompatActivity {
         util = new Utils();
         val = new Validation();
         mAuth = FirebaseAuth.getInstance();
+        FirebaseOptions firebaseOptions = new FirebaseOptions.Builder()
+                .setDatabaseUrl("https://booking-football-field.firebaseio.com")
+                .setApiKey("AIzaSyDt5y74ZKMA6xgVavg1Hhmo3vdML5Zufik")
+                .setApplicationId("booking-football-field").build();
+        try {
+            FirebaseApp myApp = FirebaseApp.initializeApp(getApplicationContext(), firebaseOptions, "AnyAppName");
+            authCreate = FirebaseAuth.getInstance(myApp);
+        } catch (IllegalStateException e){
+            authCreate = FirebaseAuth.getInstance(FirebaseApp.getInstance("AnyAppName"));
+        }
 
         UserDAO userDAO = new UserDAO();
 
@@ -109,12 +122,17 @@ public class CreateUserActivity extends AppCompatActivity {
                 String phone = txtPhone.getEditText().getText().toString();
                 String role = txtRole.getText().toString();
                 String status = txtStatus.getText().toString();
-                String password = txtPassword.getEditText().getText().toString();
+                password = txtPassword.getEditText().getText().toString();
                 String confirm = txtConfirm.getEditText().getText().toString();
                 if ( isValidCreate(email, password, confirm, fullName, phone, role, status)) {
                     userDTO = new UserDTO(null, email, fullName, phone, role, status,null);
                     util.showProgressDialog(progressDialog, "Create user", "Please wait for create");
-                    createUser(userDTO, password);
+                    if(imgUri != null) {
+                        uploadImageToStorage();
+                    }else {
+                        createUser(userDTO, password);
+                    }
+
                 }
             }
         });
@@ -186,18 +204,16 @@ public class CreateUserActivity extends AppCompatActivity {
     }
 
     private void createUser(UserDTO userDTO, String password) {
-        mAuth.createUserWithEmailAndPassword(userDTO.getEmail(), password)
+
+        authCreate.createUserWithEmailAndPassword(userDTO.getEmail(), password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             try {
-                                if(imgUri != null) {
-                                    uploadImageToStorage();
-                                }
                                 Log.d("EMAIL", "createUserWithEmail:success");
-                                FirebaseUser user = mAuth.getCurrentUser();
+                                FirebaseUser user = authCreate.getCurrentUser();
                                 UserDAO dao = new UserDAO();
                                 userDTO.setUserID(user.getUid());
 
@@ -212,8 +228,9 @@ public class CreateUserActivity extends AppCompatActivity {
                                     }
                                 });
                                 sendEmailVerification();
-
-                                updateUI(user);
+                                authCreate.signOut();
+                                progressDialog.cancel();
+                                finish();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -223,7 +240,7 @@ public class CreateUserActivity extends AppCompatActivity {
                             Log.w("EMAIL", "createUserWithEmail:failure", task.getException());
                             Toast.makeText(CreateUserActivity.this, "Create failed.",
                                     Toast.LENGTH_SHORT).show();
-                            updateUI(null);
+                            progressDialog.cancel();
                         }
                     }
                 });
@@ -259,6 +276,7 @@ public class CreateUserActivity extends AppCompatActivity {
                                     Log.d("USER", task.getResult().toString());
                                     Uri uri = task.getResult();
                                     userDTO.setPhotoUri(uri.toString());
+                                    createUser(userDTO, password);
                                 } else {
                                     Toast.makeText(CreateUserActivity.this, "Update fail"
                                             , Toast.LENGTH_SHORT).show();
@@ -270,14 +288,6 @@ public class CreateUserActivity extends AppCompatActivity {
                     });
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    private void updateUI(FirebaseUser user) {
-        progressDialog.cancel();
-        if (user != null) {
-            Intent intent = new Intent(CreateUserActivity.this, LoginActivity.class);
-            startActivity(intent);
         }
     }
 

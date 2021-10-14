@@ -22,7 +22,7 @@ public class Validation {
     }
 
     public boolean isValidPassword (String password) {
-        return !password.trim().isEmpty() && password.length() > 8;
+        return !password.trim().isEmpty() && password.length() >= 8;
     }
 
     public boolean isValidPhoneNumber (String phoneNumber) {

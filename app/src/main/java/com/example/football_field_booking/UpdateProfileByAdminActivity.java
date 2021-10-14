@@ -67,9 +67,7 @@ public class UpdateProfileByAdminActivity extends AppCompatActivity {
         String userID = intent.getStringExtra("userID");
         if(userID == null) {
             Toast.makeText(this, R.string.something_went_wrong, Toast.LENGTH_SHORT).show();
-            Intent intentBackToMain = new Intent(this, MainActivity.class);
-            intentBackToMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intentBackToMain);
+            finish();
         }
 
         UserDAO userDAO = new UserDAO();
@@ -110,12 +108,13 @@ public class UpdateProfileByAdminActivity extends AppCompatActivity {
                                 txtRole.setText(userDTO.getRole(), false);
                                 txtStatus.setText(userDTO.getStatus(), false);
                                 Log.d("USER", userDTO.getPhotoUri());
-                                if (userDTO.getPhotoUri() != null) {
+
+                                try {
                                     Uri uri = Uri.parse(userDTO.getPhotoUri());
                                     Glide.with(imgUser.getContext())
                                             .load(uri)
                                             .into(imgUser);
-                                } else {
+                                }catch (Exception e) {
                                     imgUser.setImageResource(R.drawable.outline_account_circle_24);
                                 }
 

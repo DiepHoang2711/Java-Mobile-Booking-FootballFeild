@@ -24,6 +24,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +37,7 @@ public class FootballFieldDAO {
 
     public static final String SUB_COLLECTION_FOOTBALL_FIELD_INFO = "footballFieldInfos";
 
-    public static final String SUB_COLLECTION_TIME_PICKER="time_picker";
+    public static final String SUB_COLLECTION_TIME_PICKER="timePicker";
 
     private static final String SUB_COLLECTION_OWNER_INFO = "ownerInfo";
 
@@ -105,5 +106,42 @@ public class FootballFieldDAO {
                 System.out.println("createTimePickerForFootballField ERROR:"+e.getMessage());
             }
         });
+    }
+
+    public Task<DocumentSnapshot> getFieldByID (String fieldID) {
+        DocumentReference doc = db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID);
+        return doc.get();
+    }
+
+    public Task<QuerySnapshot> getAllTimePickerOfField (String fieldID) {
+        return db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID).collection(SUB_COLLECTION_TIME_PICKER).get();
+    }
+
+    public Task<Void> updateFootballField (FootballFieldDTO fieldDTO, List<TimePickerDTO> listTimePicker) throws Exception {
+        DocumentReference docField = db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldDTO.getFieldID());
+        DocumentReference docFieldOfOwner = docField.getParent().getParent();
+        return db.runTransaction(new Transaction.Function<Void>() {
+            @Nullable
+            @Override
+            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+
+                Map<String, Object> dataField = new HashMap<>();
+                dataField.put("name", fieldDTO.getName());
+                dataField.put("location", fieldDTO.getLocation());
+                dataField.put("type", fieldDTO.getType());
+                dataField.put("image", fieldDTO.getImage());
+                dataField.put("status", fieldDTO.getStatus());
+                transaction.update(docField, dataField);
+
+                transaction.update(docFieldOfOwner, dataField);
+
+                return null;
+            }
+        });
+    }
+
+    public void updateTimePicker (List<TimePickerDTO> list, String fieldID) throws Exception {
+        DocumentReference docField = db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID);
+
     }
 }
