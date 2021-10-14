@@ -53,6 +53,7 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
     private TimePickerAdapter timePickerAdapter;
     private ListView lvTimePickerWorking;
     private List<String> listTypeField;
+    private List<TimePickerDTO> list;
     private FootballFieldDTO footballFieldDTO;
 
 
@@ -147,77 +148,16 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         footballFieldDTO.setLocation(location);
         footballFieldDTO.setStatus(ACTIVE);
 
-        List<TimePickerDTO> list = new ArrayList<>();
+        list = new ArrayList<>();
         for (TimePickerDTO dto : timePickerAdapter.getTimePickerDTOList()) {
             if (dto.getPrice() > -1 && dto.getStart() > -1 && dto.getEnd() > -1) {
                 list.add(dto);
             }
         }
-        FootballFieldDAO fieldDAO = new FootballFieldDAO();
-        try {
-            if (uriImg != null) {
-                uploadImageToStorage();
-            }
-            fieldDAO.createNewFootballField(footballFieldDTO, uriImg)
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(CreateFootballFieldActivity.this, "Create Faild" + e.getMessage(), Toast.LENGTH_LONG).show();
-                            e.printStackTrace();
-                        }
-                    }).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                @Override
-                public void onSuccess(DocumentReference documentReference) {
-                    //thay bằng dialog
-                    try {
-                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                        UserDAO userDAO = new UserDAO();
-                        userDAO.getUserById(user.getUid())
-                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                        try {
-                                            UserDTO userDTO = documentSnapshot.toObject(UserDTO.class);
-                                            fieldDAO.addOwnerToFootballFieldsCollection(userDTO, documentReference);
-                                            documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                    FootballFieldDTO fieldDTO = task.getResult().toObject(FootballFieldDTO.class);
-                                                    try {
-                                                        fieldDAO.addFootFiledInfoToUsersCollection(userDTO.getUserID(), fieldDTO);
-                                                    } catch (Exception e) {
-                                                        e.printStackTrace();
-                                                    }
-                                                }
-                                            });
-                                            for (TimePickerDTO dto : list) {
-                                                fieldDAO.createTimePickerForFootballField(dto, documentReference);
-                                            }
-                                            Toast.makeText(CreateFootballFieldActivity.this, "Create Successfull", Toast.LENGTH_SHORT).show();
-//                                            finish();
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                            Toast.makeText(CreateFootballFieldActivity.this, "Create subCollection Failded", Toast.LENGTH_SHORT).show();
-
-                                        }
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(CreateFootballFieldActivity.this,
-                                                "Fail to get user on server", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (uriImg != null) {
+            uploadImageToStorage();
+        } else {
+            createFootballField();
         }
     }
 
@@ -232,6 +172,8 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     Uri uri = task.getResult();
                                     footballFieldDTO.setImage(uri.toString());
+
+                                    createFootballField();
                                     System.out.println(("URL IMAGE " + footballFieldDTO.getImage()));
                                 } else {
                                     Toast.makeText(CreateFootballFieldActivity.this, "Update fail"
@@ -242,6 +184,65 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
                             }
                         }
                     });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createFootballField() {
+        try {
+            FootballFieldDAO fieldDAO = new FootballFieldDAO();
+            fieldDAO.createNewFootballField(footballFieldDTO, uriImg)
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(CreateFootballFieldActivity.this, "Create Fail" + e.getMessage(), Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                @Override
+                public void onSuccess(DocumentReference documentReference) {
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    UserDAO userDAO = new UserDAO();
+                    userDAO.getUserById(user.getUid())
+                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    try {
+                                        UserDTO userDTO = documentSnapshot.toObject(UserDTO.class);
+                                        fieldDAO.addOwnerToFootballFieldsCollection(userDTO, documentReference);
+                                        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                FootballFieldDTO fieldDTO = task.getResult().toObject(FootballFieldDTO.class);
+                                                try {
+                                                    fieldDAO.addFootFiledInfoToUsersCollection(userDTO.getUserID(), fieldDTO);
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        });
+                                        for (TimePickerDTO dto : list) {
+                                            fieldDAO.createTimePickerForFootballField(dto, documentReference);
+                                        }
+                                        Toast.makeText(CreateFootballFieldActivity.this, "Create Successfull", Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        Toast.makeText(CreateFootballFieldActivity.this, "Create subCollection Failded", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(CreateFootballFieldActivity.this,
+                                            "Fail to get user on server", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }

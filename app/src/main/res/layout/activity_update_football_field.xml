@@ -10,7 +10,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_weight="2">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,45 +32,61 @@
 
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tlName"
+                    android:id="@+id/tlFootballFieldName"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:hint="Name"
                     app:helperText="Require*"
-                    app:helperTextTextColor="@android:color/holo_red_light"
-                    android:hint="Name">
-                    <EditText
-                        android:id="@+id/edtFootballFieldName"
+                    app:helperTextTextColor="@android:color/holo_red_light">
+                    <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tlLocation"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:hint="Location"
                     app:helperText="Require*"
-                    app:helperTextTextColor="@android:color/holo_red_light"
-                    android:hint="Location">
-                    <EditText
-                        android:id="@+id/edtLocation"
+                    app:helperTextTextColor="@android:color/holo_red_light">
+
+                    <com.google.android.material.textfield.TextInputEditText
+
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tlType"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:hint="Type"
                     app:helperText="Require*"
-                    app:helperTextTextColor="@android:color/holo_red_light"
-                    app:endIconMode="dropdown_menu"
-                    android:hint="Type">
+                    app:helperTextTextColor="@android:color/holo_red_light">
                     <AutoCompleteTextView
                         android:id="@+id/auComTxtType"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="none"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tlStatus"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Status"
+                    app:helperText="Require*"
+                    app:helperTextTextColor="@android:color/holo_red_light">
+                    <AutoCompleteTextView
+                        android:id="@+id/auComTxtStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <LinearLayout
@@ -92,11 +108,11 @@
                 </LinearLayout>
 
                 <ImageView
-                    android:id="@+id/imgFootBallField"
+                    android:id="@+id/img_photo"
                     android:layout_width="200dp"
-                    android:layout_height="200dp"
+                    android:layout_height="100dp"
                     android:layout_gravity="center"
-                    android:scaleType="centerCrop" />
+                    android:scaleType="fitStart" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -108,11 +124,9 @@
 
                 <ListView
                     android:id="@+id/lvTimePickerWorking"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="20dp">
-                </ListView>
-
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="20dp"/>
 
                 <ImageButton
                     android:id="@+id/imgBtnAdd"
@@ -132,11 +146,17 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/btnUpdateFootballField"
-            android:layout_width="wrap_content"
+            android:id="@+id/btnUpdateField"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Update" />
+        <Button
+            android:id="@+id/btnDeleteField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Delete" />
     </LinearLayout>
 
 </LinearLayout>
