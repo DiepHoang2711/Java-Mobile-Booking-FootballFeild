@@ -118,11 +118,8 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:gravity="right"
-
                                     android:text="4.5" />
                             </LinearLayout>
-
-
                         </LinearLayout>
 
                         <View
@@ -143,17 +140,17 @@
                                 android:id="@+id/txtSelectDate"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:ems="10"
-                                android:textSize="18dp"
                                 android:background="@drawable/border"
+                                android:ems="10"
                                 android:padding="3dp"
-                                android:text="05/10/2021" />
+                                android:text="05/10/2021"
+                                android:textSize="18dp" />
 
                             <com.google.android.material.button.MaterialButton
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:layout_gravity="center"
-                                android:backgroundTint="@color/black"
+                                android:backgroundTint="@color/green"
                                 android:onClick="clickToChangeDate"
                                 app:icon="@drawable/ic_baseline_calendar_today_24"
                                 app:iconGravity="top"
@@ -176,71 +173,35 @@
                             android:text="5$/h"
                             android:textColor="#099CD9"
                             android:textSize="18dp"
-                            android:textStyle="bold"/>
+                            android:textStyle="bold" />
 
                         <GridLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="25dp"
-                            android:columnCount="4"
-                            android:orientation="horizontal">
+                            android:layout_marginRight="25dp"
+                            android:columnCount="4">
 
                             <ToggleButton
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                style="@style/MyToggleButton"
+                                android:enabled="false"
                                 android:textOff="7h-8h"
-                                android:textOn="7h-8h"
-                                android:textSize="12dp" />
+                                android:textOn="7h-8h" />
 
                             <ToggleButton
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                style="@style/MyToggleButton"
                                 android:textOff="8h-9h"
-                                android:textOn="8h-9h"
-                                android:textSize="12dp" />
+                                android:textOn="8h-9h" />
 
                             <ToggleButton
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                style="@style/MyToggleButton"
                                 android:textOff="9h-10h"
-                                android:textOn="10h-11h"
-                                android:textSize="12dp" />
+                                android:textOn="10h-11h" />
 
                             <ToggleButton
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textOff="10h-11h"
-                                android:textOn="10h-11h"
-                                android:textSize="12dp" />
-
-                            <ToggleButton
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textOff="13h-14h"
-                                android:textOn="13h-14h"
-                                android:textSize="12dp" />
-
-                            <ToggleButton
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textOff="14h-15h"
-                                android:textOn="14h-15h"
-                                android:textSize="12dp" />
-
-                            <ToggleButton
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textOff="15h-16h"
-                                android:textOn="15h-16h"
-                                android:textSize="12dp" />
-
-                            <ToggleButton
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textOff="16h-17h"
-                                android:textOn="16h-17h"
-                                android:textSize="12dp" />
-
+                                style="@style/MyToggleButton"
+                                android:textOff="9h-10h"
+                                android:textOn="10h-11h" />
                         </GridLayout>
 
                         <TextView
@@ -251,42 +212,34 @@
                             android:text="7$/h"
                             android:textColor="#099CD9"
                             android:textSize="18dp"
-                            android:textStyle="bold"/>
+                            android:textStyle="bold" />
 
                         <GridLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="25dp"
-                            android:columnCount="4"
-                            android:orientation="horizontal">
+                            android:layout_marginRight="25dp"
+                            android:columnCount="4">
 
                             <ToggleButton
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                style="@style/MyToggleButton"
                                 android:textOff="17h-18h"
-                                android:textOn="17h-18h"
-                                android:textSize="12dp" />
+                                android:textOn="17h-18h" />
 
                             <ToggleButton
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                style="@style/MyToggleButton"
                                 android:textOff="18h-19h"
-                                android:textOn="18h-19h"
-                                android:textSize="12dp" />
+                                android:textOn="18h-19h" />
 
                             <ToggleButton
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                style="@style/MyToggleButton"
                                 android:textOff="19h-20h"
-                                android:textOn="19h-20h"
-                                android:textSize="12dp" />
+                                android:textOn="19h-20h" />
 
                             <ToggleButton
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                style="@style/MyToggleButton"
                                 android:textOff="21h-22h"
-                                android:textOn="21h-22h"
-                                android:textSize="12dp" />
+                                android:textOn="21h-22h" />
 
                         </GridLayout>
 
