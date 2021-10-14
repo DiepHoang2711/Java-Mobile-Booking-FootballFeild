@@ -20,6 +20,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -51,23 +52,25 @@ public class FootballFieldDAO {
         db = FirebaseFirestore.getInstance();
     }
 
-    public Task<DocumentReference> createNewFootballField(FootballFieldDTO fieldDTO, Uri uriImg) throws Exception {
-        DocumentReference reference = db.collection(COLLECTION_FOOTBALL_FIELD).document();
-        fieldDTO.setFieldID(reference.getId());
-        return db.collection(COLLECTION_FOOTBALL_FIELD).add(fieldDTO);
-    }
+    public Task<Void> createNewFootballField(FootballFieldDTO fieldDTO, Uri uriImg,UserDTO owner,List<TimePickerDTO> timePickerDTOList) throws Exception {
+        DocumentReference footballFieldReference = db.collection(COLLECTION_FOOTBALL_FIELD).document();
+        fieldDTO.setFieldID(footballFieldReference.getId());
+        WriteBatch batch= db.batch();
+        batch.set(footballFieldReference,fieldDTO);
 
-    public Task<DocumentReference> addOwnerToFootballFieldsCollection(UserDTO owner, DocumentReference footballFIeldReference) throws Exception {
-        DocumentReference reference = footballFIeldReference.collection(SUB_COLLECTION_OWNER_INFO).document();
-        return reference.getParent().add(owner);
-    }
+        DocumentReference ownerInfoReference = footballFieldReference.collection(SUB_COLLECTION_OWNER_INFO).document();
+        batch.set(ownerInfoReference,owner);
 
-    public Task<DocumentReference> addFootFiledInfoToUsersCollection(String ownerID, FootballFieldDTO fieldDTO) throws Exception {
-        System.out.println("addFootFiledInfoToUsersCollection: " + fieldDTO.toString());
-        DocumentReference reference = db.collection(COLLECTION_USERS).document(ownerID).collection(SUB_COLLECTION_FOOTBALL_FIELD_INFO).document();
-        return reference.getParent().add(fieldDTO);
-    }
+        DocumentReference footballFieldInfoReference = db.collection(COLLECTION_USERS).document(owner.getUserID()).collection(SUB_COLLECTION_FOOTBALL_FIELD_INFO).document();
+        batch.set(footballFieldInfoReference,fieldDTO);
 
+        for (TimePickerDTO dto:timePickerDTOList){
+            DocumentReference reference=  footballFieldReference.collection(SUB_COLLECTION_TIME_PICKER).document();
+            dto.setTimePickerID(reference.getId());
+            batch.set(reference,dto);
+        }
+        return batch.commit();
+    }
 
     public Task<Uri> uploadImgFootballFieldToFirebase(Uri uri) throws Exception {
 
@@ -89,23 +92,6 @@ public class FootballFieldDAO {
 
     public Task<QuerySnapshot> getAllFootballFieldOfOwner(String ownerID) {
         return db.collection(COLLECTION_USERS).document(ownerID).collection(SUB_COLLECTION_FOOTBALL_FIELD_INFO).get();
-    }
-
-    public void createTimePickerForFootballField(TimePickerDTO dto, DocumentReference parent) throws Exception {
-        DocumentReference reference=  parent.collection(SUB_COLLECTION_TIME_PICKER).document();
-        dto.setTimePickerID(reference.getId());
-        reference.getParent().add(dto)
-                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentReference> task) {
-                        System.out.println("createTimePickerForFootballField SUCCESS");
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                System.out.println("createTimePickerForFootballField ERROR:"+e.getMessage());
-            }
-        });
     }
 
     public Task<DocumentSnapshot> getFieldByID (String fieldID) {
