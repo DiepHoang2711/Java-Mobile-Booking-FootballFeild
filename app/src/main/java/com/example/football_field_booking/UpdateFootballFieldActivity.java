@@ -93,6 +93,7 @@ public class UpdateFootballFieldActivity extends AppCompatActivity {
                     try {
                         DocumentSnapshot doc = task.getResult();
                         fieldDTO = doc.toObject(FootballFieldDTO.class);
+                        Log.d("USER", "dto: " + fieldDTO);
 
                         tlFootballFieldName.getEditText().setText(fieldDTO.getName());
                         tlLocation.getEditText().setText(fieldDTO.getLocation());

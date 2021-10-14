@@ -20,6 +20,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -119,7 +120,9 @@ public class FootballFieldDAO {
 
     public Task<Void> updateFootballField (FootballFieldDTO fieldDTO, List<TimePickerDTO> listTimePicker) throws Exception {
         DocumentReference docField = db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldDTO.getFieldID());
+
         DocumentReference docFieldOfOwner = docField.getParent().getParent();
+        Log.d("USER", "docFieldOfOwner: " + docFieldOfOwner);
         return db.runTransaction(new Transaction.Function<Void>() {
             @Nullable
             @Override
@@ -141,7 +144,14 @@ public class FootballFieldDAO {
     }
 
     public void updateTimePicker (List<TimePickerDTO> list, String fieldID) throws Exception {
+        WriteBatch batch = db.batch();
         DocumentReference docField = db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID);
+        docField.collection(SUB_COLLECTION_TIME_PICKER).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+            }
+        });
 
     }
 }
