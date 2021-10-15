@@ -19,6 +19,9 @@ import android.widget.Toast;
 
 import com.example.football_field_booking.R;
 import com.example.football_field_booking.dtos.TimePickerDTO;
+import com.example.football_field_booking.utils.Utils;
+import com.example.football_field_booking.validations.Validation;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.w3c.dom.Text;
 
@@ -33,6 +36,7 @@ public class TimePickerAdapter extends BaseAdapter {
     private LayoutInflater layoutInflater;
     private int startTime, endTime;
     private float price;
+    private List<String> listError;
 
     public List<TimePickerDTO> getTimePickerDTOList() {
         return timePickerDTOList;
@@ -40,13 +44,70 @@ public class TimePickerAdapter extends BaseAdapter {
 
     public void setTimePickerDTOList(List<TimePickerDTO> timePickerDTOList) {
         this.timePickerDTOList = timePickerDTOList;
+    }
 
+    public List<String> getListError() {
+        return listError;
+    }
+
+    public void setListError(List<String> listError) {
+        this.listError = listError;
     }
 
     public TimePickerAdapter(Context context) {
         this.context = context;
         this.timePickerDTOList = new ArrayList<>();
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        listError = new ArrayList<>();
+    }
+
+    private void checkValidTimePicker (int position) {
+        try {
+            listError.set(position, "");
+            TimePickerDTO dto = timePickerDTOList.get(position);
+            Log.d("USER", "dto: " + dto.toString());
+            if (dto.getStart() < 0) {
+                listError.set(position, "Start time require");
+                return;
+            }
+            if (dto.getEnd() < 0) {
+                listError.set(position, "End time require");
+                return;
+            }
+            if (dto.getPrice() < 0) {
+                listError.set(position, "Price require");
+                return;
+            }
+            if (dto.getEnd() <= dto.getStart()){
+                listError.set(position, "End time must better than start time");
+                return;
+            }
+
+            for (int i = 0; i < timePickerDTOList.size(); i++) {
+                if(position != i){
+                    if(timePickerDTOList.get(i).getStart() < dto.getEnd()) {
+                        if(timePickerDTOList.get(i).getEnd() > dto.getStart()) {
+                            listError.set(position, "Time conflict");
+                            return;
+                        }
+                    }
+                }
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public boolean isValidTimePicker () {
+        boolean result = true;
+        for (String error: listError ) {
+            if(!error.equals("")) {
+                result = false;
+                break;
+            }
+        }
+        return result;
     }
 
     @Override
@@ -73,12 +134,11 @@ public class TimePickerAdapter extends BaseAdapter {
 
         timePickerHolder.txtStartTime = (TextView) view.findViewById(R.id.txtStartTime);
         timePickerHolder.txtEndTime = (TextView) view.findViewById(R.id.txtEndTime);
-        timePickerHolder.edtPrice = (EditText) view.findViewById(R.id.edtPrice);
+        timePickerHolder.tlPrice = (TextInputLayout) view.findViewById(R.id.tlPrice);
         timePickerHolder.imgButtonRemoveTP = (ImageButton) view.findViewById(R.id.imgBtnRemoveTP);
-
+        timePickerHolder.txtError = (TextView) view.findViewById(R.id.txtError);
 
         TimePickerDTO timePickerDTO = timePickerDTOList.get(i);
-
 
         if(timePickerDTO.getStart()==-1){
             timePickerHolder.txtStartTime.setText("Start");
@@ -93,16 +153,16 @@ public class TimePickerAdapter extends BaseAdapter {
         }
 
         if(timePickerDTO.getPrice()>-1){
-            timePickerHolder.edtPrice.setText(timePickerDTO.getPrice() + "");
+            timePickerHolder.tlPrice.getEditText().setText(timePickerDTO.getPrice() + "");
         }
-
-
+        timePickerHolder.txtError.setText(listError.get(i));
 
         timePickerHolder.imgButtonRemoveTP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
                     timePickerDTOList.remove(i);
+                    listError.remove(i);
                     TimePickerAdapter.this.notifyDataSetChanged();
                 } catch (Exception e) {
                     Log.d("Remove error", e.getMessage());
@@ -122,6 +182,8 @@ public class TimePickerAdapter extends BaseAdapter {
                                 startTime = hourOfDay;
                                 timePickerHolder.txtStartTime.setText(startTime + ":00");
                                 timePickerDTO.setStart(startTime);
+                                checkValidTimePicker(i);
+                                TimePickerAdapter.this.notifyDataSetChanged();
                             }
                         }, 0, 0, true);
                 timePickerDialog.updateTime(startTime, 0);
@@ -141,6 +203,8 @@ public class TimePickerAdapter extends BaseAdapter {
                                 endTime = hourOfDay;
                                 timePickerHolder.txtEndTime.setText(endTime + ":00");
                                 timePickerDTO.setEnd(endTime);
+                                checkValidTimePicker(i);
+                                TimePickerAdapter.this.notifyDataSetChanged();
                             }
                         }, startTime + 1, 0, true);
                 timePickerDialog.updateTime(endTime, 0);
@@ -149,8 +213,7 @@ public class TimePickerAdapter extends BaseAdapter {
             }
         });
 
-
-        timePickerHolder.edtPrice.addTextChangedListener(new TextWatcher() {
+        timePickerHolder.tlPrice.getEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -163,8 +226,14 @@ public class TimePickerAdapter extends BaseAdapter {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                price = Float.parseFloat(editable.toString());
-                timePickerDTO.setPrice(price);
+                try {
+                    price = Float.parseFloat(editable.toString());
+                    timePickerDTO.setPrice(price);
+                }catch (Exception e) {
+                    timePickerDTO.setPrice(-1);
+                }
+                checkValidTimePicker(i);
+                TimePickerAdapter.this.notifyDataSetChanged();
             }
         });
         return view;
@@ -173,7 +242,8 @@ public class TimePickerAdapter extends BaseAdapter {
     class ViewHolder {
         TextView txtStartTime;
         TextView txtEndTime;
-        EditText edtPrice;
+        TextInputLayout tlPrice;
         ImageButton imgButtonRemoveTP;
+        TextView txtError;
     }
 }

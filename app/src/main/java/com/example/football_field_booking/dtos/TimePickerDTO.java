@@ -47,4 +47,14 @@ public class TimePickerDTO {
     public void setTimePickerID(String timePickerID) {
         this.timePickerID = timePickerID;
     }
+
+    @Override
+    public String toString() {
+        return "TimePickerDTO{" +
+                "start=" + start +
+                ", end=" + end +
+                ", price=" + price +
+                ", timePickerID='" + timePickerID + '\'' +
+                '}';
+    }
 }

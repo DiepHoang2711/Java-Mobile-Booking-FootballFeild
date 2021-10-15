@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -26,6 +27,7 @@ import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.utils.Utils;
+import com.example.football_field_booking.validations.Validation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -44,14 +46,16 @@ public class UpdateFootballFieldActivity extends AppCompatActivity {
     public static final int RC_IMAGE_PICKER = 1000;
 
     private Button btnChooseImg, btnUpdateField;
+    private ImageButton imgBtnAdd;
     private ImageView imgFootBallField;
     private TextInputLayout tlFootballFieldName, tlLocation, tlType, tlStatus;
     private Uri imgUri;
     private ListView lvTimePickerWorking;
     private AutoCompleteTextView auComTxtType, auComTxtStatus;
     private FootballFieldDTO fieldDTO;
-    private Utils utils;
     private TimePickerAdapter timePickerAdapter;
+    private Utils utils;
+    private Validation val;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,11 +68,13 @@ public class UpdateFootballFieldActivity extends AppCompatActivity {
         tlStatus = findViewById(R.id.tlStatus);
         btnChooseImg = findViewById(R.id.btnChooseImage);
         btnUpdateField = findViewById(R.id.btnUpdateField);
+        imgBtnAdd = findViewById(R.id.imgBtnAdd);
         imgFootBallField = findViewById(R.id.imgFootBallField);
         auComTxtType = findViewById(R.id.auComTxtType);
         auComTxtStatus = findViewById(R.id.auComTxtStatus);
         lvTimePickerWorking = findViewById(R.id.lvTimePickerWorking);
         utils = new Utils();
+        val = new Validation();
         timePickerAdapter = new TimePickerAdapter(UpdateFootballFieldActivity.this);
 
         Intent intent = this.getIntent();
@@ -177,7 +183,7 @@ public class UpdateFootballFieldActivity extends AppCompatActivity {
                         String type = auComTxtType.getText().toString();
                         String status = auComTxtStatus.getText().toString();
 
-                        if(isValidUpdate(fieldName, location, type, status)) {
+                        if(isValidUpdate(fieldName, location, type, status) && timePickerAdapter.isValidTimePicker()) {
                             fieldDTO.setName(fieldName);
                             fieldDTO.setLocation(location);
                             fieldDTO.setType(type);
@@ -198,6 +204,24 @@ public class UpdateFootballFieldActivity extends AppCompatActivity {
             }
         });
 
+        imgBtnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("timePicker", timePickerAdapter.getTimePickerDTOList().size() + "");
+                loadTimePickerWorking();
+            }
+        });
+
+    }
+
+    private void loadTimePickerWorking() {
+        TimePickerDTO timePickerDTO = new TimePickerDTO();
+        timePickerDTO.setStart(-1);
+        timePickerDTO.setEnd(-1);
+        timePickerDTO.setPrice(-1);
+        timePickerAdapter.getTimePickerDTOList().add(timePickerDTO);
+        timePickerAdapter.getListError().add("");
+        lvTimePickerWorking.setAdapter(timePickerAdapter);
     }
 
     @Override
@@ -273,6 +297,27 @@ public class UpdateFootballFieldActivity extends AppCompatActivity {
 
     private boolean isValidUpdate(String name, String location, String type, String status) {
         boolean result = true;
+        utils.clearError(tlFootballFieldName);
+        utils.clearError(tlLocation);
+        utils.clearError(tlType);
+        utils.clearError(tlStatus);
+
+        if(val.isEmpty(status)){
+            utils.showError(tlStatus, "Status must not be blank");
+            result = false;
+        }
+        if (val.isEmpty(type)) {
+            utils.showError(tlType, "Type must not be blank");
+            result = false;
+        }
+        if(val.isEmpty(location)) {
+            utils.showError(tlLocation, "Location must not be blank");
+            result = false;
+        }
+        if(val.isEmpty(name)) {
+            utils.showError(tlFootballFieldName, "Name must not be blank");
+            result = false;
+        }
         return result;
     }
 }
