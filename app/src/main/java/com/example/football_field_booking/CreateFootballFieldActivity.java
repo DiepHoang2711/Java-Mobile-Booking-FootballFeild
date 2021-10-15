@@ -82,11 +82,11 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         //load list type tu database
         FootballFieldDAO footballFieldDAO = new FootballFieldDAO();
         try {
-            footballFieldDAO.getTypeOfFootballField()
+            footballFieldDAO.getConstOfFootballField()
                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            listTypeField = (ArrayList<String>) task.getResult().get("TypeFootBallFIeld");
+                            listTypeField = (ArrayList<String>) task.getResult().get("typeFootballField");
                             ArrayAdapter<String> adapter = new ArrayAdapter<String>(CreateFootballFieldActivity.this, android.R.layout.simple_spinner_item, listTypeField);
                             auComTxtType.setAdapter(adapter);
                         }

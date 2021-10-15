@@ -18,6 +18,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
@@ -85,7 +86,7 @@ public class FootballFieldDAO {
         });
     }
 
-    public Task<DocumentSnapshot> getTypeOfFootballField() throws Exception {
+    public Task<DocumentSnapshot> getConstOfFootballField() throws Exception {
         DocumentReference doc = db.collection(CONST_OF_PROJECT).document("const");
         return doc.get();
     }
@@ -103,10 +104,11 @@ public class FootballFieldDAO {
         return db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID).collection(SUB_COLLECTION_TIME_PICKER).get();
     }
 
-    public Task<Void> updateFootballField (FootballFieldDTO fieldDTO, List<TimePickerDTO> listTimePicker) throws Exception {
+    public Task<Void> updateFootballField (FootballFieldDTO fieldDTO, String userID) throws Exception {
         DocumentReference docField = db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldDTO.getFieldID());
 
-        DocumentReference docFieldOfOwner = docField.getParent().getParent();
+        DocumentReference docFieldOfOwner = db.collection(COLLECTION_USERS).document(userID)
+                .collection(SUB_COLLECTION_FOOTBALL_FIELD_INFO).document(fieldDTO.getFieldID());
         Log.d("USER", "docFieldOfOwner: " + docFieldOfOwner);
         return db.runTransaction(new Transaction.Function<Void>() {
             @Nullable
@@ -134,7 +136,15 @@ public class FootballFieldDAO {
         docField.collection(SUB_COLLECTION_TIME_PICKER).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
+                for (DocumentSnapshot doc: queryDocumentSnapshots.getDocuments()) {
+                    batch.delete(doc.getReference());
+                }
+                for (TimePickerDTO dto:list){
+                    DocumentReference reference = docField.collection(SUB_COLLECTION_TIME_PICKER).document();
+                    dto.setTimePickerID(reference.getId());
+                    batch.set(reference,dto);
+                }
+                batch.commit();
             }
         });
 
