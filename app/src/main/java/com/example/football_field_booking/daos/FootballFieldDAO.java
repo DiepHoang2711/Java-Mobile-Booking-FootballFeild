@@ -58,10 +58,10 @@ public class FootballFieldDAO {
         WriteBatch batch= db.batch();
         batch.set(footballFieldReference,fieldDTO);
 
-        DocumentReference ownerInfoReference = footballFieldReference.collection(SUB_COLLECTION_OWNER_INFO).document();
+        DocumentReference ownerInfoReference = footballFieldReference.collection(SUB_COLLECTION_OWNER_INFO).document(owner.getUserID());
         batch.set(ownerInfoReference,owner);
 
-        DocumentReference footballFieldInfoReference = db.collection(COLLECTION_USERS).document(owner.getUserID()).collection(SUB_COLLECTION_FOOTBALL_FIELD_INFO).document();
+        DocumentReference footballFieldInfoReference = db.collection(COLLECTION_USERS).document(owner.getUserID()).collection(SUB_COLLECTION_FOOTBALL_FIELD_INFO).document(fieldDTO.getFieldID());
         batch.set(footballFieldInfoReference,fieldDTO);
 
         for (TimePickerDTO dto:timePickerDTOList){
