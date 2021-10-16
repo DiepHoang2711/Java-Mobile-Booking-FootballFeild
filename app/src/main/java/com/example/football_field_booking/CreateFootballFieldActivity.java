@@ -24,6 +24,8 @@ import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.dtos.UserDTO;
+import com.example.football_field_booking.utils.Utils;
+import com.example.football_field_booking.validations.Validation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -47,7 +49,7 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
     private ImageView imgPhoto;
     private Uri uriImg;
     private StorageReference storageRef;
-    private TextInputLayout txtName, txtLocation;
+    private TextInputLayout tlName, tlLocation, tlType;
     private AutoCompleteTextView auComTxtType;
     private ImageButton imgBtnAdd;
     private TimePickerAdapter timePickerAdapter;
@@ -55,6 +57,8 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
     private List<String> listTypeField;
     private List<TimePickerDTO> list;
     private FootballFieldDTO footballFieldDTO;
+    private Utils utils;
+    private Validation val;
 
 
     @Override
@@ -62,13 +66,16 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_football_field);
 
-        txtName = findViewById(R.id.txtFootballFieldName);
-        txtLocation = findViewById(R.id.txtLocation);
+        tlName = findViewById(R.id.tlFootballFieldName);
+        tlLocation = findViewById(R.id.tlLocation);
+        tlType = findViewById(R.id.tlType);
         auComTxtType = findViewById(R.id.auComTxtType);
         imgPhoto = findViewById(R.id.img_photo);
         btnChooseImg = findViewById(R.id.btnChooseImage);
         imgBtnAdd = findViewById(R.id.imgBtnAdd);
         lvTimePickerWorking = findViewById(R.id.lvTimePickerWorking);
+        utils = new Utils();
+        val = new Validation();
 
         btnChooseImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,11 +89,11 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         //load list type tu database
         FootballFieldDAO footballFieldDAO = new FootballFieldDAO();
         try {
-            footballFieldDAO.getTypeOfFootballField()
+            footballFieldDAO.getConstOfFootballField()
                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            listTypeField = (ArrayList<String>) task.getResult().get("TypeFootBallFIeld");
+                            listTypeField = (ArrayList<String>) task.getResult().get("typeFootballField");
                             ArrayAdapter<String> adapter = new ArrayAdapter<String>(CreateFootballFieldActivity.this, android.R.layout.simple_spinner_item, listTypeField);
                             auComTxtType.setAdapter(adapter);
                         }
@@ -111,6 +118,7 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         timePickerDTO.setEnd(-1);
         timePickerDTO.setPrice(-1);
         timePickerAdapter.getTimePickerDTOList().add(timePickerDTO);
+        timePickerAdapter.getListError().add("");
         lvTimePickerWorking.setAdapter(timePickerAdapter);
     }
 
@@ -138,10 +146,29 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
 
 
     public void clickToCreate(View view) {
-        String name = txtName.getEditText().getText().toString();
-        String location = txtLocation.getEditText().getText().toString();
+        String name = tlName.getEditText().getText().toString();
+        String location = tlLocation.getEditText().getText().toString();
         String type = auComTxtType.getText().toString();
 
+        if (isValidCreate(name, location, type) && timePickerAdapter.isValidTimePicker()) {
+            footballFieldDTO = new FootballFieldDTO();
+            footballFieldDTO.setName(name);
+            footballFieldDTO.setType(type);
+            footballFieldDTO.setLocation(location);
+            footballFieldDTO.setStatus(ACTIVE);
+
+            list = new ArrayList<>();
+            for (TimePickerDTO dto : timePickerAdapter.getTimePickerDTOList()) {
+                if (dto.getPrice() > -1 && dto.getStart() > -1 && dto.getEnd() > -1) {
+                    list.add(dto);
+                }
+            }
+            if (uriImg != null) {
+                uploadImageToStorage();
+            } else {
+                createFootballField();
+            }
+        }
         footballFieldDTO = new FootballFieldDTO();
         footballFieldDTO.setName(name);
         footballFieldDTO.setType(type);
@@ -159,6 +186,8 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         } else {
             createFootballField();
         }
+    }
+
     }
 
     private void uploadImageToStorage() {
@@ -228,5 +257,26 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean isValidCreate(String name, String location, String type) {
+        boolean result = true;
+        utils.clearError(tlName);
+        utils.clearError(tlLocation);
+        utils.clearError(tlType);
+
+        if (val.isEmpty(type)) {
+            utils.showError(tlType, "Type must not be blank");
+            result = false;
+        }
+        if(val.isEmpty(location)) {
+            utils.showError(tlLocation, "Location must not be blank");
+            result = false;
+        }
+        if(val.isEmpty(name)) {
+            utils.showError(tlName, "Name must not be blank");
+            result = false;
+        }
+        return result;
     }
 }

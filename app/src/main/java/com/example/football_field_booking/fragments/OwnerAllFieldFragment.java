@@ -32,8 +32,8 @@ public class OwnerAllFieldFragment extends Fragment {
 
     private Button btnCreate;
     private ListView lvFootballFieldOwner;
-    private FootballFieldAdapter fieldAdapter;
-    private List<FootballFieldDTO> fieldDTOList;
+//    private FootballFieldAdapter fieldAdapter;
+//    private List<FootballFieldDTO> fieldDTOList;
 
     public OwnerAllFieldFragment() {
         // Required empty public constructor
@@ -48,7 +48,7 @@ public class OwnerAllFieldFragment extends Fragment {
         btnCreate=view.findViewById(R.id.btnCreateFootballField);
         lvFootballFieldOwner=view.findViewById(R.id.lvFootballFieldOwner);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        fieldDTOList = new ArrayList<>();
+        List<FootballFieldDTO> fieldDTOList = new ArrayList<>();
 
         btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,8 +68,11 @@ public class OwnerAllFieldFragment extends Fragment {
                         Log.d("USER", "Doc: " + doc.toObject(FootballFieldDTO.class));
                         fieldDTOList.add(doc.toObject(FootballFieldDTO.class));
                     }
-                    fieldAdapter = new FootballFieldAdapter(getActivity(), fieldDTOList);
+                    Log.d("USER", "dto: " + fieldDTOList);
+
+                    FootballFieldAdapter fieldAdapter = new FootballFieldAdapter(getActivity(), fieldDTOList);
                     lvFootballFieldOwner.setAdapter(fieldAdapter);
+                    fieldAdapter.notifyDataSetChanged();
                 }catch (Exception e) {
                     e.printStackTrace();
                 }
