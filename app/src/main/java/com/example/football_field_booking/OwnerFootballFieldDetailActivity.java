@@ -8,6 +8,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.Calendar;
 
 public class OwnerFootballFieldDetailActivity extends AppCompatActivity {
@@ -17,6 +19,7 @@ public class OwnerFootballFieldDetailActivity extends AppCompatActivity {
     private int year, month, day;
     private Calendar calendar;
     String now;
+    private FloatingActionButton btnBack;
 
 
     @Override
@@ -27,6 +30,7 @@ public class OwnerFootballFieldDetailActivity extends AppCompatActivity {
 //        String fieldID=intent.getStringExtra("fieldID");
         calendar = Calendar.getInstance();
         txtSelectDate = findViewById(R.id.txtSelectDate);
+        btnBack=findViewById(R.id.btnBack);
 
         now = calendar.get(Calendar.DAY_OF_MONTH) +
                 "/" + (calendar.get(Calendar.MONTH) + 1) +
@@ -36,6 +40,13 @@ public class OwnerFootballFieldDetailActivity extends AppCompatActivity {
         day = calendar.get(Calendar.DAY_OF_MONTH);
         month = calendar.get(Calendar.MONTH);
         year = calendar.get(Calendar.YEAR);
+
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
     }
 
     public void clickToChangeDate(View view) {
