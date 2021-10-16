@@ -102,24 +102,15 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         timePickerAdapter = new TimePickerAdapter(CreateFootballFieldActivity.this);
-        loadTimePickerWorking();
+        lvTimePickerWorking.setAdapter(timePickerAdapter);
+        timePickerAdapter.addNewTimePickerWorking();
         imgBtnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d("timePicker", timePickerAdapter.getTimePickerDTOList().size() + "");
-                loadTimePickerWorking();
+                timePickerAdapter.addNewTimePickerWorking();
             }
         });
-    }
-
-    private void loadTimePickerWorking() {
-        TimePickerDTO timePickerDTO = new TimePickerDTO();
-        timePickerDTO.setStart(-1);
-        timePickerDTO.setEnd(-1);
-        timePickerDTO.setPrice(-1);
-        timePickerAdapter.getTimePickerDTOList().add(timePickerDTO);
-        timePickerAdapter.getListError().add("");
-        lvTimePickerWorking.setAdapter(timePickerAdapter);
     }
 
     @Override
