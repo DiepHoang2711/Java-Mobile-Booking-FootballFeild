@@ -35,10 +35,11 @@ import java.util.List;
 public class TimePickerDetailAdapter extends BaseAdapter {
 
     private Context context;
+    private List<Float> priceList;
     List<TimePickerDTO> timePickerDTOList;
     private LayoutInflater layoutInflater;
-    private List<Float> priceList;
     private List<TimePickerDTO> chooseList;
+    private List<TimePickerDTO> bookedTimeList;
 
     public List<TimePickerDTO> getTimePickerDTOList() {
         return timePickerDTOList;
@@ -48,33 +49,47 @@ public class TimePickerDetailAdapter extends BaseAdapter {
         this.timePickerDTOList = timePickerDTOList;
     }
 
+    public List<TimePickerDTO> getChooseList() {
+        return chooseList;
+    }
 
-    public TimePickerDetailAdapter(Context context, List<TimePickerDTO> list) {
+    public void setChooseList(List<TimePickerDTO> chooseList) {
+        this.chooseList = chooseList;
+    }
+
+    public TimePickerDetailAdapter(Context context, List<TimePickerDTO> list, List<TimePickerDTO> chooseList, List<TimePickerDTO> bookedTimeList) {
         this.context = context;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        priceList = new ArrayList<>();
-        chooseList=new ArrayList<>();
-        for (TimePickerDTO timePickerDTO : timePickerDTOList) {
-            boolean isAdd = true;
-            for (Float price : priceList) {
-                if (price == timePickerDTO.getPrice()) {
-                    isAdd = false;
+        this.priceList = new ArrayList<>();
+        this.chooseList = chooseList;
+        this.bookedTimeList = bookedTimeList;
+        timePickerDTOList = new ArrayList<>();
+        try {
+            for (TimePickerDTO timePickerDTO : list) {
+                boolean isAdd = true;
+                for (Float price : priceList) {
+                    if (price == timePickerDTO.getPrice()) {
+                        isAdd = false;
+                    }
+                }
+                if (isAdd) {
+                    priceList.add(timePickerDTO.getPrice());
                 }
             }
-            if (isAdd) {
-                priceList.add(timePickerDTO.getPrice());
-            }
-        }
-        timePickerDTOList=new ArrayList<>();
+            Log.d("USER", "listPrice: " + priceList.toString());
 
-        for(TimePickerDTO dto:list){
-            for(int i= dto.getStart();i<dto.getEnd();i++){
-                TimePickerDTO timePickerDTO=new TimePickerDTO();
-                timePickerDTO.setStart(i);
-                timePickerDTO.setEnd(i+1);
-                timePickerDTO.setPrice(dto.getPrice());
-                timePickerDTOList.add(timePickerDTO);
+            for (TimePickerDTO dto : list) {
+                for (int i = dto.getStart(); i < dto.getEnd(); i++) {
+                    TimePickerDTO timePickerDTO = new TimePickerDTO();
+                    timePickerDTO.setStart(i);
+                    timePickerDTO.setEnd(i + 1);
+                    timePickerDTO.setPrice(dto.getPrice());
+                    timePickerDTOList.add(timePickerDTO);
+                }
             }
+            Log.d("USER", "listDto: " + timePickerDTOList.toString());
+        }catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
@@ -99,32 +114,55 @@ public class TimePickerDetailAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         View rowView = view;
         if (rowView == null) {
-            view = layoutInflater.inflate(R.layout.item_time_picker, viewGroup, false);
+            view = layoutInflater.inflate(R.layout.item_time_picker_detail, viewGroup, false);
         }
-        TextView txtPrice = view.findViewById(R.id.txtPrice);
-        GridLayout groupToggleButton = view.findViewById(R.id.groupToggleButton);
-        Float price=priceList.get(i);
-        for (TimePickerDTO dto : timePickerDTOList) {
-            if(dto.getPrice()==price){
-                ToggleButton toggleButton = new ToggleButton(view.getContext());
-                toggleButton.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                toggleButton.setBackground(view.getResources().getDrawable(R.drawable.toggle_selector));
-                toggleButton.setWidth(40);
-                toggleButton.setHeight(75);
-                toggleButton.setTextSize(12);
-                groupToggleButton.addView(toggleButton);
-                toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                        if(b){
-                            chooseList.add(dto);
-                        }else{
-                            chooseList.remove(dto);
+        try {
+            TextView txtPrice = view.findViewById(R.id.txtPrice);
+            GridLayout groupToggleButton = view.findViewById(R.id.groupToggleButton);
+            groupToggleButton.removeAllViewsInLayout();
+            Float price = priceList.get(i);
+            txtPrice.setText("$"+price+"/h");
+            Log.d("USER", i + "  listDTO: " + timePickerDTOList.toString());
+            for (TimePickerDTO dto : timePickerDTOList) {
+                if (dto.getPrice() == price) {
+                    ToggleButton toggleButton = new ToggleButton(view.getContext());
+                    toggleButton.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                    toggleButton.setBackground(view.getResources().getDrawable(R.drawable.toggle_selector));
+                    toggleButton.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                    toggleButton.setTextSize(12);
+                    toggleButton.setText(dto.getStart() + "-" + dto.getEnd());
+                    toggleButton.setTextOn(dto.getStart() + "-" + dto.getEnd());
+                    toggleButton.setTextOff(dto.getStart() + "-" + dto.getEnd());
+
+                    for (TimePickerDTO chooseDTO : chooseList) {
+                        if (dto.getStart() == chooseDTO.getStart() && dto.getEnd() == chooseDTO.getEnd()) {
+                            toggleButton.setChecked(true);
                         }
                     }
-                });
+
+                    for (TimePickerDTO bookedDTO : bookedTimeList) {
+                        if (dto.getStart() == bookedDTO.getStart() && dto.getEnd() == bookedDTO.getEnd()) {
+                            toggleButton.setEnabled(false);
+                        }
+                    }
+
+                    groupToggleButton.addView(toggleButton);
+                    toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                            if (b) {
+                                chooseList.add(dto);
+                            } else {
+                                chooseList.remove(dto);
+                            }
+                        }
+                    });
+                }
             }
+        }catch (Exception e) {
+            e.printStackTrace();
         }
+
         return view;
     }
 

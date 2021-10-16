@@ -4,6 +4,9 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
+import com.example.football_field_booking.dtos.CartItemDTO;
+import com.example.football_field_booking.dtos.FootballFieldDTO;
+import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
@@ -13,17 +16,21 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class UserDAO {
 
     public static final String CONST_OF_PROJECT = "constOfProject";
     public static final String USER_IMAGES_FOLDER = "user_images";
+    public static final String SUB_COLLECTION_CART = "cart";
+    public static final String SUB_COLLECTION_TIMESLOTS = "timeSlots";
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private static final String COLLECTION_USERS = "users";
@@ -92,6 +99,29 @@ public class UserDAO {
                 return mStoreRef.getDownloadUrl();
             }
         });
+    }
+
+    public Task<Void> addToCart (CartItemDTO cartItemDTO, String userID) {
+        WriteBatch batch = db.batch();
+
+        DocumentReference docField = db.collection(COLLECTION_USERS).document(userID).collection(SUB_COLLECTION_CART).document();
+        Map<String, Object> data = new HashMap<>();
+        data.put("fieldID", cartItemDTO.getFieldID());
+        data.put("name", cartItemDTO.getName());
+        data.put("location", cartItemDTO.getLocation());
+        data.put("type", cartItemDTO.getType());
+        data.put("image", cartItemDTO.getImage());
+        data.put("date", cartItemDTO.getDate());
+        data.put("total", cartItemDTO.getTotal());
+
+        batch.set(docField, data);
+        for (TimePickerDTO dto: cartItemDTO.getTimePickerDTOList()) {
+            DocumentReference docTimePicker = docField.collection(SUB_COLLECTION_TIMESLOTS).document();
+            dto.setTimePickerID(docTimePicker.getId());
+            batch.set(docTimePicker, dto);
+        }
+
+        return batch.commit();
     }
 
 }
