@@ -2,6 +2,7 @@ package com.example.football_field_booking.adapters;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,6 +68,7 @@ public class FootballFieldAdapter extends BaseAdapter {
         txtLocation.setText(dto.getLocation());
         txtType.setText(dto.getType());
         txtRate.setText(dto.getRate()+"");
+        Log.d("FootballFieldAdapter",fieldDTOList.size()+"");
         return rowView;
     }
 }
