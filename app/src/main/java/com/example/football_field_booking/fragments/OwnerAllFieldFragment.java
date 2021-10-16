@@ -47,35 +47,13 @@ public class OwnerAllFieldFragment extends Fragment {
 
         btnCreate=view.findViewById(R.id.btnCreateFootballField);
         lvFootballFieldOwner=view.findViewById(R.id.lvFootballFieldOwner);
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        List<FootballFieldDTO> fieldDTOList = new ArrayList<>();
+
 
         btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent=new Intent(getActivity(), CreateFootballFieldActivity.class);
                 startActivity(intent);
-            }
-        });
-
-        FootballFieldDAO dao = new FootballFieldDAO();
-        dao.getAllFootballFieldOfOwner(user.getUid()).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                try {
-                    for (QueryDocumentSnapshot doc: queryDocumentSnapshots) {
-                        Log.d("USER", "DocID: " + doc.getId());
-                        Log.d("USER", "Doc: " + doc.toObject(FootballFieldDTO.class));
-                        fieldDTOList.add(doc.toObject(FootballFieldDTO.class));
-                    }
-                    Log.d("USER", "dto: " + fieldDTOList);
-
-                    FootballFieldAdapter fieldAdapter = new FootballFieldAdapter(getActivity(), fieldDTOList);
-                    lvFootballFieldOwner.setAdapter(fieldAdapter);
-                    fieldAdapter.notifyDataSetChanged();
-                }catch (Exception e) {
-                    e.printStackTrace();
-                }
             }
         });
 
@@ -96,4 +74,30 @@ public class OwnerAllFieldFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        List<FootballFieldDTO> fieldDTOList = new ArrayList<>();
+        FootballFieldDAO dao = new FootballFieldDAO();
+        dao.getAllFootballFieldOfOwner(user.getUid()).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                try {
+                    for (QueryDocumentSnapshot doc: queryDocumentSnapshots) {
+                        Log.d("USER", "DocID: " + doc.getId());
+                        Log.d("USER", "Doc: " + doc.toObject(FootballFieldDTO.class));
+                        fieldDTOList.add(doc.toObject(FootballFieldDTO.class));
+                    }
+                    Log.d("USER", "dto: " + fieldDTOList);
+
+                    FootballFieldAdapter fieldAdapter = new FootballFieldAdapter(getActivity(), fieldDTOList);
+                    lvFootballFieldOwner.setAdapter(fieldAdapter);
+                    fieldAdapter.notifyDataSetChanged();
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 }

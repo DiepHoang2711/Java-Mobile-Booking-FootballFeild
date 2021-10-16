@@ -8,19 +8,29 @@ public class FootballFieldDTO implements Serializable {
     private String location;
     private String type;
     private String image;
+    private double rate;
     private String status;
 
 
     public FootballFieldDTO() {
     }
 
-    public FootballFieldDTO(String fieldID, String name, String location, String type, String image, String status) {
+    public FootballFieldDTO(String fieldID, String name, String location, String type, String image, String status,double rate) {
         this.fieldID = fieldID;
         this.name = name;
         this.location = location;
         this.type = type;
         this.image = image;
+        this.rate=rate;
         this.status = status;
+    }
+
+    public double getRate() {
+        return rate;
+    }
+
+    public void setRate(double rate) {
+        this.rate = rate;
     }
 
     public String getStatus() {

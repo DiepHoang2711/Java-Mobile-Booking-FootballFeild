@@ -113,4 +113,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void clickToGoToSearchActivity(MenuItem item) {
+        Intent intent=new Intent(this,SearchByNameActivity.class);
+        startActivity(intent);
+    }
 }
