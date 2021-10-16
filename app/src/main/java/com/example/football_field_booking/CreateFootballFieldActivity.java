@@ -188,8 +188,6 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         }
     }
 
-    }
-
     private void uploadImageToStorage() {
         try {
             FootballFieldDAO dao = new FootballFieldDAO();
