@@ -48,7 +48,7 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
     private FloatingActionButton btnBack;
     private Button btnAddToCart;
     private LinearLayout groupBtnOwner;
-    private TextView txtFieldName,txtLocation,txtRate,txtType;
+    private TextView txtFieldName, txtLocation, txtRate, txtType;
     private List<TimePickerDTO> timePickerDTOList;
     private TimePickerDetailAdapter timePickerDetailAdapter;
     private ListView lvTimePickerDetail;
@@ -65,17 +65,14 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         btnAddToCart = findViewById(R.id.btnAddToCart);
         groupBtnOwner = findViewById(R.id.groupBtnOwner);
-        txtFieldName=findViewById(R.id.txtFieldName);
-        txtLocation=findViewById(R.id.txtLocation);
-        txtRate=findViewById(R.id.txtRate);
-        txtType=findViewById(R.id.txtType);
-        lvTimePickerDetail=findViewById(R.id.lvTimePickerDetail);
-        imgFootBallField=findViewById(R.id.imgFootBallField);
+        txtFieldName = findViewById(R.id.txtFieldName);
+        txtLocation = findViewById(R.id.txtLocation);
+        txtRate = findViewById(R.id.txtRate);
+        txtType = findViewById(R.id.txtType);
+        lvTimePickerDetail = findViewById(R.id.lvTimePickerDetail);
+        imgFootBallField = findViewById(R.id.imgFootBallField);
 
         txtSelectDate.setText(df.format(calendar.getTime()));
-        day = calendar.get(Calendar.DAY_OF_MONTH);
-        month = calendar.get(Calendar.MONTH);
-        year = calendar.get(Calendar.YEAR);
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,16 +100,16 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                     });
         }
 
-        FootballFieldDAO  fieldDAO=new FootballFieldDAO();
-        Intent intent=this.getIntent();
-        String fieldID=intent.getStringExtra("fieldID");
+        FootballFieldDAO fieldDAO = new FootballFieldDAO();
+        Intent intent = this.getIntent();
+        String fieldID = intent.getStringExtra("fieldID");
         fieldDAO.getFieldByID(fieldID).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                FootballFieldDTO fieldDTO=documentSnapshot.toObject(FootballFieldDTO.class);
+                FootballFieldDTO fieldDTO = documentSnapshot.toObject(FootballFieldDTO.class);
                 txtFieldName.setText(fieldDTO.getName());
                 txtLocation.setText(fieldDTO.getLocation());
-                txtRate.setText(fieldDTO.getRate()+"");
+                txtRate.setText(fieldDTO.getRate() + "");
                 txtType.setText(fieldDTO.getType());
                 if (fieldDTO.getImage() != null) {
                     Uri uri = Uri.parse(fieldDTO.getImage());
@@ -125,11 +122,11 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                         .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                             @Override
                             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                timePickerDTOList=new ArrayList<>();
-                                for (QueryDocumentSnapshot snapshot:queryDocumentSnapshots){
+                                timePickerDTOList = new ArrayList<>();
+                                for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
                                     timePickerDTOList.add(snapshot.toObject(TimePickerDTO.class));
                                 }
-                                timePickerDetailAdapter=new TimePickerDetailAdapter(FootballFieldDetailActivity.this,timePickerDTOList);
+                                timePickerDetailAdapter = new TimePickerDetailAdapter(FootballFieldDetailActivity.this, timePickerDTOList);
                                 lvTimePickerDetail.setAdapter(timePickerDetailAdapter);
                             }
                         }).addOnFailureListener(new OnFailureListener() {
@@ -151,17 +148,17 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
 
     public void clickToChangeDate(View view) {
         String[] selectedDate = txtSelectDate.getText().toString().split("/");
-        if (!txtSelectDate.getText().equals(df.format(calendar.getTime()))) {
-            year = Integer.parseInt(selectedDate[0]);
-            month = Integer.parseInt(selectedDate[1]) - 1;
-            day = Integer.parseInt(selectedDate[2]);
-        }
+
+        year = Integer.parseInt(selectedDate[0]);
+        month = Integer.parseInt(selectedDate[1]) - 1;
+        day = Integer.parseInt(selectedDate[2]);
+
         datePickerDialog = new DatePickerDialog(FootballFieldDetailActivity.this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int y, int m, int d) {
-                Date date= null;
+                Date date = null;
                 try {
-                    date = df.parse(y+"/"+(m+1)+"/"+d);
+                    date = df.parse(y + "/" + (m + 1) + "/" + d);
 
                     txtSelectDate.setText(df.format(date));
                 } catch (ParseException e) {
