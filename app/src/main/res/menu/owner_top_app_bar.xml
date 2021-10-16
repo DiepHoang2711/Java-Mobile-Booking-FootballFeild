@@ -6,6 +6,5 @@
         android:icon="@drawable/outline_search_24"
         android:title="Search"
         android:contentDescription="content_description_search"
-        app:showAsAction="ifRoom"
-        android:onClick="clickToGoToSearchActivity"/>
+        app:showAsAction="ifRoom" />
 </menu>
