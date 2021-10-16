@@ -61,6 +61,26 @@ public class TimePickerAdapter extends BaseAdapter {
         listError = new ArrayList<>();
     }
 
+    public TimePickerAdapter(Context context, List<TimePickerDTO> list) {
+        this.context = context;
+        this.timePickerDTOList = list;
+        layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        listError = new ArrayList<>();
+        for (TimePickerDTO dto: list) {
+            listError.add("");
+        }
+    }
+
+    public void addNewTimePickerWorking() {
+        TimePickerDTO timePickerDTO = new TimePickerDTO();
+        timePickerDTO.setStart(-1);
+        timePickerDTO.setEnd(-1);
+        timePickerDTO.setPrice(-1);
+        getTimePickerDTOList().add(timePickerDTO);
+        listError.add("");
+        TimePickerAdapter.this.notifyDataSetChanged();
+    }
+
     private void checkValidTimePicker (int position) {
         try {
             listError.set(position, "");

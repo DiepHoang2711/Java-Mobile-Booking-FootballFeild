@@ -75,7 +75,6 @@ public class UpdateFootballFieldActivity extends AppCompatActivity {
         lvTimePickerWorking = findViewById(R.id.lvTimePickerWorking);
         utils = new Utils();
         val = new Validation();
-        timePickerAdapter = new TimePickerAdapter(UpdateFootballFieldActivity.this);
 
         Intent intent = this.getIntent();
         String fieldID = intent.getStringExtra("fieldID");
@@ -149,7 +148,7 @@ public class UpdateFootballFieldActivity extends AppCompatActivity {
                             TimePickerDTO dto = doc.toObject(TimePickerDTO.class);
                             list.add(dto);
                         }
-                        timePickerAdapter.setTimePickerDTOList(list);
+                        timePickerAdapter = new TimePickerAdapter(UpdateFootballFieldActivity.this, list);
                         lvTimePickerWorking.setAdapter(timePickerAdapter);
                         
                     }catch (Exception e) {
@@ -208,20 +207,10 @@ public class UpdateFootballFieldActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d("timePicker", timePickerAdapter.getTimePickerDTOList().size() + "");
-                loadTimePickerWorking();
+                timePickerAdapter.addNewTimePickerWorking();
             }
         });
 
-    }
-
-    private void loadTimePickerWorking() {
-        TimePickerDTO timePickerDTO = new TimePickerDTO();
-        timePickerDTO.setStart(-1);
-        timePickerDTO.setEnd(-1);
-        timePickerDTO.setPrice(-1);
-        timePickerAdapter.getTimePickerDTOList().add(timePickerDTO);
-        timePickerAdapter.getListError().add("");
-        lvTimePickerWorking.setAdapter(timePickerAdapter);
     }
 
     @Override
