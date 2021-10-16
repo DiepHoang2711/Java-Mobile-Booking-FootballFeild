@@ -12,16 +12,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.example.football_field_booking.CreateFootballFieldActivity;
-import com.example.football_field_booking.OwnerFootballFieldDetailActivity;
+import com.example.football_field_booking.FootballFieldDetailActivity;
 import com.example.football_field_booking.R;
-import com.example.football_field_booking.UpdateFootballFieldActivity;
 import com.example.football_field_booking.adapters.FootballFieldAdapter;
 import com.example.football_field_booking.daos.FootballFieldDAO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -45,10 +41,27 @@ public class UserHomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_user_home, container, false);
 
         lvFootballField=view.findViewById(R.id.lvFootballField);
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        lvFootballField.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                try {
+                    FootballFieldDTO dto = (FootballFieldDTO) lvFootballField.getItemAtPosition(i);
+                    Intent intent = new Intent(getActivity(), FootballFieldDetailActivity.class);
+                    intent.putExtra("fieldID", dto.getFieldID());
+                    startActivity(intent);
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         fieldDTOList = new ArrayList<>();
-
-
         FootballFieldDAO dao = new FootballFieldDAO();
         dao.getAllFootballField().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -66,21 +79,5 @@ public class UserHomeFragment extends Fragment {
                 }
             }
         });
-
-        lvFootballField.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                try {
-                    FootballFieldDTO dto = (FootballFieldDTO) lvFootballField.getItemAtPosition(i);
-                    Intent intent = new Intent(getActivity(), OwnerFootballFieldDetailActivity.class);
-                    intent.putExtra("fieldID", dto.getFieldID());
-                    startActivity(intent);
-                }catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        return view;
     }
 }
