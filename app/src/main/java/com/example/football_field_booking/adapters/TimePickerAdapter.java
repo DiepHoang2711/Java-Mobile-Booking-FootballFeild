@@ -8,9 +8,11 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -77,7 +79,7 @@ public class TimePickerAdapter extends BaseAdapter {
         timePickerDTO.setEnd(-1);
         timePickerDTO.setPrice(-1);
         getTimePickerDTOList().add(timePickerDTO);
-        listError.add("");
+        listError.add("Input your working time");
         TimePickerAdapter.this.notifyDataSetChanged();
     }
 
@@ -87,19 +89,19 @@ public class TimePickerAdapter extends BaseAdapter {
             TimePickerDTO dto = timePickerDTOList.get(position);
             Log.d("USER", "dto: " + dto.toString());
             if (dto.getStart() < 0) {
-                listError.set(position, "Start time require");
+                listError.set(position, "Start time require!");
                 return;
             }
             if (dto.getEnd() < 0) {
-                listError.set(position, "End time require");
+                listError.set(position, "End time require!");
                 return;
             }
             if (dto.getPrice() < 0) {
-                listError.set(position, "Price require");
+                listError.set(position, "Price require!");
                 return;
             }
             if (dto.getEnd() <= dto.getStart()){
-                listError.set(position, "End time must better than start time");
+                listError.set(position, "End time must better than start time!");
                 return;
             }
 
@@ -107,7 +109,7 @@ public class TimePickerAdapter extends BaseAdapter {
                 if(position != i){
                     if(timePickerDTOList.get(i).getStart() < dto.getEnd()) {
                         if(timePickerDTOList.get(i).getEnd() > dto.getStart()) {
-                            listError.set(position, "Time conflict");
+                            listError.set(position, "Time conflict!");
                             return;
                         }
                     }
@@ -233,29 +235,32 @@ public class TimePickerAdapter extends BaseAdapter {
             }
         });
 
-        timePickerHolder.tlPrice.getEditText().addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                try {
-                    price = Float.parseFloat(editable.toString());
-                    timePickerDTO.setPrice(price);
-                }catch (Exception e) {
-                    timePickerDTO.setPrice(-1);
+        timePickerHolder.tlPrice.getEditText().setOnEditorActionListener(
+                new TextView.OnEditorActionListener() {
+                    @Override
+                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                        if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                                actionId == EditorInfo.IME_ACTION_DONE ||
+                                event != null &&
+                                        event.getAction() == KeyEvent.ACTION_DOWN &&
+                                        event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                            if (event == null || !event.isShiftPressed()) {
+                                // the user is done typing.
+                                try {
+                                    price = Float.parseFloat(v.getText().toString());
+                                    timePickerDTO.setPrice(price);
+                                }catch (Exception e) {
+                                    timePickerDTO.setPrice(-1);
+                                }
+                                checkValidTimePicker(i);
+                                TimePickerAdapter.this.notifyDataSetChanged();
+                                return true; // consume.
+                            }
+                        }
+                        return false; // pass on to other listeners.
+                    }
                 }
-                checkValidTimePicker(i);
-                TimePickerAdapter.this.notifyDataSetChanged();
-            }
-        });
+        );
         return view;
     }
 
