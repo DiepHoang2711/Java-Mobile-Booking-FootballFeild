@@ -3,11 +3,14 @@ package com.example.football_field_booking;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -16,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.football_field_booking.adapters.TimePickerDetailAdapter;
 import com.example.football_field_booking.daos.FootballFieldDAO;
 import com.example.football_field_booking.daos.UserDAO;
@@ -23,6 +27,7 @@ import com.example.football_field_booking.dtos.CartItemDTO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.dtos.UserDTO;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -33,9 +38,13 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class FootballFieldDetailActivity extends AppCompatActivity {
@@ -44,7 +53,6 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
     private DatePickerDialog datePickerDialog;
     private int year, month, day;
     private Calendar calendar;
-    private String now;
     private FloatingActionButton btnBack;
     private Button btnAddToCart;
     private LinearLayout groupBtnOwner;
@@ -52,6 +60,8 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
     private List<TimePickerDTO> timePickerDTOList;
     private TimePickerDetailAdapter timePickerDetailAdapter;
     private ListView lvTimePickerDetail;
+    private ImageView imgFootBallField;
+    public static final SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
     private FootballFieldDTO fieldDTO;
 
     @Override
@@ -68,13 +78,10 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
         txtLocation=findViewById(R.id.txtLocation);
         txtRate=findViewById(R.id.txtRate);
         txtType=findViewById(R.id.txtType);
-        lvTimePickerDetail = findViewById(R.id.lvTimePickerDetail);
+        lvTimePickerDetail=findViewById(R.id.lvTimePickerDetail);
+        imgFootBallField=findViewById(R.id.imgFootBallField);
 
-        now = calendar.get(Calendar.DAY_OF_MONTH) +
-                "/" + (calendar.get(Calendar.MONTH) + 1) +
-                "/" + calendar.get(Calendar.YEAR);
-        txtSelectDate.setText(now);
-        System.out.println("Now:" + now);
+        txtSelectDate.setText(df.format(calendar.getTime()));
         day = calendar.get(Calendar.DAY_OF_MONTH);
         month = calendar.get(Calendar.MONTH);
         year = calendar.get(Calendar.YEAR);
@@ -129,6 +136,12 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                 txtLocation.setText(fieldDTO.getLocation());
                 txtRate.setText(fieldDTO.getRate()+"");
                 txtType.setText(fieldDTO.getType());
+                if (fieldDTO.getImage() != null) {
+                    Uri uri = Uri.parse(fieldDTO.getImage());
+                    Glide.with(imgFootBallField.getContext())
+                            .load(uri)
+                            .into(imgFootBallField);
+                }
 
                 fieldDAO.getAllTimePickerOfField(fieldDTO.getFieldID())
                         .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -144,7 +157,12 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                                 lvTimePickerDetail.setScrollContainer(false);
                                 lvTimePickerDetail.setAdapter(timePickerDetailAdapter);
                             }
-                        });
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        e.printStackTrace();
+                    }
+                });
             }
         });
     }
@@ -158,22 +176,28 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
 
     public void clickToChangeDate(View view) {
         String[] selectedDate = txtSelectDate.getText().toString().split("/");
-        if (!txtSelectDate.getText().equals(now)) {
-            day = Integer.parseInt(selectedDate[0]);
+        if (!txtSelectDate.getText().equals(df.format(calendar.getTime()))) {
+            year = Integer.parseInt(selectedDate[0]);
             month = Integer.parseInt(selectedDate[1]) - 1;
-            year = Integer.parseInt(selectedDate[2]);
+            day = Integer.parseInt(selectedDate[2]);
         }
-        System.out.println(day + "/" + month + "/" + year);
         datePickerDialog = new DatePickerDialog(FootballFieldDetailActivity.this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int y, int m, int d) {
-                txtSelectDate.setText(d + "/" + (m + 1) + "/" + y);
+                Date date= null;
+                try {
+                    date = df.parse(y+"/"+(m+1)+"/"+d);
+
+                    txtSelectDate.setText(df.format(date));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
         }, year, month, day);
         datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
         datePickerDialog.show();
     }
-    
+
     private void addToCart () throws Exception{
         List<TimePickerDTO> list = timePickerDetailAdapter.getChooseList();
         if(list.isEmpty()){
