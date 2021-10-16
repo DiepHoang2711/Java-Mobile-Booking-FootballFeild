@@ -30,7 +30,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.List;
 
-public class UpdateProfileByAdminActivity extends AppCompatActivity {
+public class EditProfileByAdminActivity extends AppCompatActivity {
 
     public static final int RC_IMAGE_PICKER = 1000;
 
@@ -47,7 +47,7 @@ public class UpdateProfileByAdminActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_update_profile_by_admin);
+        setContentView(R.layout.activity_edit_profile_by_admin);
 
         txtUserId = findViewById(R.id.txtUserID);
         txtEmail = findViewById(R.id.txtEmail);
@@ -80,8 +80,8 @@ public class UpdateProfileByAdminActivity extends AppCompatActivity {
                             try {
                                 roles = (List<String>) task.getResult().get("roles");
                                 status = (List<String>) task.getResult().get("status");
-                                ArrayAdapter<String> adapterRoles = new ArrayAdapter<>(UpdateProfileByAdminActivity.this, android.R.layout.simple_spinner_item,roles);
-                                ArrayAdapter<String> adapterStatus = new ArrayAdapter<>(UpdateProfileByAdminActivity.this, android.R.layout.simple_spinner_item,status);
+                                ArrayAdapter<String> adapterRoles = new ArrayAdapter<>(EditProfileByAdminActivity.this, android.R.layout.simple_spinner_item,roles);
+                                ArrayAdapter<String> adapterStatus = new ArrayAdapter<>(EditProfileByAdminActivity.this, android.R.layout.simple_spinner_item,status);
                                 txtRole.setAdapter(adapterRoles);
                                 txtStatus.setAdapter(adapterStatus);
                                 Log.d("USER", roles.toString());
@@ -122,7 +122,7 @@ public class UpdateProfileByAdminActivity extends AppCompatActivity {
                                 Log.d("DAO", e.toString());
                             }
                         } else {
-                            Toast.makeText(UpdateProfileByAdminActivity.this,
+                            Toast.makeText(EditProfileByAdminActivity.this,
                                     "Fail to get user on server", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -149,9 +149,9 @@ public class UpdateProfileByAdminActivity extends AppCompatActivity {
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             finish();
-                                            startActivity(UpdateProfileByAdminActivity.this.getIntent());
+                                            startActivity(EditProfileByAdminActivity.this.getIntent());
                                         } else {
-                                            Toast.makeText(UpdateProfileByAdminActivity.this,
+                                            Toast.makeText(EditProfileByAdminActivity.this,
                                                     "Fail to update User", Toast.LENGTH_SHORT).show();
                                         }
                                     }
@@ -159,7 +159,7 @@ public class UpdateProfileByAdminActivity extends AppCompatActivity {
                     }
 
                 }else {
-                    Toast.makeText(UpdateProfileByAdminActivity.this,
+                    Toast.makeText(EditProfileByAdminActivity.this,
                             R.string.something_went_wrong, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -173,12 +173,12 @@ public class UpdateProfileByAdminActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if(task.isSuccessful()) {
-                                    Toast.makeText(UpdateProfileByAdminActivity.this,
+                                    Toast.makeText(EditProfileByAdminActivity.this,
                                             "Delete successful", Toast.LENGTH_SHORT).show();
                                     finish();
-                                    startActivity(UpdateProfileByAdminActivity.this.getIntent());
+                                    startActivity(EditProfileByAdminActivity.this.getIntent());
                                 } else {
-                                    Toast.makeText(UpdateProfileByAdminActivity.this,
+                                    Toast.makeText(EditProfileByAdminActivity.this,
                                             R.string.something_went_wrong, Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -206,7 +206,7 @@ public class UpdateProfileByAdminActivity extends AppCompatActivity {
                 try {
                     Uri uri = data.getData();
                     UserDAO userDAO = new UserDAO();
-                    ProgressDialog progressDialog = new ProgressDialog(UpdateProfileByAdminActivity.this);
+                    ProgressDialog progressDialog = new ProgressDialog(EditProfileByAdminActivity.this);
                     util.showProgressDialog(progressDialog, "Uploading ....", "Please wait for uploading image");
                     userDAO.uploadImgUserToFirebase(uri)
                             .addOnCompleteListener(new OnCompleteListener<Uri>() {
@@ -221,18 +221,18 @@ public class UpdateProfileByAdminActivity extends AppCompatActivity {
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     progressDialog.cancel();
                                                     if (task.isSuccessful()) {
-                                                        Toast.makeText(UpdateProfileByAdminActivity.this, "Update Success"
+                                                        Toast.makeText(EditProfileByAdminActivity.this, "Update Success"
                                                                 , Toast.LENGTH_SHORT).show();
                                                         finish();
-                                                        startActivity(UpdateProfileByAdminActivity.this.getIntent());
+                                                        startActivity(EditProfileByAdminActivity.this.getIntent());
                                                     } else {
-                                                        Toast.makeText(UpdateProfileByAdminActivity.this, "Update fail"
+                                                        Toast.makeText(EditProfileByAdminActivity.this, "Update fail"
                                                                 , Toast.LENGTH_SHORT).show();
                                                     }
                                                 }
                                             });
                                         } else {
-                                            Toast.makeText(UpdateProfileByAdminActivity.this, "Update fail"
+                                            Toast.makeText(EditProfileByAdminActivity.this, "Update fail"
                                                     , Toast.LENGTH_SHORT).show();
                                         }
                                     } catch (Exception e) {

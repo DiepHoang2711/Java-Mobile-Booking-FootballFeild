@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.football_field_booking.MainActivity;
-import com.example.football_field_booking.UpdateProfileActivity;
+import com.example.football_field_booking.EditProfileActivity;
 import com.example.football_field_booking.R;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
@@ -80,7 +80,7 @@ public class ProfileFragment extends Fragment {
         btnUpdateUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), UpdateProfileActivity.class);
+                Intent intent = new Intent(getActivity(), EditProfileActivity.class);
                 startActivity(intent);
             }
         });

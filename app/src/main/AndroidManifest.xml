@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Football_Field_Booking">
         <activity
-            android:name=".UpdateFootballFieldActivity"
+            android:name=".EditFootballFieldActivity"
             android:exported="true" />
         <activity
             android:name=".OwnerMainActivity"
@@ -23,10 +23,10 @@
             android:name=".CreateUserActivity"
             android:exported="true" />
         <activity
-            android:name=".UpdateProfileByAdminActivity"
+            android:name=".EditProfileByAdminActivity"
             android:exported="true" />
         <activity
-            android:name=".UpdateProfileActivity"
+            android:name=".EditProfileActivity"
             android:exported="true" />
         <activity
             android:name=".AdminMainActivity"

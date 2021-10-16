@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -41,7 +40,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UpdateFootballFieldActivity extends AppCompatActivity {
+public class EditFootballFieldActivity extends AppCompatActivity {
 
     public static final int RC_IMAGE_PICKER = 1000;
 
@@ -60,7 +59,7 @@ public class UpdateFootballFieldActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_update_football_field);
+        setContentView(R.layout.activity_edit_football_field);
 
         tlFootballFieldName = findViewById(R.id.tlFootballFieldName);
         tlLocation = findViewById(R.id.tlLocation);
@@ -93,9 +92,9 @@ public class UpdateFootballFieldActivity extends AppCompatActivity {
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             List<String> listTypeField = (ArrayList<String>) documentSnapshot.get("typeFootballField");
                             List<String> listStatusField = (ArrayList<String>) documentSnapshot.get("status");
-                            ArrayAdapter<String> adapterType = new ArrayAdapter<String>(UpdateFootballFieldActivity.this,
+                            ArrayAdapter<String> adapterType = new ArrayAdapter<String>(EditFootballFieldActivity.this,
                                     android.R.layout.simple_spinner_item, listTypeField);
-                            ArrayAdapter<String> adapterStatus = new ArrayAdapter<String>(UpdateFootballFieldActivity.this,
+                            ArrayAdapter<String> adapterStatus = new ArrayAdapter<String>(EditFootballFieldActivity.this,
                                     android.R.layout.simple_spinner_item, listStatusField);
                             auComTxtType.setAdapter(adapterType);
                             auComTxtStatus.setAdapter(adapterStatus);
@@ -132,7 +131,7 @@ public class UpdateFootballFieldActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }else {
-                    Toast.makeText(UpdateFootballFieldActivity.this, "Get data fail", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EditFootballFieldActivity.this, "Get data fail", Toast.LENGTH_SHORT).show();
                     finish();
                 }
             }
@@ -148,7 +147,7 @@ public class UpdateFootballFieldActivity extends AppCompatActivity {
                             TimePickerDTO dto = doc.toObject(TimePickerDTO.class);
                             list.add(dto);
                         }
-                        timePickerAdapter = new TimePickerAdapter(UpdateFootballFieldActivity.this, list);
+                        timePickerAdapter = new TimePickerAdapter(EditFootballFieldActivity.this, list);
                         lvTimePickerWorking.setAdapter(timePickerAdapter);
                         
                     }catch (Exception e) {
@@ -156,7 +155,7 @@ public class UpdateFootballFieldActivity extends AppCompatActivity {
                     }
 
                 }else {
-                    Toast.makeText(UpdateFootballFieldActivity.this, "Get time picker data fail",
+                    Toast.makeText(EditFootballFieldActivity.this, "Get time picker data fail",
                             Toast.LENGTH_SHORT).show();
                     finish();
                 }
@@ -189,7 +188,7 @@ public class UpdateFootballFieldActivity extends AppCompatActivity {
                             fieldDTO.setStatus(status);
 
                             List<TimePickerDTO> list = timePickerAdapter.getTimePickerDTOList();
-                            ProgressDialog progressDialog = new ProgressDialog(UpdateFootballFieldActivity.this);
+                            ProgressDialog progressDialog = new ProgressDialog(EditFootballFieldActivity.this);
                             utils.showProgressDialog(progressDialog, "Updating ....", "Please wait for update field");
                             updateFootballField();
                             updateTimePicker(list, fieldID);
@@ -222,7 +221,7 @@ public class UpdateFootballFieldActivity extends AppCompatActivity {
                     imgUri = data.getData();
                     imgFootBallField.setImageURI(imgUri);
                     UserDAO userDAO = new UserDAO();
-                    ProgressDialog progressDialog = new ProgressDialog(UpdateFootballFieldActivity.this);
+                    ProgressDialog progressDialog = new ProgressDialog(EditFootballFieldActivity.this);
                     utils.showProgressDialog(progressDialog, "Uploading ....", "Please wait for uploading image");
                     uploadImgFootballField(imgUri);
                     progressDialog.cancel();
@@ -242,10 +241,10 @@ public class UpdateFootballFieldActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()) {
-                        Toast.makeText(UpdateFootballFieldActivity.this, "Update field success",
+                        Toast.makeText(EditFootballFieldActivity.this, "Update field success",
                                 Toast.LENGTH_SHORT).show();
                     }else {
-                        Toast.makeText(UpdateFootballFieldActivity.this, "Update field fail",
+                        Toast.makeText(EditFootballFieldActivity.this, "Update field fail",
                                 Toast.LENGTH_SHORT).show();
                         Log.d("USER", "errorrr: " + task.getException());
                     }
