@@ -17,6 +17,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -105,14 +106,23 @@ public class TimePickerDetailAdapter extends BaseAdapter {
         txtPrice.setText("$"+price+"/h");
         for (TimePickerDTO dto : timePickerDTOList) {
             if(dto.getPrice()==price){
-                ToggleButton toggleButton = new ToggleButton(new ContextThemeWrapper(view.getContext(), R.style.MyToggleButton));
+                ToggleButton toggleButton = new ToggleButton(context);
+                toggleButton.setTextAppearance(context,R.style.MyToggleButton);
+                toggleButton.setBackground(context.getResources().getDrawable(R.drawable.toggle_selector));
+                LinearLayout.LayoutParams params= new LinearLayout.LayoutParams(200,100);
+                params.setMargins(10,5,10,5);
+                toggleButton.setLayoutParams(params);
+                toggleButton.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                toggleButton.setText(dto.getStart()+"h-"+dto.getEnd()+"h");
                 groupToggleButton.addView(toggleButton);
                 toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                         if(b){
+                            toggleButton.setTextOn(dto.getStart()+"h-"+dto.getEnd()+"h");
                             chooseList.add(dto);
                         }else{
+                            toggleButton.setTextOff(dto.getStart()+"h-"+dto.getEnd()+"h");
                             chooseList.remove(dto);
                         }
                     }
