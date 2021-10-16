@@ -28,7 +28,6 @@
                 app:logo="@drawable/logo"
                 app:menu="@menu/top_app_bar"
                 app:title="Fast Field">
-
             </com.google.android.material.appbar.MaterialToolbar>
 
         </com.google.android.material.appbar.AppBarLayout>

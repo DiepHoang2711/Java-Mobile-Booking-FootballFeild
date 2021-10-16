@@ -1,7 +1,6 @@
 package com.example.football_field_booking.daos;
 
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,9 +9,6 @@ import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -94,6 +90,12 @@ public class FootballFieldDAO {
         return db.collection(COLLECTION_USERS).document(ownerID).collection(SUB_COLLECTION_FOOTBALL_FIELD_INFO).get();
     }
 
+    public Task<QuerySnapshot> getAllFootballField() {
+        return db.collection(COLLECTION_FOOTBALL_FIELD).get();
+    }
+
+
+
     public Task<DocumentSnapshot> getFieldByID (String fieldID) {
         DocumentReference doc = db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID);
         return doc.get();
@@ -129,5 +131,9 @@ public class FootballFieldDAO {
     public void updateTimePicker (List<TimePickerDTO> list, String fieldID) throws Exception {
         DocumentReference docField = db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID);
 
+    }
+
+    public Task<QuerySnapshot> searchByLikeName(String name) throws Exception{
+        return db.collection(COLLECTION_FOOTBALL_FIELD).whereGreaterThanOrEqualTo("name",name).get();
     }
 }

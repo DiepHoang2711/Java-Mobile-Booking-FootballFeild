@@ -147,7 +147,7 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         footballFieldDTO.setType(type);
         footballFieldDTO.setLocation(location);
         footballFieldDTO.setStatus(ACTIVE);
-
+        footballFieldDTO.setRate(0);
         list = new ArrayList<>();
         for (TimePickerDTO dto : timePickerAdapter.getTimePickerDTOList()) {
             if (dto.getPrice() > -1 && dto.getStart() > -1 && dto.getEnd() > -1) {
