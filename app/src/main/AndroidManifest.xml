@@ -14,7 +14,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Football_Field_Booking">
         <activity
+            android:name=".FootballFieldDetailActivity"
+            android:exported="true" />
+        <activity
             android:name=".EditFootballFieldActivity"
+            android:exported="true" />
+        <activity
+            android:name=".SearchByNameActivity"
             android:exported="true" />
         <activity
             android:name=".OwnerMainActivity"

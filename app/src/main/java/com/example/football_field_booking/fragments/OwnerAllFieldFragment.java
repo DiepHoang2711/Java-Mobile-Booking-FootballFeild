@@ -58,6 +58,28 @@ public class OwnerAllFieldFragment extends Fragment {
             }
         });
 
+        lvFootballFieldOwner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                try {
+                    FootballFieldDTO dto = (FootballFieldDTO) lvFootballFieldOwner.getItemAtPosition(i);
+                    Intent intent = new Intent(getActivity(), EditFootballFieldActivity.class);
+                    intent.putExtra("fieldID", dto.getFieldID());
+                    startActivity(intent);
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        List<FootballFieldDTO> fieldDTOList = new ArrayList<>();
         FootballFieldDAO dao = new FootballFieldDAO();
         dao.getAllFootballFieldOfOwner(user.getUid()).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -78,22 +100,5 @@ public class OwnerAllFieldFragment extends Fragment {
                 }
             }
         });
-
-        lvFootballFieldOwner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                try {
-                    FootballFieldDTO dto = (FootballFieldDTO) lvFootballFieldOwner.getItemAtPosition(i);
-                    Intent intent = new Intent(getActivity(), EditFootballFieldActivity.class);
-                    intent.putExtra("fieldID", dto.getFieldID());
-                    startActivity(intent);
-                }catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        return view;
     }
-
 }

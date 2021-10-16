@@ -12,8 +12,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.football_field_booking.R;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
-import com.example.football_field_booking.dtos.UserDTO;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.List;
 
@@ -50,13 +48,13 @@ public class FootballFieldAdapter extends BaseAdapter {
 
         View rowView = view;
         if(rowView == null) {
-            rowView = layoutInflater.inflate(R.layout.item_football_field_owner, viewGroup, false);
+            rowView = layoutInflater.inflate(R.layout.item_football_field, viewGroup, false);
         }
         ImageView imgField = rowView.findViewById(R.id.imgFootBallField);
         TextView txtFieldName = rowView.findViewById(R.id.txtFieldName);
         TextView txtLocation = rowView.findViewById(R.id.txtLocation);
         TextView txtType=rowView.findViewById(R.id.txtType);
-
+        TextView txtRate=rowView.findViewById(R.id.txtRate);
         FootballFieldDTO dto = fieldDTOList.get(i);
 
         if (dto.getImage() != null) {
@@ -68,7 +66,7 @@ public class FootballFieldAdapter extends BaseAdapter {
         txtFieldName.setText(dto.getName());
         txtLocation.setText(dto.getLocation());
         txtType.setText(dto.getType());
-
+        txtRate.setText(dto.getRate()+"");
         return rowView;
     }
 }
