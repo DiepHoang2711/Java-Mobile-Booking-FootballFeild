@@ -8,6 +8,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,17 +45,13 @@ public class TimePickerDetailAdapter extends BaseAdapter {
         return timePickerDTOList;
     }
 
-    public void setTimePickerDTOList(List<TimePickerDTO> timePickerDTOList) {
-        this.timePickerDTOList = timePickerDTOList;
-    }
-
 
     public TimePickerDetailAdapter(Context context, List<TimePickerDTO> list) {
         this.context = context;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         priceList = new ArrayList<>();
         chooseList=new ArrayList<>();
-        for (TimePickerDTO timePickerDTO : timePickerDTOList) {
+        for (TimePickerDTO timePickerDTO : list) {
             boolean isAdd = true;
             for (Float price : priceList) {
                 if (price == timePickerDTO.getPrice()) {
@@ -99,19 +96,16 @@ public class TimePickerDetailAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         View rowView = view;
         if (rowView == null) {
-            view = layoutInflater.inflate(R.layout.item_time_picker, viewGroup, false);
+            view = layoutInflater.inflate(R.layout.item_time_picker_detail, viewGroup, false);
         }
         TextView txtPrice = view.findViewById(R.id.txtPrice);
         GridLayout groupToggleButton = view.findViewById(R.id.groupToggleButton);
+        groupToggleButton.removeAllViewsInLayout();
         Float price=priceList.get(i);
+        txtPrice.setText("$"+price+"/h");
         for (TimePickerDTO dto : timePickerDTOList) {
             if(dto.getPrice()==price){
-                ToggleButton toggleButton = new ToggleButton(view.getContext());
-                toggleButton.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                toggleButton.setBackground(view.getResources().getDrawable(R.drawable.toggle_selector));
-                toggleButton.setWidth(40);
-                toggleButton.setHeight(75);
-                toggleButton.setTextSize(12);
+                ToggleButton toggleButton = new ToggleButton(new ContextThemeWrapper(view.getContext(), R.style.MyToggleButton));
                 groupToggleButton.addView(toggleButton);
                 toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
@@ -125,8 +119,8 @@ public class TimePickerDetailAdapter extends BaseAdapter {
                 });
             }
         }
+        Log.d("TimePickerDetailAdapter",timePickerDTOList.size()+"");
         return view;
     }
-
 }
 
