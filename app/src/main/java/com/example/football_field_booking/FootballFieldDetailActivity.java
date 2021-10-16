@@ -46,8 +46,7 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
     private int year, month, day;
     private Calendar calendar;
     private FloatingActionButton btnBack;
-    private Button btnAddToCart;
-    private LinearLayout groupBtnOwner;
+    private Button btnAddToCart,btnEdit,btnDelete;
     private TextView txtFieldName, txtLocation, txtRate, txtType;
     private List<TimePickerDTO> timePickerDTOList;
     private TimePickerDetailAdapter timePickerDetailAdapter;
@@ -64,7 +63,8 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
         txtSelectDate = findViewById(R.id.txtSelectDate);
         btnBack = findViewById(R.id.btnBack);
         btnAddToCart = findViewById(R.id.btnAddToCart);
-        groupBtnOwner = findViewById(R.id.groupBtnOwner);
+        btnEdit=findViewById(R.id.btnEdit);
+        btnDelete=findViewById(R.id.btnDelete);
         txtFieldName = findViewById(R.id.txtFieldName);
         txtLocation = findViewById(R.id.txtLocation);
         txtRate = findViewById(R.id.txtRate);
@@ -93,8 +93,10 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                             UserDTO dto = documentSnapshot.toObject(UserDTO.class);
                             String role = dto.getRole();
                             if (role.equals("owner")) {
-                                groupBtnOwner.setVisibility(View.VISIBLE);
-
+                                btnEdit.setVisibility(View.VISIBLE);
+                                btnDelete.setVisibility(View.VISIBLE);
+                            }else if(role.equals("user")){
+                                btnAddToCart.setVisibility(View.VISIBLE);
                             }
                         }
                     });
