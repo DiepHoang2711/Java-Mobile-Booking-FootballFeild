@@ -17,10 +17,10 @@
             android:name=".FootballFieldDetailActivity"
             android:exported="true" />
         <activity
-            android:name=".SearchByNameActivity"
+            android:name=".EditFootballFieldActivity"
             android:exported="true" />
         <activity
-            android:name=".UpdateFootballFieldActivity"
+            android:name=".SearchByNameActivity"
             android:exported="true" />
         <activity
             android:name=".OwnerMainActivity"
@@ -29,10 +29,10 @@
             android:name=".CreateUserActivity"
             android:exported="true" />
         <activity
-            android:name=".UpdateProfileByAdminActivity"
+            android:name=".EditProfileByAdminActivity"
             android:exported="true" />
         <activity
-            android:name=".UpdateProfileActivity"
+            android:name=".EditProfileActivity"
             android:exported="true" />
         <activity
             android:name=".AdminMainActivity"

@@ -15,7 +15,7 @@ import android.widget.ListView;
 
 import com.example.football_field_booking.CreateFootballFieldActivity;
 import com.example.football_field_booking.R;
-import com.example.football_field_booking.UpdateFootballFieldActivity;
+import com.example.football_field_booking.EditFootballFieldActivity;
 import com.example.football_field_booking.adapters.FootballFieldAdapter;
 import com.example.football_field_booking.daos.FootballFieldDAO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
@@ -47,7 +47,8 @@ public class OwnerAllFieldFragment extends Fragment {
 
         btnCreate=view.findViewById(R.id.btnCreateFootballField);
         lvFootballFieldOwner=view.findViewById(R.id.lvFootballFieldOwner);
-
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        List<FootballFieldDTO> fieldDTOList = new ArrayList<>();
 
         btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,7 +63,7 @@ public class OwnerAllFieldFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
                     FootballFieldDTO dto = (FootballFieldDTO) lvFootballFieldOwner.getItemAtPosition(i);
-                    Intent intent = new Intent(getActivity(), UpdateFootballFieldActivity.class);
+                    Intent intent = new Intent(getActivity(), EditFootballFieldActivity.class);
                     intent.putExtra("fieldID", dto.getFieldID());
                     startActivity(intent);
                 }catch (Exception e) {

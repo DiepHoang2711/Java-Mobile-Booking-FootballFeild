@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UpdateProfileByAdminActivity"
+    tools:context=".EditProfileActivity"
     android:orientation="vertical">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -27,8 +27,7 @@
                 app:layout_scrollFlags="scroll|enterAlways|snap"
                 app:liftOnScroll="true"
                 app:logo="@drawable/logo"
-                app:titleCentered="true"
-                app:title="User's Detail">
+                app:title="Fast Field">
 
             </com.google.android.material.appbar.MaterialToolbar>
 
@@ -48,8 +47,7 @@
                     android:id="@+id/imgUser"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:scaleType="centerCrop"
-                    android:layout_gravity="center"/>
+                    android:scaleType="centerCrop"/>
 
                 <TextView
                     android:id="@+id/txtUserID"
@@ -98,57 +96,12 @@
                         />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilRole"
-                    style="@style/TextFieldDropDownUpdate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginEnd="24dp"
-                    android:hint="Role">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/txtRole"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="none"
-                        />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilStatus"
-                    style="@style/TextFieldDropDownUpdate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginEnd="24dp"
-                    android:hint="Status">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/txtStatus"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="none"
-                        />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
                 <Button
                     android:id="@+id/btnUpdateUser"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:text="Update"/>
-
-                <Button
-                    android:id="@+id/btnDeleteUser"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:text="Delete"/>
 
 
             </LinearLayout>
