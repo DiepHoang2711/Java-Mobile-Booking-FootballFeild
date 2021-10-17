@@ -126,16 +126,16 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                     });
         }
 
-        FootballFieldDAO  fieldDAO=new FootballFieldDAO();
-        Intent intent=this.getIntent();
-        String fieldID=intent.getStringExtra("fieldID");
+        FootballFieldDAO fieldDAO = new FootballFieldDAO();
+        Intent intent = this.getIntent();
+        String fieldID = intent.getStringExtra("fieldID");
         fieldDAO.getFieldByID(fieldID).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 fieldDTO=documentSnapshot.toObject(FootballFieldDTO.class);
                 txtFieldName.setText(fieldDTO.getName());
                 txtLocation.setText(fieldDTO.getLocation());
-                txtRate.setText(fieldDTO.getRate()+"");
+                txtRate.setText(fieldDTO.getRate() + "");
                 txtType.setText(fieldDTO.getType());
                 if (fieldDTO.getImage() != null) {
                     Uri uri = Uri.parse(fieldDTO.getImage());
@@ -167,9 +167,9 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
         datePickerDialog = new DatePickerDialog(FootballFieldDetailActivity.this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int y, int m, int d) {
-                Date date= null;
+                Date date = null;
                 try {
-                    date = df.parse(y+"/"+(m+1)+"/"+d);
+                    date = df.parse(y + "/" + (m + 1) + "/" + d);
 
                     txtSelectDate.setText(df.format(date));
                 } catch (ParseException e) {
