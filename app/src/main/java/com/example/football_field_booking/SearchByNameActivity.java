@@ -47,7 +47,8 @@ public class SearchByNameActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     for (QueryDocumentSnapshot snapshot: queryDocumentSnapshots) {
-                        fieldDTOList.add(snapshot.toObject(FootballFieldDTO.class));
+                        FootballFieldDTO dto = snapshot.get("fieldInfo", FootballFieldDTO.class);
+                        fieldDTOList.add(dto);
                     }
                     Log.d("listSearchSize",fieldDTOList.size()+"");
                     fieldAdapter=new FootballFieldAdapter(SearchByNameActivity.this,fieldDTOList);

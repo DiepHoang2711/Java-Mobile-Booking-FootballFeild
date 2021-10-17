@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
             userDAO.getUserById(user.getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    String role = documentSnapshot.getString("role");
+                    String role = documentSnapshot.getString("userInfo.role");
                     if (role != null) {
                         switch (role) {
                             case "owner": {

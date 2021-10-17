@@ -20,7 +20,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.football_field_booking.daos.UserDAO;
+import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.UserDTO;
+import com.example.football_field_booking.dtos.UserDocument;
 import com.example.football_field_booking.utils.Utils;
 import com.example.football_field_booking.validations.Validation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -41,6 +43,7 @@ public class EditProfileByAdminActivity extends AppCompatActivity {
     private ImageView imgUser;
     private UserDTO userDTO = null;
     private List<String> roles, status;
+    private List<FootballFieldDTO> fieldDTOList;
     private Utils util;
     private Validation val;
 
@@ -99,7 +102,7 @@ public class EditProfileByAdminActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
                             try {
-                                userDTO = task.getResult().toObject(UserDTO.class);
+                                userDTO = task.getResult().get("userInfo",UserDTO.class);
 
                                 txtUserId.setText(userDTO.getUserID());
                                 txtEmail.setText(userDTO.getEmail());
@@ -116,6 +119,10 @@ public class EditProfileByAdminActivity extends AppCompatActivity {
                                             .into(imgUser);
                                 }catch (Exception e) {
                                     imgUser.setImageResource(R.drawable.outline_account_circle_24);
+                                }
+
+                                if(userDTO.getRole().equals("owner")){
+                                    fieldDTOList = task.getResult().toObject(UserDocument.class).getFieldsInfo();
                                 }
 
                             } catch (Exception e) {
@@ -143,7 +150,7 @@ public class EditProfileByAdminActivity extends AppCompatActivity {
                         userDTO.setRole(role);
                         userDTO.setStatus(status);
 
-                        userDAO.updateUser(userDTO)
+                        userDAO.updateUser(userDTO, fieldDTOList)
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
@@ -216,7 +223,7 @@ public class EditProfileByAdminActivity extends AppCompatActivity {
                                         if (task.isSuccessful()) {
                                             Log.d("USER", task.getResult().toString());
                                             userDTO.setPhotoUri(task.getResult().toString());
-                                            userDAO.updateUser(userDTO).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            userDAO.updateUser(userDTO, fieldDTOList).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     progressDialog.cancel();

@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.fragments.OwnerAllFieldFragment;
 import com.example.football_field_booking.fragments.OwnerHomeFragment;
 import com.example.football_field_booking.fragments.ProfileFragment;

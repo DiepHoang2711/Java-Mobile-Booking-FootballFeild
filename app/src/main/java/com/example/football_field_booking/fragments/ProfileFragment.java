@@ -53,15 +53,19 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
-                    UserDTO userDTO = task.getResult().toObject(UserDTO.class);
-                    txtFullName.setText(userDTO.getFullName());
-                    if (userDTO.getPhotoUri() != null) {
-                        Uri uri = Uri.parse(userDTO.getPhotoUri());
-                        Glide.with(imgUser.getContext())
-                                .load(uri)
-                                .into(imgUser);
-                    } else {
-                        imgUser.setImageResource(R.drawable.outline_account_circle_24);
+                    try {
+                        UserDTO userDTO = task.getResult().get("userInfo", UserDTO.class);
+                        txtFullName.setText(userDTO.getFullName());
+                        if (userDTO.getPhotoUri() != null) {
+                            Uri uri = Uri.parse(userDTO.getPhotoUri());
+                            Glide.with(imgUser.getContext())
+                                    .load(uri)
+                                    .into(imgUser);
+                        } else {
+                            imgUser.setImageResource(R.drawable.outline_account_circle_24);
+                        }
+                    }catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             }

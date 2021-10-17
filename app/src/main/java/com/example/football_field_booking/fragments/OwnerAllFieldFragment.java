@@ -18,10 +18,13 @@ import com.example.football_field_booking.R;
 import com.example.football_field_booking.EditFootballFieldActivity;
 import com.example.football_field_booking.adapters.FootballFieldAdapter;
 import com.example.football_field_booking.daos.FootballFieldDAO;
+import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
+import com.example.football_field_booking.dtos.UserDocument;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -79,17 +82,18 @@ public class OwnerAllFieldFragment extends Fragment {
     public void onStart() {
         super.onStart();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        List<FootballFieldDTO> fieldDTOList = new ArrayList<>();
-        FootballFieldDAO dao = new FootballFieldDAO();
-        dao.getAllFootballFieldOfOwner(user.getUid()).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        UserDAO dao = new UserDAO();
+        dao.getUserById(user.getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
                 try {
-                    for (QueryDocumentSnapshot doc: queryDocumentSnapshots) {
-                        Log.d("USER", "DocID: " + doc.getId());
-                        Log.d("USER", "Doc: " + doc.toObject(FootballFieldDTO.class));
-                        fieldDTOList.add(doc.toObject(FootballFieldDTO.class));
-                    }
+//                    for (QueryDocumentSnapshot doc: queryDocumentSnapshots) {
+//                        Log.d("USER", "DocID: " + doc.getId());
+//                        Log.d("USER", "Doc: " + doc.get("fieldInfo", FootballFieldDTO.class));
+//                        FootballFieldDTO dto = doc.get("fieldInfo", FootballFieldDTO.class);
+//                        fieldDTOList.add(dto);
+//                    }
+                    List<FootballFieldDTO> fieldDTOList = documentSnapshot.toObject(UserDocument.class).getFieldsInfo();
                     Log.d("USER", "dto: " + fieldDTOList);
 
                     FootballFieldAdapter fieldAdapter = new FootballFieldAdapter(getActivity(), fieldDTOList);

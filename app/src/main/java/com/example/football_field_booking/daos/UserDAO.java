@@ -9,12 +9,16 @@ import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
@@ -22,16 +26,17 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class UserDAO {
 
+    private static final String COLLECTION_FOOTBALL_FIELD = "footballFields";
     public static final String CONST_OF_PROJECT = "constOfProject";
     public static final String USER_IMAGES_FOLDER = "user_images";
     public static final String SUB_COLLECTION_CART = "cart";
-    public static final String SUB_COLLECTION_TIMESLOTS = "timeSlots";
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private static final String COLLECTION_USERS = "users";
@@ -43,7 +48,9 @@ public class UserDAO {
 
     public Task<Void> createUser(UserDTO userDTO) {
         DocumentReference doc = db.collection(COLLECTION_USERS).document(userDTO.getUserID());
-        return doc.set(userDTO);
+        Map<String, Object> data = new HashMap<>();
+        data.put("userInfo", userDTO);
+        return doc.set(data);
     }
 
 
@@ -56,19 +63,37 @@ public class UserDAO {
         return db.collection(COLLECTION_USERS).get();
     }
 
-    public Task<Void> updateUser(UserDTO userDTO) {
+    public Task<Void> updateUser(UserDTO userDTO, List<FootballFieldDTO> list) {
+        WriteBatch batch = db.batch();
 
-        DocumentReference doc = db.collection(COLLECTION_USERS).document(userDTO.getUserID());
-        Map<String, Object> data = new HashMap<>();
-        data.put("userID", userDTO.getUserID());
-        data.put("email", userDTO.getEmail());
-        data.put("fullName", userDTO.getFullName());
-        data.put("phone", userDTO.getPhone());
-        data.put("role", userDTO.getRole());
-        data.put("status", userDTO.getStatus());
-        data.put("photoUri", userDTO.getPhotoUri());
+        DocumentReference docUser = db.collection(COLLECTION_USERS).document(userDTO.getUserID());
+        Map<String, Object> dataUser = new HashMap<>();
+        dataUser.put("userInfo.email", userDTO.getEmail());
+        dataUser.put("userInfo.fullName", userDTO.getFullName());
+        dataUser.put("userInfo.phone", userDTO.getPhone());
+        dataUser.put("userInfo.role", userDTO.getRole());
+        dataUser.put("userInfo.status", userDTO.getStatus());
+        dataUser.put("userInfo.photoUri", userDTO.getPhotoUri());
 
-        return doc.update(data);
+        batch.update(docUser, dataUser);
+
+        if (userDTO.getRole().equals("owner") && list != null) {
+
+            for (FootballFieldDTO dto: list) {
+                DocumentReference doc = db.collection(COLLECTION_FOOTBALL_FIELD).document(dto.getFieldID());
+                Map<String, Object> dataInFBfield = new HashMap<>();
+                dataInFBfield.put("ownerInfo.email", userDTO.getEmail());
+                dataInFBfield.put("ownerInfo.fullName", userDTO.getFullName());
+                dataInFBfield.put("ownerInfo.phone", userDTO.getPhone());
+                dataInFBfield.put("ownerInfo.role", userDTO.getRole());
+                dataInFBfield.put("ownerInfo.status", userDTO.getStatus());
+                dataInFBfield.put("ownerInfo.photoUri", userDTO.getPhotoUri());
+
+                batch.update(doc, dataInFBfield);
+            }
+        }
+        return batch.commit();
+
     }
 
     public Task<Void> updatePassword (String password) {
@@ -80,7 +105,7 @@ public class UserDAO {
 
         DocumentReference doc = db.collection(COLLECTION_USERS).document(userID);
         Map<String, Object> data = new HashMap<>();
-        data.put("status", "deleted");
+        data.put("userInfo.status", "deleted");
         return doc.update(data);
     }
 
@@ -102,7 +127,7 @@ public class UserDAO {
         });
     }
 
-    public Task<Void> addToCart (CartItemDTO cartItemDTO, String userID, FootballFieldDTO dto) {
+    public Task<Void> addToCart (CartItemDTO cartItemDTO, String userID) {
         WriteBatch batch = db.batch();
 
         DocumentReference docField = db.collection(COLLECTION_USERS).document(userID).collection(SUB_COLLECTION_CART).document();
@@ -124,21 +149,12 @@ public class UserDAO {
 //        }
 //
         batch.set(docField, cartItemDTO);
-        Map<String, Object> data = new HashMap<>();
-        data.put("dto", dto);
-        batch.set(docField, data, SetOptions.merge());
         return batch.commit();
     }
 
     public Task<QuerySnapshot> getItemInCartByDateAndFieldID (String userID, String fieldID, String date) {
         return db.collection(COLLECTION_USERS).document(userID).collection(SUB_COLLECTION_CART)
                 .whereEqualTo("date", date).whereEqualTo("fieldID", fieldID).get();
-
-    }
-
-    public Task<QuerySnapshot> getTimePikerOfCart (String userID, String cartItemID) {
-        return db.collection(COLLECTION_USERS).document(userID).collection(SUB_COLLECTION_CART)
-                .document(cartItemID).collection(SUB_COLLECTION_TIMESLOTS).get();
 
     }
 
