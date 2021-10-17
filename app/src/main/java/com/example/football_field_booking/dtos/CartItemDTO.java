@@ -11,7 +11,7 @@ public class CartItemDTO implements Serializable {
     private String image;
     private String date;
     private float total;
-    private List<TimePickerDTO> timePickerDTOList;
+    private List<TimePickerDTO> listTimeSlot;
 
     public CartItemDTO(String fieldID, String name, String location, String type, String image, String date, float total, List<TimePickerDTO> timePickerDTOList) {
         this.fieldID = fieldID;
@@ -21,7 +21,7 @@ public class CartItemDTO implements Serializable {
         this.image = image;
         this.date = date;
         this.total = total;
-        this.timePickerDTOList = timePickerDTOList;
+        this.listTimeSlot = timePickerDTOList;
     }
 
     public String getFieldID() {
@@ -80,11 +80,11 @@ public class CartItemDTO implements Serializable {
         this.total = total;
     }
 
-    public List<TimePickerDTO> getTimePickerDTOList() {
-        return timePickerDTOList;
+    public List<TimePickerDTO> getListTimeSlot() {
+        return listTimeSlot;
     }
 
-    public void setTimePickerDTOList(List<TimePickerDTO> timePickerDTOList) {
-        this.timePickerDTOList = timePickerDTOList;
+    public void setListTimeSlot(List<TimePickerDTO> listTimeSlot) {
+        this.listTimeSlot = listTimeSlot;
     }
 }

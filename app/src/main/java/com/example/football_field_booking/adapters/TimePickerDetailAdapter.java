@@ -41,6 +41,7 @@ public class TimePickerDetailAdapter extends BaseAdapter {
     private LayoutInflater layoutInflater;
     private List<TimePickerDTO> chooseList;
     private List<TimePickerDTO> bookedTimeList;
+    private List<TimePickerDTO> inCartList;
 
     public List<TimePickerDTO> getTimePickerDTOList() {
         return timePickerDTOList;
@@ -58,12 +59,13 @@ public class TimePickerDetailAdapter extends BaseAdapter {
         this.chooseList = chooseList;
     }
 
-    public TimePickerDetailAdapter(Context context, List<TimePickerDTO> list, List<TimePickerDTO> chooseList, List<TimePickerDTO> bookedTimeList) {
+    public TimePickerDetailAdapter(Context context, List<TimePickerDTO> list, List<TimePickerDTO> inCartList, List<TimePickerDTO> bookedTimeList) {
         this.context = context;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.priceList = new ArrayList<>();
-        this.chooseList = chooseList;
+        this.chooseList = new ArrayList<>();
         this.bookedTimeList = bookedTimeList;
+        this.inCartList = inCartList;
         timePickerDTOList = new ArrayList<>();
         try {
             for (TimePickerDTO timePickerDTO : list) {
@@ -143,6 +145,13 @@ public class TimePickerDetailAdapter extends BaseAdapter {
 
                     for (TimePickerDTO bookedDTO : bookedTimeList) {
                         if (dto.getStart() == bookedDTO.getStart() && dto.getEnd() == bookedDTO.getEnd()) {
+                            toggleButton.setEnabled(false);
+                        }
+                    }
+
+                    for (TimePickerDTO bookedDTO : inCartList) {
+                        if (dto.getStart() == bookedDTO.getStart() && dto.getEnd() == bookedDTO.getEnd()) {
+                            toggleButton.setSelected(true);
                             toggleButton.setEnabled(false);
                         }
                     }

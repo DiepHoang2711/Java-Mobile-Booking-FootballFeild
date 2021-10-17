@@ -45,7 +45,9 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FootballFieldDetailActivity extends AppCompatActivity {
 
@@ -57,7 +59,7 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
     private Button btnAddToCart;
     private LinearLayout groupBtnOwner;
     private TextView txtFieldName,txtLocation,txtRate,txtType;
-    private List<TimePickerDTO> timePickerDTOList;
+    private List<TimePickerDTO> timePickerDTOList, timePickerInCartList;
     private TimePickerDetailAdapter timePickerDetailAdapter;
     private ListView lvTimePickerDetail;
     private ImageView imgFootBallField;
@@ -80,11 +82,10 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
         txtType=findViewById(R.id.txtType);
         lvTimePickerDetail=findViewById(R.id.lvTimePickerDetail);
         imgFootBallField=findViewById(R.id.imgFootBallField);
-
         txtSelectDate.setText(df.format(calendar.getTime()));
-        day = calendar.get(Calendar.DAY_OF_MONTH);
-        month = calendar.get(Calendar.MONTH);
-        year = calendar.get(Calendar.YEAR);
+
+        timePickerInCartList = new ArrayList<>();
+
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,26 +144,8 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                             .into(imgFootBallField);
                 }
 
-                fieldDAO.getAllTimePickerOfField(fieldDTO.getFieldID())
-                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                            @Override
-                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                timePickerDTOList = new ArrayList<>();
-                                for (QueryDocumentSnapshot snapshot:queryDocumentSnapshots){
-                                    timePickerDTOList.add(snapshot.toObject(TimePickerDTO.class));
-                                }
-                                List<TimePickerDTO> chooseList = new ArrayList<>();
-                                List<TimePickerDTO> bookedTimeList = new ArrayList<>();
-                                timePickerDetailAdapter = new TimePickerDetailAdapter(FootballFieldDetailActivity.this,timePickerDTOList, chooseList, bookedTimeList);
-                                lvTimePickerDetail.setScrollContainer(false);
-                                lvTimePickerDetail.setAdapter(timePickerDetailAdapter);
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        e.printStackTrace();
-                    }
-                });
+                loadTimePickerListView();
+
             }
         });
     }
@@ -176,11 +159,11 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
 
     public void clickToChangeDate(View view) {
         String[] selectedDate = txtSelectDate.getText().toString().split("/");
-        if (!txtSelectDate.getText().equals(df.format(calendar.getTime()))) {
-            year = Integer.parseInt(selectedDate[0]);
-            month = Integer.parseInt(selectedDate[1]) - 1;
-            day = Integer.parseInt(selectedDate[2]);
-        }
+
+        year = Integer.parseInt(selectedDate[0]);
+        month = Integer.parseInt(selectedDate[1]) - 1;
+        day = Integer.parseInt(selectedDate[2]);
+
         datePickerDialog = new DatePickerDialog(FootballFieldDetailActivity.this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int y, int m, int d) {
@@ -212,11 +195,13 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
             String location = fieldDTO.getLocation();
             String type = fieldDTO.getType();
             String image = fieldDTO.getImage();
-            CartItemDTO cartItemDTO = new CartItemDTO(fieldID, name, location, type, image, "", total, list);
+            String date = txtSelectDate.getText().toString();
+            CartItemDTO cartItemDTO = new CartItemDTO(fieldID, name, location, type, image, date, total, list);
+
             UserDAO userDAO = new UserDAO();
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if(user != null) {
-                userDAO.addToCart(cartItemDTO, user.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                userDAO.addToCart(cartItemDTO, user.getUid(), fieldDTO).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()){
@@ -229,6 +214,48 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                     }
                 });
             }
+        }
+    }
+
+    private void loadTimePickerListView () {
+        FootballFieldDAO fieldDAO = new FootballFieldDAO();
+        UserDAO userDAO = new UserDAO();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user != null) {
+            try {
+                fieldDAO.getAllTimePickerOfField(fieldDTO.getFieldID())
+                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                            @Override
+                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                String date = txtSelectDate.getText().toString();
+                                timePickerDTOList = new ArrayList<>();
+                                for (QueryDocumentSnapshot snapshot:queryDocumentSnapshots){
+                                    timePickerDTOList.add(snapshot.toObject(TimePickerDTO.class));
+                                }
+                                userDAO.getItemInCartByDateAndFieldID(user.getUid(), fieldDTO.getFieldID(), date ).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        for (QueryDocumentSnapshot queryDocumentSnapshot: queryDocumentSnapshots) {
+                                            ArrayList<TimePickerDTO> map = (ArrayList<TimePickerDTO>) queryDocumentSnapshot.get("listTimeSlot");
+                                            FootballFieldDTO dto =  queryDocumentSnapshot.get("dto", FootballFieldDTO.class);
+                                            Log.d("USER", "listInCart: " + map.toString());
+                                            Log.d("USER", "dtoInDB: " + dto.toString());
+//                                            timePickerInCartList.addAll(list);
+                                        }
+//                                        List<TimePickerDTO> bookedTimeList = new ArrayList<>();
+//                                        timePickerDetailAdapter = new TimePickerDetailAdapter(FootballFieldDetailActivity.this,timePickerDTOList, timePickerInCartList, bookedTimeList);
+//                                        lvTimePickerDetail.setScrollContainer(false);
+//                                        lvTimePickerDetail.setAdapter(timePickerDetailAdapter);
+
+                                    }
+                                });
+
+                            }
+                        });
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
     }
 }

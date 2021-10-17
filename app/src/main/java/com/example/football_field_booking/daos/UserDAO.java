@@ -16,6 +16,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -101,27 +102,44 @@ public class UserDAO {
         });
     }
 
-    public Task<Void> addToCart (CartItemDTO cartItemDTO, String userID) {
+    public Task<Void> addToCart (CartItemDTO cartItemDTO, String userID, FootballFieldDTO dto) {
         WriteBatch batch = db.batch();
 
         DocumentReference docField = db.collection(COLLECTION_USERS).document(userID).collection(SUB_COLLECTION_CART).document();
+//        return docField.set(cartItemDTO);
+//        Map<String, Object> data = new HashMap<>();
+//        data.put("fieldID", cartItemDTO.getFieldID());
+//        data.put("name", cartItemDTO.getName());
+//        data.put("location", cartItemDTO.getLocation());
+//        data.put("type", cartItemDTO.getType());
+//        data.put("image", cartItemDTO.getImage());
+//        data.put("date", cartItemDTO.getDate());
+//        data.put("total", cartItemDTO.getTotal());
+
+//        batch.set(docField, docField);
+//        for (TimePickerDTO dto: cartItemDTO.getTimePickerDTOList()) {
+//            DocumentReference docTimePicker = docField.collection(SUB_COLLECTION_TIMESLOTS).document();
+//            dto.setTimePickerID(docTimePicker.getId());
+//            batch.set(docTimePicker, dto);
+//        }
+//
+        batch.set(docField, cartItemDTO);
         Map<String, Object> data = new HashMap<>();
-        data.put("fieldID", cartItemDTO.getFieldID());
-        data.put("name", cartItemDTO.getName());
-        data.put("location", cartItemDTO.getLocation());
-        data.put("type", cartItemDTO.getType());
-        data.put("image", cartItemDTO.getImage());
-        data.put("date", cartItemDTO.getDate());
-        data.put("total", cartItemDTO.getTotal());
-
-        batch.set(docField, data);
-        for (TimePickerDTO dto: cartItemDTO.getTimePickerDTOList()) {
-            DocumentReference docTimePicker = docField.collection(SUB_COLLECTION_TIMESLOTS).document();
-            dto.setTimePickerID(docTimePicker.getId());
-            batch.set(docTimePicker, dto);
-        }
-
+        data.put("dto", dto);
+        batch.set(docField, data, SetOptions.merge());
         return batch.commit();
+    }
+
+    public Task<QuerySnapshot> getItemInCartByDateAndFieldID (String userID, String fieldID, String date) {
+        return db.collection(COLLECTION_USERS).document(userID).collection(SUB_COLLECTION_CART)
+                .whereEqualTo("date", date).whereEqualTo("fieldID", fieldID).get();
+
+    }
+
+    public Task<QuerySnapshot> getTimePikerOfCart (String userID, String cartItemID) {
+        return db.collection(COLLECTION_USERS).document(userID).collection(SUB_COLLECTION_CART)
+                .document(cartItemID).collection(SUB_COLLECTION_TIMESLOTS).get();
+
     }
 
 }
