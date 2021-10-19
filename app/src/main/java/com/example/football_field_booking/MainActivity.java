@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     String role = documentSnapshot.getString("userInfo.role");
+                    Log.d("USER", "role: " + role);
                     if (role != null) {
                         switch (role) {
                             case "owner": {

@@ -224,6 +224,7 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                     timePickerDTOList = documentSnapshot.toObject(FootballFieldDocument.class).getTimePicker();
                     String date = txtSelectDate.getText().toString();
                     if(user != null) {
+                        Log.d("USER", "date is: " + date);
                         userDAO.getItemInCartByDateAndFieldID(user.getUid(), fieldDTO.getFieldID(), date ).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                             @Override
                             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
