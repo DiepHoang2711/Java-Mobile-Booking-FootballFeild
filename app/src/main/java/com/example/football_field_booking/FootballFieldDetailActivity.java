@@ -25,6 +25,7 @@ import com.example.football_field_booking.daos.FootballFieldDAO;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.CartItemDTO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
+import com.example.football_field_booking.dtos.FootballFieldDocument;
 import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -85,6 +86,7 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
         txtSelectDate.setText(df.format(calendar.getTime()));
 
         timePickerInCartList = new ArrayList<>();
+        timePickerDTOList = new ArrayList<>();
 
 
         btnBack.setOnClickListener(new View.OnClickListener() {
@@ -106,15 +108,13 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
         });
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            btnAddToCart.setVisibility(View.VISIBLE);
-        } else {
+        if(user != null) {
             UserDAO userDAO = new UserDAO();
             userDAO.getUserById(user.getUid())
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            UserDTO dto = documentSnapshot.toObject(UserDTO.class);
+                            UserDTO dto = documentSnapshot.get("userInfo",UserDTO.class);
                             String role = dto.getRole();
                             if (role.equals("owner")) {
                                 groupBtnOwner.setVisibility(View.VISIBLE);
@@ -129,25 +129,9 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
         FootballFieldDAO fieldDAO = new FootballFieldDAO();
         Intent intent = this.getIntent();
         String fieldID = intent.getStringExtra("fieldID");
-        fieldDAO.getFieldByID(fieldID).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                fieldDTO=documentSnapshot.toObject(FootballFieldDTO.class);
-                txtFieldName.setText(fieldDTO.getName());
-                txtLocation.setText(fieldDTO.getLocation());
-                txtRate.setText(fieldDTO.getRate() + "");
-                txtType.setText(fieldDTO.getType());
-                if (fieldDTO.getImage() != null) {
-                    Uri uri = Uri.parse(fieldDTO.getImage());
-                    Glide.with(imgFootBallField.getContext())
-                            .load(uri)
-                            .into(imgFootBallField);
-                }
-
-                loadTimePickerListView();
-
-            }
-        });
+        if (fieldID != null) {
+            loadData(fieldID);
+        }
     }
 
     @Override
@@ -201,7 +185,7 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
             UserDAO userDAO = new UserDAO();
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if(user != null) {
-                userDAO.addToCart(cartItemDTO, user.getUid(), fieldDTO).addOnCompleteListener(new OnCompleteListener<Void>() {
+                userDAO.addToCart(cartItemDTO, user.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()){
@@ -217,45 +201,58 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
         }
     }
 
-    private void loadTimePickerListView () {
-        FootballFieldDAO fieldDAO = new FootballFieldDAO();
-        UserDAO userDAO = new UserDAO();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user != null) {
-            try {
-                fieldDAO.getAllTimePickerOfField(fieldDTO.getFieldID())
-                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+    private void loadData (String fieldID) {
+        try {
+            FootballFieldDAO fieldDAO = new FootballFieldDAO();
+            UserDAO userDAO = new UserDAO();
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            fieldDAO.getFieldByID(fieldID).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    fieldDTO=documentSnapshot.get("fieldInfo",FootballFieldDTO.class);
+                    txtFieldName.setText(fieldDTO.getName());
+                    txtLocation.setText(fieldDTO.getLocation());
+                    txtRate.setText(fieldDTO.getRate() + "");
+                    txtType.setText(fieldDTO.getType());
+                    if (fieldDTO.getImage() != null) {
+                        Uri uri = Uri.parse(fieldDTO.getImage());
+                        Glide.with(imgFootBallField.getContext())
+                                .load(uri)
+                                .into(imgFootBallField);
+                    }
+
+                    timePickerDTOList = documentSnapshot.toObject(FootballFieldDocument.class).getTimePicker();
+                    String date = txtSelectDate.getText().toString();
+                    if(user != null) {
+                        Log.d("USER", "date is: " + date);
+                        userDAO.getItemInCartByDateAndFieldID(user.getUid(), fieldDTO.getFieldID(), date ).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                             @Override
                             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                String date = txtSelectDate.getText().toString();
-                                timePickerDTOList = new ArrayList<>();
-                                for (QueryDocumentSnapshot snapshot:queryDocumentSnapshots){
-                                    timePickerDTOList.add(snapshot.toObject(TimePickerDTO.class));
+                                for (QueryDocumentSnapshot queryDocumentSnapshot: queryDocumentSnapshots) {
+                                    List<TimePickerDTO> list = queryDocumentSnapshot.toObject(CartItemDTO.class).getListTimeSlot();
+                                    Log.d("USER", "listInCart: " + list.toString());
+                                    timePickerInCartList.addAll(list);
                                 }
-                                userDAO.getItemInCartByDateAndFieldID(user.getUid(), fieldDTO.getFieldID(), date ).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                        for (QueryDocumentSnapshot queryDocumentSnapshot: queryDocumentSnapshots) {
-                                            ArrayList<TimePickerDTO> map = (ArrayList<TimePickerDTO>) queryDocumentSnapshot.get("listTimeSlot");
-                                            FootballFieldDTO dto =  queryDocumentSnapshot.get("dto", FootballFieldDTO.class);
-                                            Log.d("USER", "listInCart: " + map.toString());
-                                            Log.d("USER", "dtoInDB: " + dto.toString());
-//                                            timePickerInCartList.addAll(list);
-                                        }
-//                                        List<TimePickerDTO> bookedTimeList = new ArrayList<>();
-//                                        timePickerDetailAdapter = new TimePickerDetailAdapter(FootballFieldDetailActivity.this,timePickerDTOList, timePickerInCartList, bookedTimeList);
-//                                        lvTimePickerDetail.setScrollContainer(false);
-//                                        lvTimePickerDetail.setAdapter(timePickerDetailAdapter);
-
-                                    }
-                                });
+                                List<TimePickerDTO> bookedTimeList = new ArrayList<>();
+                                timePickerDetailAdapter = new TimePickerDetailAdapter(FootballFieldDetailActivity.this,timePickerDTOList, timePickerInCartList, bookedTimeList);
+                                lvTimePickerDetail.setScrollContainer(false);
+                                lvTimePickerDetail.setAdapter(timePickerDetailAdapter);
 
                             }
                         });
-            }catch (Exception e) {
-                e.printStackTrace();
-            }
+                    } else {
+                        List<TimePickerDTO> bookedTimeList = new ArrayList<>();
+                        timePickerDetailAdapter = new TimePickerDetailAdapter(FootballFieldDetailActivity.this,timePickerDTOList, timePickerInCartList, bookedTimeList);
+                        lvTimePickerDetail.setScrollContainer(false);
+                        lvTimePickerDetail.setAdapter(timePickerDetailAdapter);
+                    }
 
+
+                }
+            });
+        }catch (Exception e) {
+            e.printStackTrace();
         }
+
     }
 }

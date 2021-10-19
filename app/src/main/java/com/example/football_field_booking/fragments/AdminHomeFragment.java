@@ -49,7 +49,8 @@ public class AdminHomeFragment extends Fragment {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (QueryDocumentSnapshot doc: queryDocumentSnapshots) {
-                    listUser.add(doc.toObject(UserDTO.class));
+                    UserDTO dto = doc.get("userInfo", UserDTO.class);
+                    listUser.add(dto);
                     Log.d("USER", "Add : " + doc.toObject(UserDTO.class).toString());
 
                 }

@@ -69,8 +69,9 @@ public class UserHomeFragment extends Fragment {
                 try {
                     for (QueryDocumentSnapshot doc: queryDocumentSnapshots) {
                         Log.d("USER", "DocID: " + doc.getId());
-                        Log.d("USER", "Doc: " + doc.toObject(FootballFieldDTO.class));
-                        fieldDTOList.add(doc.toObject(FootballFieldDTO.class));
+                        Log.d("USER", "Doc: " + doc.get("fieldInfo", FootballFieldDTO.class));
+                        FootballFieldDTO dto = doc.get("fieldInfo", FootballFieldDTO.class);
+                        fieldDTOList.add(dto);
                     }
                     fieldAdapter = new FootballFieldAdapter(getActivity(), fieldDTOList);
                     lvFootballField.setAdapter(fieldAdapter);

@@ -14,16 +14,19 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +40,6 @@ public class FootballFieldDAO {
 
     public static final String SUB_COLLECTION_FOOTBALL_FIELD_INFO = "footballFieldInfos";
 
-    public static final String SUB_COLLECTION_TIME_PICKER="timePicker";
-
-    private static final String SUB_COLLECTION_OWNER_INFO = "ownerInfo";
-
     private static final String COLLECTION_USERS = "users";
 
     public static final String CONST_OF_PROJECT = "constOfProject";
@@ -51,23 +50,27 @@ public class FootballFieldDAO {
         db = FirebaseFirestore.getInstance();
     }
 
-    public Task<Void> createNewFootballField(FootballFieldDTO fieldDTO, Uri uriImg,UserDTO owner,List<TimePickerDTO> timePickerDTOList) throws Exception {
+    public Task<Void> createNewFootballField(FootballFieldDTO fieldDTO,UserDTO owner,List<TimePickerDTO> timePickerDTOList) throws Exception {
         DocumentReference footballFieldReference = db.collection(COLLECTION_FOOTBALL_FIELD).document();
         fieldDTO.setFieldID(footballFieldReference.getId());
         WriteBatch batch= db.batch();
-        batch.set(footballFieldReference,fieldDTO);
+        Map<String, Object> dataFBField = new HashMap<>();
+        dataFBField.put("fieldInfo", fieldDTO);
+        batch.set(footballFieldReference, dataFBField, SetOptions.merge());
 
-        DocumentReference ownerInfoReference = footballFieldReference.collection(SUB_COLLECTION_OWNER_INFO).document(owner.getUserID());
-        batch.set(ownerInfoReference,owner);
+        Map<String, Object> dataOwner= new HashMap<>();
+        dataOwner.put("ownerInfo", owner);
+        batch.set(footballFieldReference, dataOwner, SetOptions.merge());
 
-        DocumentReference footballFieldInfoReference = db.collection(COLLECTION_USERS).document(owner.getUserID()).collection(SUB_COLLECTION_FOOTBALL_FIELD_INFO).document(fieldDTO.getFieldID());
-        batch.set(footballFieldInfoReference,fieldDTO);
+        DocumentReference footballFieldInfoReference = db.collection(COLLECTION_USERS).document(owner.getUserID());
+        Map<String, Object> dataInOwner = new HashMap<>();
+        dataInOwner.put("fieldsInfo", FieldValue.arrayUnion(fieldDTO));
+        batch.update(footballFieldInfoReference, dataInOwner);
 
-        for (TimePickerDTO dto:timePickerDTOList){
-            DocumentReference reference=  footballFieldReference.collection(SUB_COLLECTION_TIME_PICKER).document();
-            dto.setTimePickerID(reference.getId());
-            batch.set(reference,dto);
-        }
+        Map<String, Object> dataTimePicker= new HashMap<>();
+        dataTimePicker.put("timePicker", timePickerDTOList);
+        batch.set(footballFieldReference, dataTimePicker, SetOptions.merge());
+
         return batch.commit();
     }
 
@@ -89,69 +92,52 @@ public class FootballFieldDAO {
         return doc.get();
     }
 
-    public Task<QuerySnapshot> getAllFootballFieldOfOwner(String ownerID) {
-        return db.collection(COLLECTION_USERS).document(ownerID).collection(SUB_COLLECTION_FOOTBALL_FIELD_INFO).get();
-    }
-
     public Task<QuerySnapshot> getAllFootballField() {
         return db.collection(COLLECTION_FOOTBALL_FIELD).get();
     }
-
-
 
     public Task<DocumentSnapshot> getFieldByID (String fieldID) {
         DocumentReference doc = db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID);
         return doc.get();
     }
 
-    public Task<QuerySnapshot> getAllTimePickerOfField (String fieldID) {
-        return db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID).collection(SUB_COLLECTION_TIME_PICKER).get();
-    }
-
-    public Task<Void> updateFootballField (FootballFieldDTO fieldDTO, String userID) throws Exception {
+    public Task<Void> updateFootballField (FootballFieldDTO fieldDTO, FootballFieldDTO fieldOldDTO, String userID, List<TimePickerDTO> timePickerDTOList) throws Exception {
         DocumentReference docField = db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldDTO.getFieldID());
+        DocumentReference docOwner = db.collection(COLLECTION_USERS).document(userID);
 
-        DocumentReference docFieldOfOwner = db.collection(COLLECTION_USERS).document(userID)
-                .collection(SUB_COLLECTION_FOOTBALL_FIELD_INFO).document(fieldDTO.getFieldID());
-        Log.d("USER", "docFieldOfOwner: " + docFieldOfOwner);
+        Log.d("USER", "docFieldOfOwner: " + docOwner);
         return db.runTransaction(new Transaction.Function<Void>() {
             @Nullable
             @Override
             public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
 
                 Map<String, Object> dataField = new HashMap<>();
-                dataField.put("name", fieldDTO.getName());
-                dataField.put("location", fieldDTO.getLocation());
-                dataField.put("type", fieldDTO.getType());
-                dataField.put("image", fieldDTO.getImage());
-                dataField.put("status", fieldDTO.getStatus());
+                dataField.put("fieldInfo.name", fieldDTO.getName());
+                dataField.put("fieldInfo.location", fieldDTO.getLocation());
+                dataField.put("fieldInfo.type", fieldDTO.getType());
+                dataField.put("fieldInfo.image", fieldDTO.getImage());
+                dataField.put("fieldInfo.status", fieldDTO.getStatus());
                 transaction.update(docField, dataField);
 
-                transaction.update(docFieldOfOwner, dataField);
+                Map<String,Object> dataDeleteField = new HashMap<>();
+                dataDeleteField.put("fieldsInfo", FieldValue.arrayRemove(fieldOldDTO));
+                transaction.update(docOwner, dataDeleteField);
+
+                Map<String,Object> dataUpdateField = new HashMap<>();
+                dataUpdateField.put("fieldsInfo", FieldValue.arrayUnion(fieldDTO));
+                transaction.update(docOwner, dataUpdateField);
+
+                Map<String,Object> dataDeleteTimePicker = new HashMap<>();
+                dataDeleteTimePicker.put("timePicker", FieldValue.delete());
+                transaction.update(docField, dataDeleteTimePicker);
+
+                Map<String, Object> dataUpdateTimePicker = new HashMap<>();
+                dataUpdateTimePicker.put("timePicker", timePickerDTOList);
+                transaction.set(docField, dataUpdateTimePicker, SetOptions.merge());
 
                 return null;
             }
         });
-    }
-
-    public void updateTimePicker (List<TimePickerDTO> list, String fieldID) throws Exception {
-        WriteBatch batch = db.batch();
-        DocumentReference docField = db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID);
-        docField.collection(SUB_COLLECTION_TIME_PICKER).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (DocumentSnapshot doc: queryDocumentSnapshots.getDocuments()) {
-                    batch.delete(doc.getReference());
-                }
-                for (TimePickerDTO dto:list){
-                    DocumentReference reference = docField.collection(SUB_COLLECTION_TIME_PICKER).document();
-                    dto.setTimePickerID(reference.getId());
-                    batch.set(reference,dto);
-                }
-                batch.commit();
-            }
-        });
-
     }
 
     public Task<QuerySnapshot> searchByLikeName(String name) throws Exception{

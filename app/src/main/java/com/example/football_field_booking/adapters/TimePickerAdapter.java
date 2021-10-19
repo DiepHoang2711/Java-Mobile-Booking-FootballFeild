@@ -250,7 +250,7 @@ public class TimePickerAdapter extends BaseAdapter {
                                 try {
                                     price = Float.parseFloat(v.getText().toString());
                                     timePickerDTO.setPrice(price);
-                                }catch (Exception e) {
+                                } catch (Exception e) {
                                     timePickerDTO.setPrice(-1);
                                 }
                                 checkValidTimePicker(i);

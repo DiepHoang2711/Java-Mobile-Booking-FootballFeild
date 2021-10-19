@@ -160,23 +160,6 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
                 createFootballField();
             }
         }
-        footballFieldDTO = new FootballFieldDTO();
-        footballFieldDTO.setName(name);
-        footballFieldDTO.setType(type);
-        footballFieldDTO.setLocation(location);
-        footballFieldDTO.setStatus(ACTIVE);
-        footballFieldDTO.setRate(0);
-        list = new ArrayList<>();
-        for (TimePickerDTO dto : timePickerAdapter.getTimePickerDTOList()) {
-            if (dto.getPrice() > -1 && dto.getStart() > -1 && dto.getEnd() > -1) {
-                list.add(dto);
-            }
-        }
-        if (uriImg != null) {
-            uploadImageToStorage();
-        } else {
-            createFootballField();
-        }
     }
 
     private void uploadImageToStorage() {
@@ -217,7 +200,8 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             try {
-                                fieldDAO.createNewFootballField(footballFieldDTO, uriImg,documentSnapshot.toObject(UserDTO.class),list)
+                                UserDTO owner = documentSnapshot.get("userInfo",UserDTO.class);
+                                fieldDAO.createNewFootballField(footballFieldDTO, owner, list)
                                         .addOnFailureListener(new OnFailureListener() {
                                             @Override
                                             public void onFailure(@NonNull Exception e) {

@@ -145,7 +145,6 @@ public class LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(GOOGLE_LOG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            UserDAO userDAO = new UserDAO();
 
                             if (task.getResult().getAdditionalUserInfo().isNewUser()) {
                                 try {
@@ -213,7 +212,7 @@ public class LoginActivity extends AppCompatActivity {
             userDAO.getUserById(user.getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    String role = documentSnapshot.getString("role");
+                    String role = documentSnapshot.getString("userInfo.role");
                     if (role != null) {
                         switch (role) {
                             case "user": {

@@ -13,6 +13,9 @@ public class CartItemDTO implements Serializable {
     private float total;
     private List<TimePickerDTO> listTimeSlot;
 
+    public CartItemDTO() {
+    }
+
     public CartItemDTO(String fieldID, String name, String location, String type, String image, String date, float total, List<TimePickerDTO> timePickerDTOList) {
         this.fieldID = fieldID;
         this.name = name;
@@ -86,5 +89,19 @@ public class CartItemDTO implements Serializable {
 
     public void setListTimeSlot(List<TimePickerDTO> listTimeSlot) {
         this.listTimeSlot = listTimeSlot;
+    }
+
+    @Override
+    public String toString() {
+        return "CartItemDTO{" +
+                "fieldID='" + fieldID + '\'' +
+                ", name='" + name + '\'' +
+                ", location='" + location + '\'' +
+                ", type='" + type + '\'' +
+                ", image='" + image + '\'' +
+                ", date='" + date + '\'' +
+                ", total=" + total +
+                ", listTimeSlot=" + listTimeSlot +
+                '}';
     }
 }

@@ -17,8 +17,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.football_field_booking.daos.FootballFieldDAO;
 import com.example.football_field_booking.daos.UserDAO;
+import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.UserDTO;
+import com.example.football_field_booking.dtos.UserDocument;
 import com.example.football_field_booking.utils.Utils;
 import com.example.football_field_booking.validations.Validation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -29,6 +32,11 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EditProfileActivity extends AppCompatActivity {
 
@@ -40,6 +48,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private UserDTO userDTO = null;
     private Validation val;
     private Utils util;
+    private List<FootballFieldDTO> fieldDTOList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +90,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
 
                         try {
-                            userDTO = documentSnapshot.toObject(UserDTO.class);
+                            userDTO = documentSnapshot.get("userInfo", UserDTO.class);
 
                             Log.d("USER","Is verify: " + String.valueOf(user.isEmailVerified()));
                             txtUserId.setText(userDTO.getUserID());
@@ -95,6 +104,20 @@ public class EditProfileActivity extends AppCompatActivity {
                                         .into(imgUser);
                             } else {
                                 imgUser.setImageResource(R.drawable.outline_account_circle_24);
+                            }
+
+                            FootballFieldDAO fieldDAO = new FootballFieldDAO();
+                            if(userDTO.getRole().equals("owner")){
+                                fieldDTOList = documentSnapshot.toObject(UserDocument.class).getFieldsInfo();
+//                                fieldDAO.getAllFootballFieldOfOwner(userDTO.getUserID()).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//                                    @Override
+//                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+//                                        for (QueryDocumentSnapshot doc: queryDocumentSnapshots) {
+//                                            FootballFieldDTO dto = doc.get("fieldInfo", FootballFieldDTO.class);
+//                                            fieldDTOList.add(dto);
+//                                        }
+//                                    }
+//                                });
                             }
 
                         } catch (Exception e) {
@@ -121,13 +144,15 @@ public class EditProfileActivity extends AppCompatActivity {
                     if(isValidUpdate(fullName, phone)) {
                         userDTO.setFullName(fullName);
                         userDTO.setPhone(phone);
-                        userDAO.updateUser(userDTO)
+                        userDAO.updateUser(userDTO, fieldDTOList)
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             finish();
                                             startActivity(EditProfileActivity.this.getIntent());
+                                            Toast.makeText(EditProfileActivity.this,
+                                                    "Success to update User", Toast.LENGTH_SHORT).show();
                                         } else {
                                             Toast.makeText(EditProfileActivity.this,
                                                     "Fail to update User", Toast.LENGTH_SHORT).show();
@@ -162,7 +187,7 @@ public class EditProfileActivity extends AppCompatActivity {
                                   try {
                                       if(task.isSuccessful()) {
                                           userDTO.setPhotoUri(task.getResult().toString());
-                                          userDAO.updateUser(userDTO).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                          userDAO.updateUser(userDTO, fieldDTOList).addOnCompleteListener(new OnCompleteListener<Void>() {
                                               @Override
                                               public void onComplete(@NonNull Task<Void> task) {
                                                   progressDialog.cancel();

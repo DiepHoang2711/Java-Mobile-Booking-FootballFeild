@@ -24,6 +24,7 @@ import com.example.football_field_booking.adapters.TimePickerAdapter;
 import com.example.football_field_booking.daos.FootballFieldDAO;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
+import com.example.football_field_booking.dtos.FootballFieldDocument;
 import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.utils.Utils;
 import com.example.football_field_booking.validations.Validation;
@@ -51,7 +52,7 @@ public class EditFootballFieldActivity extends AppCompatActivity {
     private Uri imgUri;
     private ListView lvTimePickerWorking;
     private AutoCompleteTextView auComTxtType, auComTxtStatus;
-    private FootballFieldDTO fieldDTO;
+    private FootballFieldDTO fieldDTO, fieldOldDTO;
     private TimePickerAdapter timePickerAdapter;
     private Utils utils;
     private Validation val;
@@ -110,7 +111,8 @@ public class EditFootballFieldActivity extends AppCompatActivity {
                 if(task.isSuccessful()){
                     try {
                         DocumentSnapshot doc = task.getResult();
-                        fieldDTO = doc.toObject(FootballFieldDTO.class);
+                        fieldDTO = doc.get("fieldInfo",FootballFieldDTO.class);
+                        fieldOldDTO = doc.get("fieldInfo",FootballFieldDTO.class);
                         Log.d("USER", "dto: " + fieldDTO);
 
                         tlFootballFieldName.getEditText().setText(fieldDTO.getName());
@@ -127,6 +129,10 @@ public class EditFootballFieldActivity extends AppCompatActivity {
                             imgFootBallField.setImageResource(R.drawable.myfield);
                         }
 
+                        List<TimePickerDTO> timePickerDTOList = doc.toObject(FootballFieldDocument.class).getTimePicker();
+                        timePickerAdapter = new TimePickerAdapter(EditFootballFieldActivity.this, timePickerDTOList);
+                        lvTimePickerWorking.setAdapter(timePickerAdapter);
+
                     }catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -137,30 +143,30 @@ public class EditFootballFieldActivity extends AppCompatActivity {
             }
         });
 
-        footballFieldDAO.getAllTimePickerOfField(fieldID).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()){
-                    try {
-                        List<TimePickerDTO> list = new ArrayList<>();
-                        for (QueryDocumentSnapshot doc: task.getResult()) {
-                            TimePickerDTO dto = doc.toObject(TimePickerDTO.class);
-                            list.add(dto);
-                        }
-                        timePickerAdapter = new TimePickerAdapter(EditFootballFieldActivity.this, list);
-                        lvTimePickerWorking.setAdapter(timePickerAdapter);
-                        
-                    }catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                }else {
-                    Toast.makeText(EditFootballFieldActivity.this, "Get time picker data fail",
-                            Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-            }
-        });
+//        footballFieldDAO.getAllTimePickerOfField(fieldID).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                if (task.isSuccessful()){
+//                    try {
+//                        List<TimePickerDTO> list = new ArrayList<>();
+//                        for (QueryDocumentSnapshot doc: task.getResult()) {
+//                            TimePickerDTO dto = doc.toObject(TimePickerDTO.class);
+//                            list.add(dto);
+//                        }
+//                        timePickerAdapter = new TimePickerAdapter(EditFootballFieldActivity.this, list);
+//                        lvTimePickerWorking.setAdapter(timePickerAdapter);
+//
+//                    }catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                }else {
+//                    Toast.makeText(EditFootballFieldActivity.this, "Get time picker data fail",
+//                            Toast.LENGTH_SHORT).show();
+//                    finish();
+//                }
+//            }
+//        });
 
         btnChooseImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,11 +193,9 @@ public class EditFootballFieldActivity extends AppCompatActivity {
                             fieldDTO.setType(type);
                             fieldDTO.setStatus(status);
 
-                            List<TimePickerDTO> list = timePickerAdapter.getTimePickerDTOList();
                             ProgressDialog progressDialog = new ProgressDialog(EditFootballFieldActivity.this);
                             utils.showProgressDialog(progressDialog, "Updating ....", "Please wait for update field");
                             updateFootballField();
-                            updateTimePicker(list, fieldID);
                             progressDialog.cancel();
 
                         }
@@ -220,7 +224,6 @@ public class EditFootballFieldActivity extends AppCompatActivity {
                 try {
                     imgUri = data.getData();
                     imgFootBallField.setImageURI(imgUri);
-                    UserDAO userDAO = new UserDAO();
                     ProgressDialog progressDialog = new ProgressDialog(EditFootballFieldActivity.this);
                     utils.showProgressDialog(progressDialog, "Uploading ....", "Please wait for uploading image");
                     uploadImgFootballField(imgUri);
@@ -237,7 +240,8 @@ public class EditFootballFieldActivity extends AppCompatActivity {
         try {
             FootballFieldDAO fieldDAO = new FootballFieldDAO();
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            fieldDAO.updateFootballField(fieldDTO,user.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
+            List<TimePickerDTO> list = timePickerAdapter.getTimePickerDTOList();
+            fieldDAO.updateFootballField(fieldDTO, fieldOldDTO, user.getUid(), list).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()) {
@@ -274,14 +278,14 @@ public class EditFootballFieldActivity extends AppCompatActivity {
 
     }
 
-    private void updateTimePicker (List<TimePickerDTO> listDTO, String fieldID) {
-        try {
-            FootballFieldDAO fieldDAO = new FootballFieldDAO();
-            fieldDAO.updateTimePicker(listDTO, fieldID);
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    private void updateTimePicker (List<TimePickerDTO> listDTO, String fieldID) {
+//        try {
+//            FootballFieldDAO fieldDAO = new FootballFieldDAO();
+//            fieldDAO.updateTimePicker(listDTO, fieldID);
+//        }catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     private boolean isValidUpdate(String name, String location, String type, String status) {
         boolean result = true;
