@@ -17,6 +17,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -119,20 +120,23 @@ public class TimePickerDetailAdapter extends BaseAdapter {
         if (rowView == null) {
             view = layoutInflater.inflate(R.layout.item_time_picker_detail, viewGroup, false);
         }
+        TextView txtPrice = view.findViewById(R.id.txtPrice);
+        GridLayout groupToggleButton = view.findViewById(R.id.groupToggleButton);
+        groupToggleButton.removeAllViewsInLayout();
+        Float price=priceList.get(i);
+        txtPrice.setText("$"+price+"/h");
         try {
-            TextView txtPrice = view.findViewById(R.id.txtPrice);
-            GridLayout groupToggleButton = view.findViewById(R.id.groupToggleButton);
-            groupToggleButton.removeAllViewsInLayout();
-            Float price = priceList.get(i);
-            txtPrice.setText("$"+price+"/h");
-            Log.d("USER", i + "  listDTO: " + timePickerDTOList.toString());
             for (TimePickerDTO dto : timePickerDTOList) {
                 if (dto.getPrice() == price) {
-                    ToggleButton toggleButton = new ToggleButton(view.getContext());
+                    ToggleButton toggleButton = new ToggleButton(context);
+                    toggleButton.setTextAppearance(context,R.style.MyToggleButton);
+                    toggleButton.setBackground(context.getResources().getDrawable(R.drawable.toggle_selector));
+                    LinearLayout.LayoutParams params= new LinearLayout.LayoutParams(200,100);
+                    params.setMargins(10,5,10,5);
+                    toggleButton.setLayoutParams(params);
                     toggleButton.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                    toggleButton.setBackground(view.getResources().getDrawable(R.drawable.toggle_selector));
-                    toggleButton.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                    toggleButton.setTextSize(12);
+                    toggleButton.setText(dto.getStart()+"h-"+dto.getEnd()+"h");
+                    groupToggleButton.addView(toggleButton);
                     toggleButton.setText(dto.getStart() + "-" + dto.getEnd());
                     toggleButton.setTextOn(dto.getStart() + "-" + dto.getEnd());
                     toggleButton.setTextOff(dto.getStart() + "-" + dto.getEnd());

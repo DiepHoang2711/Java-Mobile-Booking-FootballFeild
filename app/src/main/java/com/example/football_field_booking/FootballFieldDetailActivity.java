@@ -57,15 +57,15 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
     private int year, month, day;
     private Calendar calendar;
     private FloatingActionButton btnBack;
-    private Button btnAddToCart;
-    private LinearLayout groupBtnOwner;
-    private TextView txtFieldName,txtLocation,txtRate,txtType;
-    private List<TimePickerDTO> timePickerDTOList, timePickerInCartList;
+    private Button btnAddToCart,btnEdit,btnDelete;
+    private TextView txtFieldName, txtLocation, txtRate, txtType;
+    private List<TimePickerDTO> timePickerDTOList;
     private TimePickerDetailAdapter timePickerDetailAdapter;
     private ListView lvTimePickerDetail;
     private ImageView imgFootBallField;
     public static final SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
     private FootballFieldDTO fieldDTO;
+    private List<TimePickerDTO> timePickerInCartList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,13 +76,15 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
         txtSelectDate = findViewById(R.id.txtSelectDate);
         btnBack = findViewById(R.id.btnBack);
         btnAddToCart = findViewById(R.id.btnAddToCart);
-        groupBtnOwner = findViewById(R.id.groupBtnOwner);
-        txtFieldName=findViewById(R.id.txtFieldName);
-        txtLocation=findViewById(R.id.txtLocation);
-        txtRate=findViewById(R.id.txtRate);
-        txtType=findViewById(R.id.txtType);
-        lvTimePickerDetail=findViewById(R.id.lvTimePickerDetail);
-        imgFootBallField=findViewById(R.id.imgFootBallField);
+        btnEdit=findViewById(R.id.btnEdit);
+        btnDelete=findViewById(R.id.btnDelete);
+        txtFieldName = findViewById(R.id.txtFieldName);
+        txtLocation = findViewById(R.id.txtLocation);
+        txtRate = findViewById(R.id.txtRate);
+        txtType = findViewById(R.id.txtType);
+        lvTimePickerDetail = findViewById(R.id.lvTimePickerDetail);
+        imgFootBallField = findViewById(R.id.imgFootBallField);
+
         txtSelectDate.setText(df.format(calendar.getTime()));
 
         timePickerInCartList = new ArrayList<>();
@@ -117,8 +119,8 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                             UserDTO dto = documentSnapshot.get("userInfo",UserDTO.class);
                             String role = dto.getRole();
                             if (role.equals("owner")) {
-                                groupBtnOwner.setVisibility(View.VISIBLE);
-
+                                btnEdit.setVisibility(View.VISIBLE);
+                                btnDelete.setVisibility(View.VISIBLE);
                             } else if(role.equals("user")){
                                 btnAddToCart.setVisibility(View.VISIBLE);
                             }
