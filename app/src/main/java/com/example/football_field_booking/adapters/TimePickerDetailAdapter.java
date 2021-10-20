@@ -39,8 +39,8 @@ public class TimePickerDetailAdapter extends BaseAdapter {
     private Context context;
     List<TimePickerDTO> timePickerDTOList;
     private LayoutInflater layoutInflater;
-    private List<Float> priceList;
     private List<TimePickerDTO> chooseList;
+    private List<Float> priceList;
 
     public List<TimePickerDTO> getTimePickerDTOList() {
         return timePickerDTOList;
