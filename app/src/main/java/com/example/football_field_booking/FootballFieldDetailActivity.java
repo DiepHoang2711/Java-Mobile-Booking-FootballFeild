@@ -254,5 +254,30 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+//        private List<CartItemDTO> cartItemDTOList;
+//        private List<BookingDocument> bookingDocumentList;
+//
+//        getBookingforUser(user ID).addsusssecc {
+//
+//            for( bookingDoc: bookingDocs){
+//                bookingDTO = bookingDoc.toObject(BookingDTO.class);
+//                BookingDocument bookingDocument = new BookingDocumnet();
+//                bookingDocument.setbookingDTO(bookingDTO);
+//                getAllFieldsInBooking(bookingDoc.getID).addsussecc {
+//                    for(doc: docs) {
+//                        field = doc.toocject(CartItemDTO.class);
+//                        cartItemDTOList.add(field);
+//                    }
+//                    bookingDocument.setCartItemDTOList(cartItemDTOList);
+//                    bookingDocumentList.add(bookingDocument);
+//                    adapter.set(bookingDocumentList);
+//                    lv.setAdpter(adapter);
+//                }
+//            }
+//
+//
+//        }
+
+
     }
 }
