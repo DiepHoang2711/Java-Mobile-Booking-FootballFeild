@@ -65,6 +65,7 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
     private ImageView imgFootBallField;
     public static final SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
     private FootballFieldDTO fieldDTO;
+    private List<TimePickerDTO> timePickerInCartList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -137,7 +137,6 @@ public class TimePickerDetailAdapter extends BaseAdapter {
                     toggleButton.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                     toggleButton.setText(dto.getStart()+"h-"+dto.getEnd()+"h");
                     groupToggleButton.addView(toggleButton);
-                    toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     toggleButton.setText(dto.getStart() + "-" + dto.getEnd());
                     toggleButton.setTextOn(dto.getStart() + "-" + dto.getEnd());
                     toggleButton.setTextOff(dto.getStart() + "-" + dto.getEnd());
