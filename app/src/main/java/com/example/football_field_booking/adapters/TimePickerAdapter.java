@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.example.football_field_booking.R;
 import com.example.football_field_booking.dtos.TimePickerDTO;
@@ -249,7 +250,7 @@ public class TimePickerAdapter extends BaseAdapter {
                                 try {
                                     price = Float.parseFloat(v.getText().toString());
                                     timePickerDTO.setPrice(price);
-                                }catch (Exception e) {
+                                } catch (Exception e) {
                                     timePickerDTO.setPrice(-1);
                                 }
                                 checkValidTimePicker(i);

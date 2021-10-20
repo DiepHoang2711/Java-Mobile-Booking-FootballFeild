@@ -17,8 +17,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.football_field_booking.daos.FootballFieldDAO;
 import com.example.football_field_booking.daos.UserDAO;
+import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.UserDTO;
+import com.example.football_field_booking.dtos.UserDocument;
 import com.example.football_field_booking.utils.Utils;
 import com.example.football_field_booking.validations.Validation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -29,8 +32,13 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
-public class UpdateProfileActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class EditProfileActivity extends AppCompatActivity {
 
     public static final int RC_IMAGE_PICKER = 1000;
     private TextView txtUserId, txtEmail;
@@ -40,11 +48,12 @@ public class UpdateProfileActivity extends AppCompatActivity {
     private UserDTO userDTO = null;
     private Validation val;
     private Utils util;
+    private List<FootballFieldDTO> fieldDTOList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_update_profile);
+        setContentView(R.layout.activity_edit_profile);
 
         txtUserId = findViewById(R.id.txtUserID);
         txtEmail = findViewById(R.id.txtEmail);
@@ -81,7 +90,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
 
                         try {
-                            userDTO = documentSnapshot.toObject(UserDTO.class);
+                            userDTO = documentSnapshot.get("userInfo", UserDTO.class);
 
                             Log.d("USER","Is verify: " + String.valueOf(user.isEmailVerified()));
                             txtUserId.setText(userDTO.getUserID());
@@ -97,6 +106,20 @@ public class UpdateProfileActivity extends AppCompatActivity {
                                 imgUser.setImageResource(R.drawable.outline_account_circle_24);
                             }
 
+                            FootballFieldDAO fieldDAO = new FootballFieldDAO();
+                            if(userDTO.getRole().equals("owner")){
+                                fieldDTOList = documentSnapshot.toObject(UserDocument.class).getFieldsInfo();
+//                                fieldDAO.getAllFootballFieldOfOwner(userDTO.getUserID()).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//                                    @Override
+//                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+//                                        for (QueryDocumentSnapshot doc: queryDocumentSnapshots) {
+//                                            FootballFieldDTO dto = doc.get("fieldInfo", FootballFieldDTO.class);
+//                                            fieldDTOList.add(dto);
+//                                        }
+//                                    }
+//                                });
+                            }
+
                         } catch (Exception e) {
                             Log.d("DAO", e.toString());
                         }
@@ -106,7 +129,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(UpdateProfileActivity.this,
+                        Toast.makeText(EditProfileActivity.this,
                                 "Fail to get user on server", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -121,15 +144,17 @@ public class UpdateProfileActivity extends AppCompatActivity {
                     if(isValidUpdate(fullName, phone)) {
                         userDTO.setFullName(fullName);
                         userDTO.setPhone(phone);
-                        userDAO.updateUser(userDTO)
+                        userDAO.updateUser(userDTO, fieldDTOList)
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             finish();
-                                            startActivity(UpdateProfileActivity.this.getIntent());
+                                            startActivity(EditProfileActivity.this.getIntent());
+                                            Toast.makeText(EditProfileActivity.this,
+                                                    "Success to update User", Toast.LENGTH_SHORT).show();
                                         } else {
-                                            Toast.makeText(UpdateProfileActivity.this,
+                                            Toast.makeText(EditProfileActivity.this,
                                                     "Fail to update User", Toast.LENGTH_SHORT).show();
                                         }
                                     }
@@ -137,7 +162,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
                     }
 
                 }else {
-                    Toast.makeText(UpdateProfileActivity.this,
+                    Toast.makeText(EditProfileActivity.this,
                             R.string.something_went_wrong, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -153,7 +178,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
               try {
                   Uri uri = data.getData();
                   UserDAO userDAO = new UserDAO();
-                  ProgressDialog progressDialog = new ProgressDialog(UpdateProfileActivity.this);
+                  ProgressDialog progressDialog = new ProgressDialog(EditProfileActivity.this);
                   util.showProgressDialog(progressDialog, "Uploading ....", "Please wait for uploading image");
                   userDAO.uploadImgUserToFirebase(uri)
                           .addOnCompleteListener(new OnCompleteListener<Uri>() {
@@ -162,24 +187,24 @@ public class UpdateProfileActivity extends AppCompatActivity {
                                   try {
                                       if(task.isSuccessful()) {
                                           userDTO.setPhotoUri(task.getResult().toString());
-                                          userDAO.updateUser(userDTO).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                          userDAO.updateUser(userDTO, fieldDTOList).addOnCompleteListener(new OnCompleteListener<Void>() {
                                               @Override
                                               public void onComplete(@NonNull Task<Void> task) {
                                                   progressDialog.cancel();
                                                   if (task.isSuccessful()) {
-                                                      Toast.makeText(UpdateProfileActivity.this, "Update Success"
+                                                      Toast.makeText(EditProfileActivity.this, "Update Success"
                                                               , Toast.LENGTH_SHORT).show();
                                                       finish();
-                                                      startActivity(UpdateProfileActivity.this.getIntent());
+                                                      startActivity(EditProfileActivity.this.getIntent());
                                                       overridePendingTransition(0, 0);
                                                   }else {
-                                                      Toast.makeText(UpdateProfileActivity.this, "Update fail"
+                                                      Toast.makeText(EditProfileActivity.this, "Update fail"
                                                               , Toast.LENGTH_SHORT).show();
                                                   }
                                               }
                                           });
                                       } else {
-                                          Toast.makeText(UpdateProfileActivity.this, "Update fail"
+                                          Toast.makeText(EditProfileActivity.this, "Update fail"
                                                   , Toast.LENGTH_SHORT).show();
                                       }
                                   }catch (Exception e) {

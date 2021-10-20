@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.football_field_booking.MainActivity;
-import com.example.football_field_booking.UpdateProfileActivity;
+import com.example.football_field_booking.EditProfileActivity;
 import com.example.football_field_booking.R;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
@@ -53,15 +53,19 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
-                    UserDTO userDTO = task.getResult().toObject(UserDTO.class);
-                    txtFullName.setText(userDTO.getFullName());
-                    if (userDTO.getPhotoUri() != null) {
-                        Uri uri = Uri.parse(userDTO.getPhotoUri());
-                        Glide.with(imgUser.getContext())
-                                .load(uri)
-                                .into(imgUser);
-                    } else {
-                        imgUser.setImageResource(R.drawable.outline_account_circle_24);
+                    try {
+                        UserDTO userDTO = task.getResult().get("userInfo", UserDTO.class);
+                        txtFullName.setText(userDTO.getFullName());
+                        if (userDTO.getPhotoUri() != null) {
+                            Uri uri = Uri.parse(userDTO.getPhotoUri());
+                            Glide.with(imgUser.getContext())
+                                    .load(uri)
+                                    .into(imgUser);
+                        } else {
+                            imgUser.setImageResource(R.drawable.outline_account_circle_24);
+                        }
+                    }catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -80,7 +84,7 @@ public class ProfileFragment extends Fragment {
         btnUpdateUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), UpdateProfileActivity.class);
+                Intent intent = new Intent(getActivity(), EditProfileActivity.class);
                 startActivity(intent);
             }
         });

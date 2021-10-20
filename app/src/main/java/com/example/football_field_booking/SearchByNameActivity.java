@@ -3,9 +3,11 @@ package com.example.football_field_booking;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -35,6 +37,9 @@ public class SearchByNameActivity extends AppCompatActivity {
         edtSearch=findViewById(R.id.edtSearch);
         lvFootballField=findViewById(R.id.lvFootballField);
         fieldDTOList=new ArrayList<>();
+        edtSearch.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
 
     }
 
@@ -47,7 +52,8 @@ public class SearchByNameActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     for (QueryDocumentSnapshot snapshot: queryDocumentSnapshots) {
-                        fieldDTOList.add(snapshot.toObject(FootballFieldDTO.class));
+                        FootballFieldDTO dto = snapshot.get("fieldInfo", FootballFieldDTO.class);
+                        fieldDTOList.add(dto);
                     }
                     Log.d("listSearchSize",fieldDTOList.size()+"");
                     fieldAdapter=new FootballFieldAdapter(SearchByNameActivity.this,fieldDTOList);

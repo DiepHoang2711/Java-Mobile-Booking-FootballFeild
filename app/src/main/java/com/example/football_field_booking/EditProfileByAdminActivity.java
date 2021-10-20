@@ -20,7 +20,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.football_field_booking.daos.UserDAO;
+import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.UserDTO;
+import com.example.football_field_booking.dtos.UserDocument;
 import com.example.football_field_booking.utils.Utils;
 import com.example.football_field_booking.validations.Validation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -30,7 +32,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.List;
 
-public class UpdateProfileByAdminActivity extends AppCompatActivity {
+public class EditProfileByAdminActivity extends AppCompatActivity {
 
     public static final int RC_IMAGE_PICKER = 1000;
 
@@ -41,13 +43,14 @@ public class UpdateProfileByAdminActivity extends AppCompatActivity {
     private ImageView imgUser;
     private UserDTO userDTO = null;
     private List<String> roles, status;
+    private List<FootballFieldDTO> fieldDTOList;
     private Utils util;
     private Validation val;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_update_profile_by_admin);
+        setContentView(R.layout.activity_edit_profile_by_admin);
 
         txtUserId = findViewById(R.id.txtUserID);
         txtEmail = findViewById(R.id.txtEmail);
@@ -80,8 +83,8 @@ public class UpdateProfileByAdminActivity extends AppCompatActivity {
                             try {
                                 roles = (List<String>) task.getResult().get("roles");
                                 status = (List<String>) task.getResult().get("status");
-                                ArrayAdapter<String> adapterRoles = new ArrayAdapter<>(UpdateProfileByAdminActivity.this, android.R.layout.simple_spinner_item,roles);
-                                ArrayAdapter<String> adapterStatus = new ArrayAdapter<>(UpdateProfileByAdminActivity.this, android.R.layout.simple_spinner_item,status);
+                                ArrayAdapter<String> adapterRoles = new ArrayAdapter<>(EditProfileByAdminActivity.this, android.R.layout.simple_spinner_item,roles);
+                                ArrayAdapter<String> adapterStatus = new ArrayAdapter<>(EditProfileByAdminActivity.this, android.R.layout.simple_spinner_item,status);
                                 txtRole.setAdapter(adapterRoles);
                                 txtStatus.setAdapter(adapterStatus);
                                 Log.d("USER", roles.toString());
@@ -99,7 +102,7 @@ public class UpdateProfileByAdminActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
                             try {
-                                userDTO = task.getResult().toObject(UserDTO.class);
+                                userDTO = task.getResult().get("userInfo",UserDTO.class);
 
                                 txtUserId.setText(userDTO.getUserID());
                                 txtEmail.setText(userDTO.getEmail());
@@ -118,11 +121,15 @@ public class UpdateProfileByAdminActivity extends AppCompatActivity {
                                     imgUser.setImageResource(R.drawable.outline_account_circle_24);
                                 }
 
+                                if(userDTO.getRole().equals("owner")){
+                                    fieldDTOList = task.getResult().toObject(UserDocument.class).getFieldsInfo();
+                                }
+
                             } catch (Exception e) {
                                 Log.d("DAO", e.toString());
                             }
                         } else {
-                            Toast.makeText(UpdateProfileByAdminActivity.this,
+                            Toast.makeText(EditProfileByAdminActivity.this,
                                     "Fail to get user on server", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -143,15 +150,15 @@ public class UpdateProfileByAdminActivity extends AppCompatActivity {
                         userDTO.setRole(role);
                         userDTO.setStatus(status);
 
-                        userDAO.updateUser(userDTO)
+                        userDAO.updateUser(userDTO, fieldDTOList)
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             finish();
-                                            startActivity(UpdateProfileByAdminActivity.this.getIntent());
+                                            startActivity(EditProfileByAdminActivity.this.getIntent());
                                         } else {
-                                            Toast.makeText(UpdateProfileByAdminActivity.this,
+                                            Toast.makeText(EditProfileByAdminActivity.this,
                                                     "Fail to update User", Toast.LENGTH_SHORT).show();
                                         }
                                     }
@@ -159,7 +166,7 @@ public class UpdateProfileByAdminActivity extends AppCompatActivity {
                     }
 
                 }else {
-                    Toast.makeText(UpdateProfileByAdminActivity.this,
+                    Toast.makeText(EditProfileByAdminActivity.this,
                             R.string.something_went_wrong, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -173,12 +180,12 @@ public class UpdateProfileByAdminActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if(task.isSuccessful()) {
-                                    Toast.makeText(UpdateProfileByAdminActivity.this,
+                                    Toast.makeText(EditProfileByAdminActivity.this,
                                             "Delete successful", Toast.LENGTH_SHORT).show();
                                     finish();
-                                    startActivity(UpdateProfileByAdminActivity.this.getIntent());
+                                    startActivity(EditProfileByAdminActivity.this.getIntent());
                                 } else {
-                                    Toast.makeText(UpdateProfileByAdminActivity.this,
+                                    Toast.makeText(EditProfileByAdminActivity.this,
                                             R.string.something_went_wrong, Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -206,7 +213,7 @@ public class UpdateProfileByAdminActivity extends AppCompatActivity {
                 try {
                     Uri uri = data.getData();
                     UserDAO userDAO = new UserDAO();
-                    ProgressDialog progressDialog = new ProgressDialog(UpdateProfileByAdminActivity.this);
+                    ProgressDialog progressDialog = new ProgressDialog(EditProfileByAdminActivity.this);
                     util.showProgressDialog(progressDialog, "Uploading ....", "Please wait for uploading image");
                     userDAO.uploadImgUserToFirebase(uri)
                             .addOnCompleteListener(new OnCompleteListener<Uri>() {
@@ -216,23 +223,23 @@ public class UpdateProfileByAdminActivity extends AppCompatActivity {
                                         if (task.isSuccessful()) {
                                             Log.d("USER", task.getResult().toString());
                                             userDTO.setPhotoUri(task.getResult().toString());
-                                            userDAO.updateUser(userDTO).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            userDAO.updateUser(userDTO, fieldDTOList).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     progressDialog.cancel();
                                                     if (task.isSuccessful()) {
-                                                        Toast.makeText(UpdateProfileByAdminActivity.this, "Update Success"
+                                                        Toast.makeText(EditProfileByAdminActivity.this, "Update Success"
                                                                 , Toast.LENGTH_SHORT).show();
                                                         finish();
-                                                        startActivity(UpdateProfileByAdminActivity.this.getIntent());
+                                                        startActivity(EditProfileByAdminActivity.this.getIntent());
                                                     } else {
-                                                        Toast.makeText(UpdateProfileByAdminActivity.this, "Update fail"
+                                                        Toast.makeText(EditProfileByAdminActivity.this, "Update fail"
                                                                 , Toast.LENGTH_SHORT).show();
                                                     }
                                                 }
                                             });
                                         } else {
-                                            Toast.makeText(UpdateProfileByAdminActivity.this, "Update fail"
+                                            Toast.makeText(EditProfileByAdminActivity.this, "Update fail"
                                                     , Toast.LENGTH_SHORT).show();
                                         }
                                     } catch (Exception e) {

@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.example.football_field_booking.CreateUserActivity;
-import com.example.football_field_booking.UpdateProfileByAdminActivity;
+import com.example.football_field_booking.EditProfileByAdminActivity;
 import com.example.football_field_booking.R;
 import com.example.football_field_booking.adapters.UserAdapter;
 import com.example.football_field_booking.daos.UserDAO;
@@ -49,7 +49,8 @@ public class AdminHomeFragment extends Fragment {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (QueryDocumentSnapshot doc: queryDocumentSnapshots) {
-                    listUser.add(doc.toObject(UserDTO.class));
+                    UserDTO dto = doc.get("userInfo", UserDTO.class);
+                    listUser.add(dto);
                     Log.d("USER", "Add : " + doc.toObject(UserDTO.class).toString());
 
                 }
@@ -66,7 +67,7 @@ public class AdminHomeFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
                     UserDTO userDTO = (UserDTO) listViewUser.getItemAtPosition(i);
-                    Intent intent = new Intent(getActivity(), UpdateProfileByAdminActivity.class);
+                    Intent intent = new Intent(getActivity(), EditProfileByAdminActivity.class);
                     intent.putExtra("userID", userDTO.getUserID());
                     startActivity(intent);
                 }catch (Exception e) {

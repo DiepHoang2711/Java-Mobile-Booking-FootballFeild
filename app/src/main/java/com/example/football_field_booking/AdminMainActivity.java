@@ -60,4 +60,9 @@ public class AdminMainActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void clickToGoToSearchActivity(MenuItem item) {
+        Intent intent=new Intent(this,SearchByNameActivity.class);
+        startActivity(intent);
+    }
 }
