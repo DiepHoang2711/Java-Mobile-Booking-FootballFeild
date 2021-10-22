@@ -42,7 +42,7 @@ public class TimePickerDetailAdapter extends BaseAdapter {
     private LayoutInflater layoutInflater;
     private List<TimePickerDTO> chooseList;
     private List<TimePickerDTO> bookedTimeList;
-    private List<TimePickerDTO> inCartList;
+    private List<TimePickerDTO> listTimePickerAvailable;
 
     public List<TimePickerDTO> getTimePickerDTOList() {
         return timePickerDTOList;
@@ -60,13 +60,13 @@ public class TimePickerDetailAdapter extends BaseAdapter {
         this.chooseList = chooseList;
     }
 
-    public TimePickerDetailAdapter(Context context, List<TimePickerDTO> list, List<TimePickerDTO> inCartList, List<TimePickerDTO> bookedTimeList) {
+    public TimePickerDetailAdapter(Context context, List<TimePickerDTO> list, List<TimePickerDTO> listTimePickerAvailable, List<TimePickerDTO> bookedTimeList) {
         this.context = context;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.priceList = new ArrayList<>();
         this.chooseList = new ArrayList<>();
         this.bookedTimeList = bookedTimeList;
-        this.inCartList = inCartList;
+        this.listTimePickerAvailable = listTimePickerAvailable;
         timePickerDTOList = new ArrayList<>();
         try {
             for (TimePickerDTO timePickerDTO : list) {
@@ -133,13 +133,13 @@ public class TimePickerDetailAdapter extends BaseAdapter {
                     toggleButton.setBackground(context.getResources().getDrawable(R.drawable.toggle_selector));
                     LinearLayout.LayoutParams params= new LinearLayout.LayoutParams(200,100);
                     params.setMargins(10,5,10,5);
+                    toggleButton.setAllCaps(false);
                     toggleButton.setLayoutParams(params);
                     toggleButton.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                     toggleButton.setText(dto.getStart()+"h-"+dto.getEnd()+"h");
-                    groupToggleButton.addView(toggleButton);
-                    toggleButton.setText(dto.getStart() + "-" + dto.getEnd());
-                    toggleButton.setTextOn(dto.getStart() + "-" + dto.getEnd());
-                    toggleButton.setTextOff(dto.getStart() + "-" + dto.getEnd());
+                    toggleButton.setTextOn(dto.getStart()+"h-"+dto.getEnd()+"h");
+                    toggleButton.setTextOff(dto.getStart()+"h-"+dto.getEnd()+"h");
+
 
                     for (TimePickerDTO chooseDTO : chooseList) {
                         if (dto.getStart() == chooseDTO.getStart() && dto.getEnd() == chooseDTO.getEnd()) {
@@ -153,13 +153,14 @@ public class TimePickerDetailAdapter extends BaseAdapter {
                         }
                     }
 
-                    for (TimePickerDTO bookedDTO : inCartList) {
-                        if (dto.getStart() == bookedDTO.getStart() && dto.getEnd() == bookedDTO.getEnd()) {
-                            toggleButton.setSelected(true);
-                            toggleButton.setEnabled(false);
+                    if(listTimePickerAvailable != null) {
+                        for (TimePickerDTO bookedDTO : listTimePickerAvailable) {
+                            if (dto.getStart() == bookedDTO.getStart() && dto.getEnd() == bookedDTO.getEnd()) {
+                                toggleButton.setTextColor(Color.GREEN);
+                                toggleButton.setEnabled(false);
+                            }
                         }
                     }
-
                     groupToggleButton.addView(toggleButton);
                     toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override

@@ -33,19 +33,13 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
             <FrameLayout
                 android:id="@+id/fragmentContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="55dp"
+                android:layout_marginBottom="55dp"
                 />
-
-        </androidx.core.widget.NestedScrollView>
-
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
