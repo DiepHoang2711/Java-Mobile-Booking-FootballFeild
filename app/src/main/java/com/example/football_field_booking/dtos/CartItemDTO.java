@@ -4,67 +4,47 @@ import java.io.Serializable;
 import java.util.List;
 
 public class CartItemDTO implements Serializable {
-    private String fieldID;
-    private String name;
-    private String location;
-    private String type;
-    private String image;
+    private String cartItemID;
+    private UserDTO userInfo;
+    private FootballFieldDTO fieldInfo;
     private String date;
     private float total;
-    private List<TimePickerDTO> listTimeSlot;
+    private List<TimePickerDTO> timePicker;
+    private String fieldAndDate;
 
     public CartItemDTO() {
     }
 
-    public CartItemDTO(String fieldID, String name, String location, String type, String image, String date, float total, List<TimePickerDTO> timePickerDTOList) {
-        this.fieldID = fieldID;
-        this.name = name;
-        this.location = location;
-        this.type = type;
-        this.image = image;
+    public String getCartItemID() {
+        return cartItemID;
+    }
+
+    public CartItemDTO(UserDTO userInfo, FootballFieldDTO fieldInfo, String date, float total, List<TimePickerDTO> timePicker) {
+        this.userInfo = userInfo;
+        this.fieldInfo = fieldInfo;
         this.date = date;
         this.total = total;
-        this.listTimeSlot = timePickerDTOList;
+        this.timePicker = timePicker;
     }
 
-    public String getFieldID() {
-        return fieldID;
+    public void setCartItemID(String cartItemID) {
+        this.cartItemID = cartItemID;
     }
 
-    public void setFieldID(String fieldID) {
-        this.fieldID = fieldID;
+    public UserDTO getUserInfo() {
+        return userInfo;
     }
 
-    public String getName() {
-        return name;
+    public void setUserInfo(UserDTO userInfo) {
+        this.userInfo = userInfo;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public FootballFieldDTO getFieldInfo() {
+        return fieldInfo;
     }
 
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
+    public void setFieldInfo(FootballFieldDTO fieldInfo) {
+        this.fieldInfo = fieldInfo;
     }
 
     public String getDate() {
@@ -83,25 +63,31 @@ public class CartItemDTO implements Serializable {
         this.total = total;
     }
 
-    public List<TimePickerDTO> getListTimeSlot() {
-        return listTimeSlot;
+    public List<TimePickerDTO> getTimePicker() {
+        return timePicker;
     }
 
-    public void setListTimeSlot(List<TimePickerDTO> listTimeSlot) {
-        this.listTimeSlot = listTimeSlot;
+    public void setTimePicker(List<TimePickerDTO> timePicker) {
+        this.timePicker = timePicker;
+    }
+
+    public String getFieldAndDate() {
+        return fieldAndDate;
+    }
+
+    public void setFieldAndDate(String fieldAndDate) {
+        this.fieldAndDate = fieldAndDate;
     }
 
     @Override
     public String toString() {
         return "CartItemDTO{" +
-                "fieldID='" + fieldID + '\'' +
-                ", name='" + name + '\'' +
-                ", location='" + location + '\'' +
-                ", type='" + type + '\'' +
-                ", image='" + image + '\'' +
+                "cartItemID='" + cartItemID + '\'' +
+                ", userInfo=" + userInfo +
+                ", fieldInfo=" + fieldInfo +
                 ", date='" + date + '\'' +
                 ", total=" + total +
-                ", listTimeSlot=" + listTimeSlot +
+                ", timePicker=" + timePicker +
                 '}';
     }
 }
