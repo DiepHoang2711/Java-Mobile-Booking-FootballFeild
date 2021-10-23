@@ -1,5 +1,7 @@
 package com.example.football_field_booking.dtos;
 
+import androidx.annotation.Nullable;
+
 public class TimePickerDTO {
     private int start;
     private int end;
@@ -46,6 +48,16 @@ public class TimePickerDTO {
 
     public void setTimePickerID(String timePickerID) {
         this.timePickerID = timePickerID;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if(obj instanceof TimePickerDTO) {
+            TimePickerDTO timePickerDTO = (TimePickerDTO) obj;
+            return start == timePickerDTO.getStart() && end == timePickerDTO.getEnd();
+        }else {
+            return false;
+        }
     }
 
     @Override

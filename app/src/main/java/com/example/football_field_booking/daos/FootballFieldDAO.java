@@ -6,6 +6,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.football_field_booking.dtos.CartItemDTO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.dtos.UserDTO;
@@ -35,13 +36,9 @@ public class FootballFieldDAO {
     private FirebaseFirestore db;
 
     private static final String COLLECTION_FOOTBALL_FIELD = "footballFields";
-
+    public static final String SUB_COLLECTION_BOOKING = "booking";
     public static final String FIELD_IMAGES_FOLDER = "football_field_images";
-
-    public static final String SUB_COLLECTION_FOOTBALL_FIELD_INFO = "footballFieldInfos";
-
     private static final String COLLECTION_USERS = "users";
-
     public static final String CONST_OF_PROJECT = "constOfProject";
 
 
@@ -142,5 +139,18 @@ public class FootballFieldDAO {
 
     public Task<QuerySnapshot> searchByLikeName(String name) throws Exception{
         return db.collection(COLLECTION_FOOTBALL_FIELD).whereGreaterThanOrEqualTo("name",name).get();
+    }
+
+    public Task<QuerySnapshot> getBookingByFieldAndDate (List<CartItemDTO> cart) {
+        List<String> listFieldAndDate = new ArrayList<>();
+        for (CartItemDTO cartItemDTO: cart) {
+            listFieldAndDate.add(cartItemDTO.getFieldInfo().getFieldID() + cartItemDTO.getDate());
+        }
+        return db.collectionGroup(SUB_COLLECTION_BOOKING).whereIn("fieldAndDate", listFieldAndDate).get();
+    }
+
+    public Task<QuerySnapshot> getBookingOfAFieldByDate (String fieldID, String date) {
+        return db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID)
+                .collection(SUB_COLLECTION_BOOKING).whereEqualTo("date", date).get();
     }
 }

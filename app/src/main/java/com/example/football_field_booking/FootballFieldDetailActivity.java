@@ -1,17 +1,14 @@
 package com.example.football_field_booking;
 
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,7 +25,6 @@ import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.FootballFieldDocument;
 import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.dtos.UserDTO;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -42,30 +38,25 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.sql.Time;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class FootballFieldDetailActivity extends AppCompatActivity {
 
-    private TextView txtSelectDate;
     private DatePickerDialog datePickerDialog;
     private int year, month, day;
     private Calendar calendar;
     private FloatingActionButton btnBack;
     private Button btnAddToCart,btnEdit,btnDelete;
-    private TextView txtFieldName, txtLocation, txtRate, txtType;
+    private TextView txtFieldName, txtLocation, txtRate, txtType, txtSelectDate;
     private List<TimePickerDTO> timePickerDTOList;
     private TimePickerDetailAdapter timePickerDetailAdapter;
     private ListView lvTimePickerDetail;
     private ImageView imgFootBallField;
-    public static final SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
+    private static final SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
     private FootballFieldDTO fieldDTO;
-    private List<TimePickerDTO> timePickerInCartList;
+    private CartItemDTO cartItemAvailable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +64,7 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_onwer_football_field_detail);
 
         calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, 1);
         txtSelectDate = findViewById(R.id.txtSelectDate);
         btnBack = findViewById(R.id.btnBack);
         btnAddToCart = findViewById(R.id.btnAddToCart);
@@ -87,9 +79,8 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
 
         txtSelectDate.setText(df.format(calendar.getTime()));
 
-        timePickerInCartList = new ArrayList<>();
         timePickerDTOList = new ArrayList<>();
-
+        cartItemAvailable = new CartItemDTO();
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,7 +119,6 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                     });
         }
 
-        FootballFieldDAO fieldDAO = new FootballFieldDAO();
         Intent intent = this.getIntent();
         String fieldID = intent.getStringExtra("fieldID");
         if (fieldID != null) {
@@ -172,33 +162,37 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
         if(list.isEmpty()){
             Toast.makeText(this, "Please choose at least one time slot", Toast.LENGTH_LONG).show();
         }else {
-            float total = 0;
-            for (TimePickerDTO dto: list) {
-                total += dto.getPrice();
-            }
-            String fieldID = fieldDTO.getFieldID();
-            String name = fieldDTO.getName();
-            String location = fieldDTO.getLocation();
-            String type = fieldDTO.getType();
-            String image = fieldDTO.getImage();
-            String date = txtSelectDate.getText().toString();
-            CartItemDTO cartItemDTO = new CartItemDTO(fieldID, name, location, type, image, date, total, list);
 
             UserDAO userDAO = new UserDAO();
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if(user != null) {
-                userDAO.addToCart(cartItemDTO, user.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                userDAO.getUserById(user.getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
-                            Toast.makeText(FootballFieldDetailActivity.this, "Add to cart success"
-                                    , Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(FootballFieldDetailActivity.this, "Add to cart fail"
-                                    , Toast.LENGTH_SHORT).show();
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        UserDTO userDTO = documentSnapshot.get("userInfo", UserDTO.class);
+                        float total = 0;
+                        for (TimePickerDTO dto: list) {
+                            total += dto.getPrice();
                         }
+                        String date = txtSelectDate.getText().toString();
+                        CartItemDTO cartItemDTO = new CartItemDTO(userDTO, fieldDTO, date, total, list);
+                        userDAO.addToCart(cartItemDTO, cartItemAvailable.getCartItemID(), user.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if(task.isSuccessful()){
+                                    loadData(fieldDTO.getFieldID());
+                                    Toast.makeText(FootballFieldDetailActivity.this, "Add to cart success"
+                                            , Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(FootballFieldDetailActivity.this, "Add to cart fail"
+                                            , Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
                     }
                 });
+
+
             }
         }
     }
@@ -225,29 +219,40 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
 
                     timePickerDTOList = documentSnapshot.toObject(FootballFieldDocument.class).getTimePicker();
                     String date = txtSelectDate.getText().toString();
-                    if(user != null) {
-                        Log.d("USER", "date is: " + date);
-                        userDAO.getItemInCartByDateAndFieldID(user.getUid(), fieldDTO.getFieldID(), date ).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                            @Override
-                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                for (QueryDocumentSnapshot queryDocumentSnapshot: queryDocumentSnapshots) {
-                                    List<TimePickerDTO> list = queryDocumentSnapshot.toObject(CartItemDTO.class).getListTimeSlot();
-                                    Log.d("USER", "listInCart: " + list.toString());
-                                    timePickerInCartList.addAll(list);
-                                }
-                                List<TimePickerDTO> bookedTimeList = new ArrayList<>();
-                                timePickerDetailAdapter = new TimePickerDetailAdapter(FootballFieldDetailActivity.this,timePickerDTOList, timePickerInCartList, bookedTimeList);
+                    fieldDAO.getBookingOfAFieldByDate(fieldID, date).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            List<TimePickerDTO> bookedTimeList = new ArrayList<>();
+                            for (QueryDocumentSnapshot doc: queryDocumentSnapshots) {
+                                List<TimePickerDTO> listDto = doc.toObject(CartItemDTO.class).getTimePicker();
+                                bookedTimeList.addAll(listDto);
+                            }
+
+                            if(user != null) {
+                                Log.d("USER", "date is: " + date);
+                                userDAO.getItemInCartByFieldAndDate(user.getUid(), fieldDTO.getFieldID(), date ).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        if (!queryDocumentSnapshots.isEmpty()) {
+                                            DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
+                                            cartItemAvailable = doc.toObject(CartItemDTO.class);
+                                            Log.d("USER", "listInCart: " + cartItemAvailable.toString());
+                                        }
+                                        timePickerDetailAdapter = new TimePickerDetailAdapter(FootballFieldDetailActivity.this,timePickerDTOList, cartItemAvailable.getTimePicker(), bookedTimeList);
+                                        lvTimePickerDetail.setScrollContainer(false);
+                                        lvTimePickerDetail.setAdapter(timePickerDetailAdapter);
+
+                                    }
+                                });
+                            } else {
+                                timePickerDetailAdapter = new TimePickerDetailAdapter(FootballFieldDetailActivity.this,timePickerDTOList, cartItemAvailable.getTimePicker(), bookedTimeList);
                                 lvTimePickerDetail.setScrollContainer(false);
                                 lvTimePickerDetail.setAdapter(timePickerDetailAdapter);
-
                             }
-                        });
-                    } else {
-                        List<TimePickerDTO> bookedTimeList = new ArrayList<>();
-                        timePickerDetailAdapter = new TimePickerDetailAdapter(FootballFieldDetailActivity.this,timePickerDTOList, timePickerInCartList, bookedTimeList);
-                        lvTimePickerDetail.setScrollContainer(false);
-                        lvTimePickerDetail.setAdapter(timePickerDetailAdapter);
-                    }
+
+                        }
+                    });
+
 
 
                 }
@@ -255,6 +260,31 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
         }catch (Exception e) {
             e.printStackTrace();
         }
+
+//        private List<CartItemDTO> cartItemDTOList;
+//        private List<BookingDocument> bookingDocumentList;
+//
+//        getBookingforUser(user ID).addsusssecc {
+//
+//            for( bookingDoc: bookingDocs){
+//                bookingDTO = bookingDoc.toObject(BookingDTO.class);
+//                BookingDocument bookingDocument = new BookingDocumnet();
+//                bookingDocument.setbookingDTO(bookingDTO);
+//                getAllFieldsInBooking(bookingDoc.getID).addsussecc {
+//                    for(doc: docs) {
+//                        field = doc.toocject(CartItemDTO.class);
+//                        cartItemDTOList.add(field);
+//                    }
+//                    bookingDocument.setCartItemDTOList(cartItemDTOList);
+//                    bookingDocumentList.add(bookingDocument);
+//                    adapter.set(bookingDocumentList);
+//                    lv.setAdpter(adapter);
+//                }
+//            }
+//
+//
+//        }
+
 
     }
 }

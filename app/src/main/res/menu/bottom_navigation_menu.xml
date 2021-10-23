@@ -6,7 +6,7 @@
         android:icon="@drawable/outline_home_24"
         android:title="Home"/>
     <item
-        android:id="@+id/page_2"
+        android:id="@+id/pageCart"
         android:enabled="true"
         android:icon="@drawable/outline_shopping_cart_24"
         android:title="Cart"/>
