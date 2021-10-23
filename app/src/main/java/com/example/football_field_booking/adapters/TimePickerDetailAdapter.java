@@ -126,6 +126,7 @@ public class TimePickerDetailAdapter extends BaseAdapter {
         Float price=priceList.get(i);
         txtPrice.setText("$"+price+"/h");
         try {
+            Log.d("timePickerDTOList: ",timePickerDTOList.size()+"");
             for (TimePickerDTO dto : timePickerDTOList) {
                 if (dto.getPrice() == price) {
                     ToggleButton toggleButton = new ToggleButton(context);
@@ -137,7 +138,6 @@ public class TimePickerDetailAdapter extends BaseAdapter {
                     toggleButton.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                     toggleButton.setText(dto.getStart()+"h-"+dto.getEnd()+"h");
                     groupToggleButton.addView(toggleButton);
-                    toggleButton.setText(dto.getStart() + "-" + dto.getEnd());
                     toggleButton.setTextOn(dto.getStart() + "-" + dto.getEnd());
                     toggleButton.setTextOff(dto.getStart() + "-" + dto.getEnd());
 
@@ -159,8 +159,6 @@ public class TimePickerDetailAdapter extends BaseAdapter {
                             toggleButton.setEnabled(false);
                         }
                     }
-
-                    groupToggleButton.addView(toggleButton);
                     toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
