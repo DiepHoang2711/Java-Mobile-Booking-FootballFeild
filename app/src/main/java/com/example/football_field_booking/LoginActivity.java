@@ -32,6 +32,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -82,10 +83,10 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String email = txtEmail.getEditText().getText().toString();
                 String password = txtPassword.getEditText().getText().toString();
-                if(isValidLogin(email, password)){
+                if (isValidLogin(email, password)) {
                     util.showProgressDialog(prdLogin, "Login", "Please wait for login");
                     signInWithEmail(email, password);
-                }else {
+                } else {
                     updateUI(null);
                 }
             }
@@ -152,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
                                     UserDTO userDTO = new UserDTO(user.getUid(), user.getEmail(),
                                             user.getDisplayName(), user.getPhoneNumber(), "user",
                                             "active", null);
-                                    if(user.getPhotoUrl() != null) {
+                                    if (user.getPhotoUrl() != null) {
                                         userDTO.setPhotoUri(user.getPhotoUrl().toString());
                                     }
                                     dao.createUser(userDTO);
@@ -184,16 +185,16 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d(EMAIL_LOG, "signInWithEmail:success");
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                if (user.isEmailVerified()) {
-                                    updateUI(user);
-                                } else {
-                                    Toast.makeText(LoginActivity.this, "Please verify your email address",
-                                            Toast.LENGTH_SHORT).show();
-                                    updateUI(null);
-                                }
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(EMAIL_LOG, "signInWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            if (user.isEmailVerified()) {
+                                updateUI(user);
+                            } else {
+                                Toast.makeText(LoginActivity.this, "Please verify your email address",
+                                        Toast.LENGTH_SHORT).show();
+                                updateUI(null);
+                            }
                         } else {
                             // If sign in fails, display a message to the user.
                             //Log.w(EMAIL_LOG, "signInWithEmail:failure", task.getException());
@@ -223,6 +224,24 @@ public class LoginActivity extends AppCompatActivity {
                                 break;
                             }
                             case "owner": {
+                                FirebaseMessaging.getInstance().getToken()
+                                        .addOnCompleteListener(new OnCompleteListener<String>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<String> task) {
+                                                if (!task.isSuccessful()) {
+                                                    Log.w("Fetch Token Error", "Fetching FCM registration token failed", task.getException());
+                                                    return;
+                                                }
+                                                // Get new FCM registration token
+                                                String token = task.getResult();
+                                                UserDAO userDAO = new UserDAO();
+                                                try {
+                                                    userDAO.saveToken(token, user.getUid());
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        });
                                 Intent intent = new Intent(LoginActivity.this, OwnerMainActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
@@ -246,15 +265,15 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private boolean isValidLogin (String email, String password) {
+    private boolean isValidLogin(String email, String password) {
         util.clearError(txtEmail);
         util.clearError(txtPassword);
         boolean result = true;
-        if (!val.isValidPassword(password)){
+        if (!val.isValidPassword(password)) {
             util.showError(txtPassword, "Password must be 8 character");
             result = false;
         }
-        if(!val.isValidEmail(email)){
+        if (!val.isValidEmail(email)) {
             util.showError(txtEmail, "Email is invalid");
             result = false;
         }

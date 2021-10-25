@@ -1,6 +1,7 @@
 package com.example.football_field_booking.dtos;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class UserDTO implements Serializable {
 
@@ -11,6 +12,7 @@ public class UserDTO implements Serializable {
     private String role;
     private String status;
     private String photoUri;
+
 
     public UserDTO() {
     }

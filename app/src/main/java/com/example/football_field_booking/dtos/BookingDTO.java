@@ -1,11 +1,10 @@
 package com.example.football_field_booking.dtos;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class BookingDTO implements Serializable {
     private String bookingID;
-    private String UserID;
+    private String userID;
     private String bookingDate;
     private float total;
     private String status;
@@ -13,8 +12,16 @@ public class BookingDTO implements Serializable {
     public BookingDTO() {
     }
 
+    public BookingDTO(String userID, String bookingDate, float total, String status) {
+        this.bookingID = bookingID;
+        this.userID = userID;
+        this.bookingDate = bookingDate;
+        this.total = total;
+        this.status = status;
+    }
+
     public BookingDTO(String userID, String bookingDate, float total) {
-        UserID = userID;
+        this.userID = userID;
         this.bookingDate = bookingDate;
         this.total = total;
     }
@@ -28,11 +35,11 @@ public class BookingDTO implements Serializable {
     }
 
     public String getUserID() {
-        return UserID;
+        return userID;
     }
 
     public void setUserID(String userID) {
-        UserID = userID;
+        this.userID = userID;
     }
 
     public String getBookingDate() {
