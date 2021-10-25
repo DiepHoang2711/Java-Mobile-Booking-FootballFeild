@@ -12,6 +12,7 @@ import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -38,6 +39,7 @@ public class FootballFieldDAO {
     public static final String FIELD_IMAGES_FOLDER = "football_field_images";
     private static final String COLLECTION_USERS = "users";
     public static final String CONST_OF_PROJECT = "constOfProject";
+    public static final String SUB_COLLECTION_RATING = "rating";
 
 
 
@@ -152,5 +154,28 @@ public class FootballFieldDAO {
                 .collection(SUB_COLLECTION_BOOKING).whereEqualTo("date", date).get();
     }
 
+    public void countRating (String fieldID) throws Exception{
+        getRating(fieldID).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                float sumRating = 0f;
+                int totalRating = 0;
+                for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                    float rating = doc.get("rating", Float.class);
+                    sumRating += rating;
+                    totalRating++;
+                }
+                float avgRating = sumRating / totalRating;
+                DocumentReference doc = db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID);
+                Map<String, Object> data = new HashMap<>();
+                data.put("fieldInfo.rate", avgRating);
+                doc.update(data);
+            }
+        });
+    }
 
+    public Task<QuerySnapshot> getRating (String fieldID) {
+        return db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID)
+                .collection(SUB_COLLECTION_RATING).get();
+    }
 }
