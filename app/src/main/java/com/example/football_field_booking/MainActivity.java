@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.example.football_field_booking.fragments.CartFragment;
+import com.example.football_field_booking.fragments.HistoryFragment;
 import com.example.football_field_booking.fragments.ProfileFragment;
 import com.example.football_field_booking.fragments.UserHomeFragment;
 import com.example.football_field_booking.validations.Validation;
@@ -75,6 +76,16 @@ public class MainActivity extends AppCompatActivity {
                             return true;
                         }
                         break;
+                    case R.id.pageHistory:
+                        if (validation.isUser()) {
+                            selectedFragment = new HistoryFragment();
+                        } else {
+                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                            return true;
+                        }
+                        break;
+
                     default:
                         return false;
                 }

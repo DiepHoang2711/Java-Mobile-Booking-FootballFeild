@@ -92,7 +92,7 @@ public class CartAdapter extends BaseAdapter {
         txtType.setText(fieldDTO.getType());
         txtLocation.setText(fieldDTO.getLocation());
         txtDate.setText(cartItemDTO.getDate());
-        txtTotal.setText(cartItemDTO.getTotal()+"");
+        txtTotal.setText("$"+cartItemDTO.getTotal());
 
         if (fieldDTO.getImage() != null) {
             Uri uri = Uri.parse(fieldDTO.getImage());
