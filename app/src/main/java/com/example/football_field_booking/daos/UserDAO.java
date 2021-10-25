@@ -8,11 +8,13 @@ import androidx.annotation.Nullable;
 import com.example.football_field_booking.dtos.BookingDTO;
 import com.example.football_field_booking.dtos.CartItemDTO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
+import com.example.football_field_booking.dtos.RatingDTO;
 import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -26,9 +28,11 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
+import com.google.firebase.firestore.core.OrderBy;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.firestore.v1.StructuredQuery;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,6 +48,7 @@ public class UserDAO {
     public static final String SUB_COLLECTION_BOOKING_INFO = "bookingInfo";
     public static final String SUB_COLLECTION_BOOKING_DETAIL = "bookingDetail";
     public static final String SUB_COLLECTION_BOOKING = "booking";
+    public static final String SUB_COLLECTION_RATING = "rating";
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private static final String COLLECTION_USERS = "users";
@@ -201,14 +206,52 @@ public class UserDAO {
                     DocumentReference docField = listDocInField.get(i);
                     DocumentReference docCart = listDocCart.get(i);
                     CartItemDTO bookingItem = cart.get(i);
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("alreadyRating", false);
                     transaction.set(docUser, bookingItem);
                     transaction.set(docField, bookingItem);
+                    transaction.set(docUser, data, SetOptions.merge());
                     transaction.delete(docCart);
                 }
 
                 return null;
             }
         });
+    }
+
+    public Task<QuerySnapshot> getAllBooking (String userID) {
+        return db.collection(COLLECTION_USERS).document(userID)
+                .collection(SUB_COLLECTION_BOOKING_INFO).orderBy("bookingDate", Query.Direction.ASCENDING).get();
+    }
+
+    public Task<Void> rating (RatingDTO ratingDTO, String bookingID, String bookingDetailID) {
+        DocumentReference docUser = db.collection(COLLECTION_USERS).document(ratingDTO.getUserInfo().getUserID())
+                .collection(SUB_COLLECTION_RATING).document();
+        DocumentReference docField = db.collection(COLLECTION_FOOTBALL_FIELD).document(ratingDTO.getFieldInfo().getFieldID())
+                .collection(SUB_COLLECTION_RATING).document();
+        DocumentReference docBooking = db.collection(COLLECTION_USERS).document(ratingDTO.getUserInfo().getUserID())
+                .collection(SUB_COLLECTION_BOOKING_INFO).document(bookingID)
+                .collection(SUB_COLLECTION_BOOKING_DETAIL).document(bookingDetailID);
+        return db.runTransaction(new Transaction.Function<Void>() {
+            @Nullable
+            @Override
+            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+
+                transaction.set(docUser, ratingDTO);
+                transaction.set(docField, ratingDTO);
+                Map<String, Object> data = new HashMap<>();
+                data.put("alreadyRating", true);
+                transaction.update(docBooking, data);
+                return null;
+            }
+        });
+
+    }
+
+    public Task<QuerySnapshot> getAllBookingDetail (String userID, String bookingID) {
+        return db.collection(COLLECTION_USERS).document(userID)
+                .collection(SUB_COLLECTION_BOOKING_INFO).document(bookingID)
+                .collection(SUB_COLLECTION_BOOKING_DETAIL).orderBy("date", Query.Direction.ASCENDING).get();
     }
 
 }
