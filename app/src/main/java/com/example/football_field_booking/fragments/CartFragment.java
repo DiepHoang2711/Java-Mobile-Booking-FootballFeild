@@ -4,6 +4,7 @@ import android.database.DataSetObserver;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -11,10 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.football_field_booking.R;
@@ -24,17 +23,36 @@ import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.BookingDTO;
 import com.example.football_field_booking.dtos.CartItemDTO;
 import com.example.football_field_booking.dtos.TimePickerDTO;
+import com.example.football_field_booking.dtos.UserDTO;
+import com.example.football_field_booking.dtos.UserDocument;
+import com.example.football_field_booking.utils.APISERVICE;
+import com.example.football_field_booking.utils.Client;
+import com.example.football_field_booking.utils.Data;
+import com.example.football_field_booking.utils.Sender;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.iid.FirebaseInstanceIdReceiver;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.squareup.okhttp.ResponseBody;
 
+import java.security.acl.Owner;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CartFragment extends Fragment {
 
@@ -45,6 +63,8 @@ public class CartFragment extends Fragment {
     private CartAdapter cartAdapter;
     private static final SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
     private static final SimpleDateFormat dfBooking = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+
+    private APISERVICE apiservice;
 
     public CartFragment() {
         // Required empty public constructor
@@ -83,35 +103,36 @@ public class CartFragment extends Fragment {
             public void onClick(View view) {
                 try {
                     booking();
-                }catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
 
+        apiservice = Client.getRetrofit("https://fcm.googleapis.com/").create(APISERVICE.class);
         return view;
     }
 
     private void loadData() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user != null) {
+        if (user != null) {
             UserDAO userDAO = new UserDAO();
             userDAO.getCart(user.getUid()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if(task.isSuccessful()){
+                    if (task.isSuccessful()) {
                         List<CartItemDTO> cart = new ArrayList<>();
-                        for (QueryDocumentSnapshot doc: task.getResult()) {
+                        for (QueryDocumentSnapshot doc : task.getResult()) {
                             CartItemDTO cartItemDTO = doc.toObject(CartItemDTO.class);
                             cart.add(cartItemDTO);
                             total += cartItemDTO.getTotal();
                         }
-                        txtTotal.setText("$"+total);
+                        txtTotal.setText("$" + total);
                         cartAdapter.setCart(cart);
                         lvCart.setAdapter(cartAdapter);
                         checkEmptyCart();
 
-                    }else {
+                    } else {
                         Toast.makeText(getActivity(), "Load cart fail", Toast.LENGTH_SHORT).show();
 
                     }
@@ -120,55 +141,79 @@ public class CartFragment extends Fragment {
         }
     }
 
-    private void checkEmptyCart () {
-        if(cartAdapter.getCart().isEmpty()) {
+    private void checkEmptyCart() {
+        if (cartAdapter.getCart().isEmpty()) {
             btnBook.setVisibility(View.GONE);
             txtCartEmpty.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             btnBook.setVisibility(View.VISIBLE);
             txtCartEmpty.setVisibility(View.GONE);
         }
     }
 
-    private void booking() throws Exception{
+    private void booking() throws Exception {
         FootballFieldDAO fieldDAO = new FootballFieldDAO();
         List<CartItemDTO> cart = cartAdapter.getCart();
-        if(isValidBookingDate(cart)) {
+        if (isValidBookingDate(cart)) {
             fieldDAO.getBookingByFieldAndDate(cart).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if(task.isSuccessful()){
+                    if (task.isSuccessful()) {
                         boolean flag = true;
                         outerLoop:
-                        for (QueryDocumentSnapshot doc: task.getResult()) {
+                        for (QueryDocumentSnapshot doc : task.getResult()) {
                             CartItemDTO itemInBooking = doc.toObject(CartItemDTO.class);
                             List<TimePickerDTO> timePickerInBooking = itemInBooking.getTimePicker();
-                            for (TimePickerDTO timePickerDTO: timePickerInBooking) {
-                                for (CartItemDTO itemInCart: cart) {
-                                    if(itemInCart.getTimePicker().contains(timePickerDTO)){
+                            for (TimePickerDTO timePickerDTO : timePickerInBooking) {
+                                for (CartItemDTO itemInCart : cart) {
+                                    if (itemInCart.getTimePicker().contains(timePickerDTO)) {
                                         flag = false;
                                         showError(itemInCart.getFieldInfo().getName() + " in" + timePickerDTO.getStart()
-                                        + "-" + timePickerDTO.getEnd() + " already booking by someone");
+                                                + "-" + timePickerDTO.getEnd() + " already booking by someone");
                                         break outerLoop;
                                     }
                                 }
                             }
                         }
 
-                        if(flag) {
+                        if (flag) {
                             UserDAO userDAO = new UserDAO();
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             Calendar calendar = Calendar.getInstance();
                             String dateBooking = dfBooking.format(calendar.getTime());
 
-                            if(user != null) {
-                                BookingDTO bookingDTO = new BookingDTO(user.getUid(), dateBooking, total);
+                            if (user != null) {
+                                BookingDTO bookingDTO = new BookingDTO(user.getUid(), dateBooking, total, "waiting");
                                 userDAO.booking(bookingDTO, cart).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
-                                        if(task.isSuccessful()){
+                                        if (task.isSuccessful()) {
+                                            for (CartItemDTO cartItemDTO : cart) {
+                                                String fieldID = cartItemDTO.getFieldInfo().getFieldID();
+                                                try {
+                                                    userDAO.getTokenListByFieldID(fieldID).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                            if (task.isSuccessful()) {
+                                                                List<String> tokens = task.getResult().getDocuments().get(0).toObject(UserDocument.class).getTokens();
+                                                                for (String token : tokens) {
+                                                                    String title = cartItemDTO.getFieldInfo().getName() + " have a new booking";
+                                                                    String body = user.getDisplayName() + " booked " + cartItemDTO.getFieldInfo().getName();
+                                                                    Data data = new Data(body, title);
+                                                                    sendNotification(token, data);
+                                                                }
+                                                            } else {
+                                                                task.getException().printStackTrace();
+                                                            }
+                                                        }
+                                                    });
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+
                                             Toast.makeText(getActivity(), "Booking Success", Toast.LENGTH_SHORT).show();
-                                        }else {
+                                        } else {
                                             Toast.makeText(getActivity(), "Booking Fail", Toast.LENGTH_SHORT).show();
                                         }
                                     }
@@ -176,23 +221,38 @@ public class CartFragment extends Fragment {
                             }
 
                         }
-                    }else {
+                    } else {
                         task.getException().printStackTrace();
                         Toast.makeText(getActivity(), "Get data booking fail", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
         }
-
     }
 
-    private boolean isValidBookingDate(List<CartItemDTO> cart) throws Exception{
+    private void sendNotification(String token, Data data) {
+        Sender sender = new Sender(data, token);
+        apiservice.sendNotification(sender)
+                .enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        Toast.makeText(getContext(), "Send notification faild", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    }
+                });
+    }
+
+
+    private boolean isValidBookingDate(List<CartItemDTO> cart) throws Exception {
         boolean result = true;
         Calendar calendar = Calendar.getInstance();
         String now = df.format(calendar.getTime());
-        for (CartItemDTO cartItemDTO: cart) {
+        for (CartItemDTO cartItemDTO : cart) {
             String date = cartItemDTO.getDate();
-            if(date.compareTo(now) < 1) {
+            if (date.compareTo(now) < 1) {
                 showError("Field name: " + cartItemDTO.getFieldInfo().getName() + " date book invalid");
                 result = false;
                 break;
@@ -201,7 +261,7 @@ public class CartFragment extends Fragment {
         return result;
     }
 
-    private void showError (String error) {
+    private void showError(String error) {
         Toast.makeText(getActivity(), error, Toast.LENGTH_LONG).show();
     }
 }

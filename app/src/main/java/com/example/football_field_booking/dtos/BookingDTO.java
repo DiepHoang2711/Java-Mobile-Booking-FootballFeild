@@ -12,6 +12,14 @@ public class BookingDTO implements Serializable {
     public BookingDTO() {
     }
 
+    public BookingDTO(String userID, String bookingDate, float total, String status) {
+        this.bookingID = bookingID;
+        this.userID = userID;
+        this.bookingDate = bookingDate;
+        this.total = total;
+        this.status = status;
+    }
+
     public BookingDTO(String userID, String bookingDate, float total) {
         this.userID = userID;
         this.bookingDate = bookingDate;

@@ -1,6 +1,7 @@
 package com.example.football_field_booking.daos;
 
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,6 +13,7 @@ import com.example.football_field_booking.dtos.RatingDTO;
 import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -52,6 +54,7 @@ public class UserDAO {
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private static final String COLLECTION_USERS = "users";
+    public static final String SUB_COLLECTION_TOKENS = "tokens";
 
     public UserDAO() {
         db = FirebaseFirestore.getInstance();
@@ -66,7 +69,7 @@ public class UserDAO {
     }
 
 
-    public Task<DocumentSnapshot> getUserById(String id){
+    public Task<DocumentSnapshot> getUserById(String id) {
         DocumentReference doc = db.collection(COLLECTION_USERS).document(id);
         return doc.get();
     }
@@ -91,7 +94,7 @@ public class UserDAO {
 
         if (userDTO.getRole().equals("owner") && list != null) {
 
-            for (FootballFieldDTO dto: list) {
+            for (FootballFieldDTO dto : list) {
                 DocumentReference doc = db.collection(COLLECTION_FOOTBALL_FIELD).document(dto.getFieldID());
                 Map<String, Object> dataInFBfield = new HashMap<>();
                 dataInFBfield.put("ownerInfo.email", userDTO.getEmail());
@@ -108,7 +111,7 @@ public class UserDAO {
 
     }
 
-    public Task<Void> updatePassword (String password) {
+    public Task<Void> updatePassword(String password) {
         FirebaseUser user = mAuth.getCurrentUser();
         return user.updatePassword(password);
     }
@@ -121,12 +124,12 @@ public class UserDAO {
         return doc.update(data);
     }
 
-    public Task<DocumentSnapshot> getConstOfUser () {
+    public Task<DocumentSnapshot> getConstOfUser() {
         DocumentReference doc = db.collection(CONST_OF_PROJECT).document("const");
         return doc.get();
     }
 
-    public Task<Uri> uploadImgUserToFirebase(Uri uri) throws Exception{
+    public Task<Uri> uploadImgUserToFirebase(Uri uri) throws Exception {
 
         StorageReference mStoreRef = FirebaseStorage.getInstance().getReference(USER_IMAGES_FOLDER)
                 .child(System.currentTimeMillis() + ".png");
@@ -139,17 +142,17 @@ public class UserDAO {
         });
     }
 
-    public Task<Void> addToCart (CartItemDTO cartItemDTO, String cartItemID, String userID) {
+    public Task<Void> addToCart(CartItemDTO cartItemDTO, String cartItemID, String userID) {
         if (cartItemID == null) {
             DocumentReference doc = db.collection(COLLECTION_USERS).document(userID).collection(SUB_COLLECTION_CART).document();
             cartItemDTO.setCartItemID(doc.getId());
-            cartItemDTO.setFieldAndDate(cartItemDTO.getFieldInfo().getFieldID()+cartItemDTO.getDate());
+            cartItemDTO.setFieldAndDate(cartItemDTO.getFieldInfo().getFieldID() + cartItemDTO.getDate());
             return doc.set(cartItemDTO);
-        }else {
+        } else {
             WriteBatch batch = db.batch();
             DocumentReference doc = db.collection(COLLECTION_USERS).document(userID).collection(SUB_COLLECTION_CART).document(cartItemID);
 
-            for (TimePickerDTO dto: cartItemDTO.getTimePicker()) {
+            for (TimePickerDTO dto : cartItemDTO.getTimePicker()) {
                 Map<String, Object> data = new HashMap<>();
                 data.put("timePicker", FieldValue.arrayUnion(dto));
                 batch.update(doc, data);
@@ -161,29 +164,29 @@ public class UserDAO {
         }
     }
 
-    public Task<QuerySnapshot> getCart (String userID) {
+    public Task<QuerySnapshot> getCart(String userID) {
         return db.collection(COLLECTION_USERS).document(userID).collection(SUB_COLLECTION_CART).get();
     }
 
-    public Task<QuerySnapshot> getItemInCartByFieldAndDate (String userID, String fieldID, String date) {
+    public Task<QuerySnapshot> getItemInCartByFieldAndDate(String userID, String fieldID, String date) {
         return db.collection(COLLECTION_USERS).document(userID).collection(SUB_COLLECTION_CART)
-                .whereEqualTo("fieldAndDate", fieldID+date).get();
+                .whereEqualTo("fieldAndDate", fieldID + date).get();
 
     }
 
-    public Task<Void> deleteCartItem (String userID, String cartItemID) {
+    public Task<Void> deleteCartItem(String userID, String cartItemID) {
         DocumentReference doc = db.collection(COLLECTION_USERS).document(userID).collection(SUB_COLLECTION_CART).document(cartItemID);
         return doc.delete();
     }
 
-    public Task<Void> booking (BookingDTO bookingDTO, List<CartItemDTO> cart) {
+    public Task<Void> booking(BookingDTO bookingDTO, List<CartItemDTO> cart) {
         List<DocumentReference> listDocInUser = new ArrayList<>();
         List<DocumentReference> listDocInField = new ArrayList<>();
         List<DocumentReference> listDocCart = new ArrayList<>();
         DocumentReference docBooking = db.collection(COLLECTION_USERS).document(bookingDTO.getUserID())
                 .collection(SUB_COLLECTION_BOOKING_INFO).document();
         bookingDTO.setBookingID(docBooking.getId());
-        for (CartItemDTO cartItemDTO: cart) {
+        for (CartItemDTO cartItemDTO : cart) {
             DocumentReference docUser = docBooking.collection(SUB_COLLECTION_BOOKING_DETAIL).document(cartItemDTO.getCartItemID());
             DocumentReference docField = db.collection(COLLECTION_FOOTBALL_FIELD).document(cartItemDTO.getFieldInfo().getFieldID())
                     .collection(SUB_COLLECTION_BOOKING).document(cartItemDTO.getCartItemID());
@@ -201,7 +204,7 @@ public class UserDAO {
 
                 transaction.set(docBooking, bookingDTO);
 
-                for (int i = 0; i <cart.size() ; i++) {
+                for (int i = 0; i < cart.size(); i++) {
                     DocumentReference docUser = listDocInUser.get(i);
                     DocumentReference docField = listDocInField.get(i);
                     DocumentReference docCart = listDocCart.get(i);
@@ -219,6 +222,18 @@ public class UserDAO {
         });
     }
 
+    public Task<Void> saveToken(String token, String userID) throws Exception {
+        DocumentReference reference = db.collection(COLLECTION_USERS).document(userID);
+        return reference.update("tokens",FieldValue.arrayUnion(token));
+    }
+
+    public Task<Void> deleteToken(String token,String userID) throws Exception{
+        return db.collection(COLLECTION_USERS).document(userID).update("tokens",FieldValue.arrayRemove(token));
+    }
+
+    public Task<QuerySnapshot> getTokenListByFieldID(String fieldID) throws Exception{
+        return db.collection(COLLECTION_USERS).whereEqualTo("fieldsInfo.fieldID",fieldID).get();
+    }
     public Task<QuerySnapshot> getAllBooking (String userID) {
         return db.collection(COLLECTION_USERS).document(userID)
                 .collection(SUB_COLLECTION_BOOKING_INFO).orderBy("bookingDate", Query.Direction.ASCENDING).get();
