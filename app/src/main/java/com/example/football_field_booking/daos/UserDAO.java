@@ -224,6 +224,6 @@ public class UserDAO {
     }
 
     public Task<QuerySnapshot> getTokenListByFieldID(String fieldID) throws Exception{
-        return db.collection(COLLECTION_USERS).whereEqualTo("fieldInfos.fieldID",fieldID).get();
+        return db.collection(COLLECTION_USERS).whereEqualTo("fieldsInfo.fieldID",fieldID).get();
     }
 }
