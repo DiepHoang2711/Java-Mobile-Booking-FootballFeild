@@ -37,18 +37,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Map<String, String> stringMap = remoteMessage.getData();
         String title = stringMap.get("title");
         String body = stringMap.get("body");
-        String receiverID = stringMap.get("receiverID");
-        sendNotification(title, body, receiverID);
+        sendNotification(title, body);
     }
 
 
-    private void sendNotification(String title, String message, String receiverID) {
+    private void sendNotification(String title, String message) {
 
         try {
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(MyFirebaseMessagingService.this, MyApplication.CHANEL_ID)
-                    .setContentTitle(title)
-                    .setContentText(message)
-                    .setSmallIcon(R.drawable.logo);
+
 //            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 //            intent=new Intent(MyFirebaseMessagingService.this, LoginActivity.class);
 //            if(user!=null){
@@ -68,10 +64,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 //                    }
 //                });
 //            }
-            intent=new Intent(MyFirebaseMessagingService.this, OwnerMainActivity.class);
+            intent = new Intent(MyFirebaseMessagingService.this, OwnerMainActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(MyFirebaseMessagingService.this, 0
                     , intent, PendingIntent.FLAG_UPDATE_CURRENT);
-            builder.setContentIntent(pendingIntent);
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(MyFirebaseMessagingService.this, MyApplication.CHANEL_ID)
+                    .setContentTitle(title)
+                    .setContentText(message)
+                    .setSmallIcon(R.drawable.logo)
+                    .setContentIntent(pendingIntent);
             Notification notification = builder.getNotification();
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             if (manager != null) {

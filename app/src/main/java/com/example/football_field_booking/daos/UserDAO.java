@@ -231,9 +231,6 @@ public class UserDAO {
         return db.collection(COLLECTION_USERS).document(userID).update("tokens",FieldValue.arrayRemove(token));
     }
 
-    public Task<QuerySnapshot> getTokenListByFieldID(String fieldID) throws Exception{
-        return db.collection(COLLECTION_USERS).whereEqualTo("fieldsInfo.fieldID",fieldID).get();
-    }
     public Task<QuerySnapshot> getAllBooking (String userID) {
         return db.collection(COLLECTION_USERS).document(userID)
                 .collection(SUB_COLLECTION_BOOKING_INFO).orderBy("bookingDate", Query.Direction.ASCENDING).get();

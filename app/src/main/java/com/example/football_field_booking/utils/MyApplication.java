@@ -18,7 +18,6 @@ public class MyApplication extends Application {
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
             NotificationChannel channel=new NotificationChannel(CHANEL_ID,"PushNotification",
                     NotificationManager.IMPORTANCE_HIGH);
-            channel.enableVibration(true);
             NotificationManager manager =getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
