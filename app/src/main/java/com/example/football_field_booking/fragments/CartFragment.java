@@ -203,7 +203,7 @@ public class CartFragment extends Fragment {
                                                                         if(tokens!=null){
                                                                             for (String token : tokens) {
                                                                                 String title = "You have a new booking";
-                                                                                String body = cartItemDTO.getFieldInfo().getName() + "is booked by" +  user.getDisplayName();
+                                                                                String body = cartItemDTO.getFieldInfo().getName() + " is booked by" +  user.getDisplayName();
                                                                                 Data data = new Data(body, title);
                                                                                 sendNotification(token, data);
                                                                             }
