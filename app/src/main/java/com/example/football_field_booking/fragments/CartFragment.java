@@ -22,6 +22,7 @@ import com.example.football_field_booking.daos.FootballFieldDAO;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.BookingDTO;
 import com.example.football_field_booking.dtos.CartItemDTO;
+import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.example.football_field_booking.dtos.UserDocument;
@@ -30,6 +31,7 @@ import com.example.football_field_booking.utils.Client;
 import com.example.football_field_booking.utils.Data;
 import com.example.football_field_booking.utils.Sender;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -189,29 +191,36 @@ public class CartFragment extends Fragment {
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             for (CartItemDTO cartItemDTO : cart) {
-                                                String fieldID = cartItemDTO.getFieldInfo().getFieldID();
-                                                try {
-                                                    userDAO.getTokenListByFieldID(fieldID).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                        @Override
-                                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                            if (task.isSuccessful()) {
-                                                                List<String> tokens = task.getResult().getDocuments().get(0).toObject(UserDocument.class).getTokens();
-                                                                for (String token : tokens) {
-                                                                    String title = cartItemDTO.getFieldInfo().getName() + " have a new booking";
-                                                                    String body = user.getDisplayName() + " booked " + cartItemDTO.getFieldInfo().getName();
-                                                                    Data data = new Data(body, title);
-                                                                    sendNotification(token, data);
-                                                                }
-                                                            } else {
-                                                                task.getException().printStackTrace();
+                                                fieldDAO.getFieldByID(cartItemDTO.getFieldInfo().getFieldID())
+                                                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                            @Override
+                                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                                String userID=documentSnapshot.getString("ownerInfo.userID");
+                                                                userDAO.getUserById(userID).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                                    @Override
+                                                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                        List<String> tokens = task.getResult().toObject(UserDocument.class).getTokens();
+                                                                        if(tokens!=null){
+                                                                            for (String token : tokens) {
+                                                                                String title = "You have a new booking";
+                                                                                String body = cartItemDTO.getFieldInfo().getName() + "is booked by" +  user.getDisplayName();
+                                                                                Data data = new Data(body, title);
+                                                                                sendNotification(token, data);
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }).addOnFailureListener(new OnFailureListener() {
+                                                                    @Override
+                                                                    public void onFailure(@NonNull Exception e) {
+                                                                        e.printStackTrace();
+                                                                    }
+                                                                });
                                                             }
-                                                        }
-                                                    });
-                                                } catch (Exception e) {
-                                                    e.printStackTrace();
-                                                }
-                                            }
+                                                        });
 
+
+
+                                            }
                                             Toast.makeText(getActivity(), "Booking Success", Toast.LENGTH_SHORT).show();
                                         } else {
                                             Toast.makeText(getActivity(), "Booking Fail", Toast.LENGTH_SHORT).show();
@@ -236,7 +245,11 @@ public class CartFragment extends Fragment {
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        Toast.makeText(getContext(), "Send notification faild", Toast.LENGTH_SHORT).show();
+                        if(response.code()==200){
+                            if(!response.isSuccessful()){
+                                Toast.makeText(getContext(), "Send notification faild", Toast.LENGTH_SHORT).show();
+                            }
+                        }
                     }
 
                     @Override
