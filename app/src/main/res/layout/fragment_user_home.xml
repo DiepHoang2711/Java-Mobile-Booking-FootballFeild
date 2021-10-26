@@ -35,7 +35,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-
                     android:orientation="horizontal">
 
                     <LinearLayout
@@ -46,6 +45,7 @@
                         android:orientation="vertical">
 
                         <ImageButton
+                            android:id="@+id/imgBtnField5"
                             style="@style/imageButtonHomeCus"
                             android:src="@drawable/fieldfive" />
 
@@ -65,6 +65,7 @@
                         android:orientation="vertical">
 
                         <ImageButton
+                            android:id="@+id/imgBtnField7"
                             style="@style/imageButtonHomeCus"
                             android:src="@drawable/fieldseven" />
 
@@ -84,6 +85,7 @@
                         android:orientation="vertical">
 
                         <ImageButton
+                            android:id="@+id/imgBtnField11"
                             style="@style/imageButtonHomeCus"
                             android:src="@drawable/fieldeleven" />
 

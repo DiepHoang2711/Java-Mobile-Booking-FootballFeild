@@ -24,7 +24,7 @@
             android:name=".EditFootballFieldActivity"
             android:exported="true" />
         <activity
-            android:name=".SearchByNameActivity"
+            android:name=".SearchActivity"
             android:exported="true" />
         <activity
             android:name=".OwnerMainActivity"

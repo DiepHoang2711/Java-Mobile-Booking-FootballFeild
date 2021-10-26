@@ -54,7 +54,6 @@ public class UserDAO {
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private static final String COLLECTION_USERS = "users";
-    public static final String SUB_COLLECTION_TOKENS = "tokens";
 
     public UserDAO() {
         db = FirebaseFirestore.getInstance();

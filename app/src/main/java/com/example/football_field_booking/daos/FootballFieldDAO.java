@@ -42,6 +42,7 @@ public class FootballFieldDAO {
     private static final String COLLECTION_USERS = "users";
     public static final String CONST_OF_PROJECT = "constOfProject";
     public static final String SUB_COLLECTION_RATING = "rating";
+    public static final String STATUS_ACTIVE="active";
 
 
 
@@ -133,15 +134,31 @@ public class FootballFieldDAO {
                 Map<String, Object> dataUpdateTimePicker = new HashMap<>();
                 dataUpdateTimePicker.put("timePicker", timePickerDTOList);
                 transaction.set(docField, dataUpdateTimePicker, SetOptions.merge());
-
                 return null;
             }
         });
     }
 
-    public Task<QuerySnapshot> searchByLikeName(String name) throws Exception{
-        return db.collection(COLLECTION_FOOTBALL_FIELD).whereGreaterThanOrEqualTo("name",name).get();
+    public Task<QuerySnapshot> searchByLikeNameForUser(String name){
+        return db.collection(COLLECTION_FOOTBALL_FIELD)
+                .whereGreaterThanOrEqualTo("fieldInfo.name",name)
+                .whereEqualTo("fieldInfo.status",STATUS_ACTIVE)
+                .get();
     }
+
+    public Task<QuerySnapshot> searchByTypeForUser(String type){
+        return db.collection(COLLECTION_FOOTBALL_FIELD)
+                .whereEqualTo("fieldInfo.type",type)
+                .whereEqualTo("fieldInfo.status",STATUS_ACTIVE)
+                .get();
+    }
+
+//    public Task<QuerySnapshot> searchByTypeAndNameForUser(String type,String name){
+//        return db.collection(COLLECTION_FOOTBALL_FIELD)
+//                .whereEqualTo("fieldInfo.type",type)
+//                .whereEqualTo("fieldInfo.status",STATUS_ACTIVE)
+//                .whereGreaterThanOrEqualTo("fieldInfo.name",name).get();
+//    }
 
     public Task<QuerySnapshot> getBookingByFieldAndDate (List<CartItemDTO> cart) {
         List<String> listFieldAndDate = new ArrayList<>();

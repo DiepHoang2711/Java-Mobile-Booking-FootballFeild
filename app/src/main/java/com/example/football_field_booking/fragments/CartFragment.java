@@ -1,5 +1,6 @@
 package com.example.football_field_booking.fragments;
 
+import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 
@@ -16,6 +17,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.football_field_booking.FootballFieldDetailActivity;
+import com.example.football_field_booking.MainActivity;
 import com.example.football_field_booking.R;
 import com.example.football_field_booking.adapters.CartAdapter;
 import com.example.football_field_booking.daos.FootballFieldDAO;
@@ -195,15 +198,15 @@ public class CartFragment extends Fragment {
                                                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                                             @Override
                                                             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                                String userID=documentSnapshot.getString("ownerInfo.userID");
+                                                                String userID = documentSnapshot.getString("ownerInfo.userID");
                                                                 userDAO.getUserById(userID).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                                                     @Override
                                                                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                                         List<String> tokens = task.getResult().toObject(UserDocument.class).getTokens();
-                                                                        if(tokens!=null){
+                                                                        if (tokens != null) {
                                                                             for (String token : tokens) {
                                                                                 String title = "You have a new booking";
-                                                                                String body = cartItemDTO.getFieldInfo().getName() + " is booked by" +  user.getDisplayName();
+                                                                                String body = cartItemDTO.getFieldInfo().getName() + " is booked by" + user.getDisplayName();
                                                                                 Data data = new Data(body, title);
                                                                                 sendNotification(token, data);
                                                                             }
@@ -217,11 +220,11 @@ public class CartFragment extends Fragment {
                                                                 });
                                                             }
                                                         });
-
-
-
                                             }
                                             Toast.makeText(getActivity(), "Booking Success", Toast.LENGTH_SHORT).show();
+                                            Intent intent=new Intent(getActivity(), MainActivity.class);
+                                            intent.putExtra("action","view history");
+                                            startActivity(intent);
                                         } else {
                                             Toast.makeText(getActivity(), "Booking Fail", Toast.LENGTH_SHORT).show();
                                         }
@@ -245,8 +248,8 @@ public class CartFragment extends Fragment {
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        if(response.code()==200){
-                            if(!response.isSuccessful()){
+                        if (response.code() == 200) {
+                            if (!response.isSuccessful()) {
                                 Toast.makeText(getContext(), "Send notification faild", Toast.LENGTH_SHORT).show();
                             }
                         }

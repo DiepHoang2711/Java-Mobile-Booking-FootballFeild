@@ -80,12 +80,7 @@ public class ProfileFragment extends Fragment {
                     @Override
                     public void onSuccess(String s) {
                         try {
-                            userDAO.deleteToken(s,user.getUid()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-                                    FirebaseMessaging.getInstance().deleteToken();
-                                }
-                            });
+                            userDAO.deleteToken(s,user.getUid());
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

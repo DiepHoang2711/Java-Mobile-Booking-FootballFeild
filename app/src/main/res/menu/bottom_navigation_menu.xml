@@ -14,7 +14,7 @@
         android:id="@+id/pageHistory"
         android:enabled="true"
         android:icon="@drawable/outline_event_24"
-        android:title="calendar"/>
+        android:title="History"/>
     <item
         android:id="@+id/pageAccount"
         android:enabled="true"
