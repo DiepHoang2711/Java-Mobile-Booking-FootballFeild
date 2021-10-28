@@ -7,7 +7,6 @@
     tools:context=".CreateUserActivity">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
-
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -51,8 +50,9 @@
                     android:layout_gravity="center" />
 
                 <Button
+                    android:layout_gravity="center"
                     android:id="@+id/btnChoiceImage"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="choice image"
                     />
@@ -60,11 +60,11 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/txtEmail"
-                    style="@style/TextFieldUpdate"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="15dp"
                     android:layout_marginEnd="24dp"
                     android:hint="Email">
 
@@ -78,11 +78,11 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/txtPassword"
-                    style="@style/TextFieldUpdate"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="24dp"
                     android:hint="Password">
 
@@ -96,11 +96,11 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/txtConfirm"
-                    style="@style/TextFieldUpdate"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="24dp"
                     android:hint="Confirm ">
 
@@ -114,11 +114,11 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/txtFullName"
-                    style="@style/TextFieldUpdate"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="24dp"
                     android:hint="Full name">
 
@@ -131,11 +131,11 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/txtPhone"
-                    style="@style/TextFieldUpdate"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="24dp"
                     android:hint="Phone">
 
@@ -149,11 +149,11 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilRole"
-                    style="@style/TextFieldDropDownUpdate"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="24dp"
                     android:hint="Role">
 
@@ -168,11 +168,11 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilStatus"
-                    style="@style/TextFieldDropDownUpdate"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="24dp"
                     android:hint="Status">
 

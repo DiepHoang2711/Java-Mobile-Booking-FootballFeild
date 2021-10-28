@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,13 +41,15 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EditFootballFieldActivity extends AppCompatActivity {
 
     public static final int RC_IMAGE_PICKER = 1000;
 
-    private Button btnChooseImg, btnUpdateField;
+    private Button btnChooseImg, btnUpdateField, btnDeleteField;
     private ImageButton imgBtnAdd;
     private ImageView imgFootBallField;
     private TextInputLayout tlFootballFieldName, tlLocation, tlType, tlStatus;
@@ -56,6 +60,7 @@ public class EditFootballFieldActivity extends AppCompatActivity {
     private TimePickerAdapter timePickerAdapter;
     private Utils utils;
     private Validation val;
+    public static final String STATUS_INACTIVE = "inactive";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,12 +78,13 @@ public class EditFootballFieldActivity extends AppCompatActivity {
         auComTxtType = findViewById(R.id.auComTxtType);
         auComTxtStatus = findViewById(R.id.auComTxtStatus);
         lvTimePickerWorking = findViewById(R.id.lvTimePickerWorking);
+        btnDeleteField = findViewById(R.id.btnDeleteField);
         utils = new Utils();
         val = new Validation();
 
         Intent intent = this.getIntent();
         String fieldID = intent.getStringExtra("fieldID");
-        if(fieldID == null) {
+        if (fieldID == null) {
             Toast.makeText(this, getResources().getString(R.string.something_went_wrong),
                     Toast.LENGTH_SHORT).show();
             finish();
@@ -108,11 +114,11 @@ public class EditFootballFieldActivity extends AppCompatActivity {
         footballFieldDAO.getFieldByID(fieldID).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()){
+                if (task.isSuccessful()) {
                     try {
                         DocumentSnapshot doc = task.getResult();
-                        fieldDTO = doc.get("fieldInfo",FootballFieldDTO.class);
-                        fieldOldDTO = doc.get("fieldInfo",FootballFieldDTO.class);
+                        fieldDTO = doc.get("fieldInfo", FootballFieldDTO.class);
+                        fieldOldDTO = doc.get("fieldInfo", FootballFieldDTO.class);
                         Log.d("USER", "dto: " + fieldDTO);
 
                         tlFootballFieldName.getEditText().setText(fieldDTO.getName());
@@ -125,7 +131,7 @@ public class EditFootballFieldActivity extends AppCompatActivity {
                             Glide.with(imgFootBallField.getContext())
                                     .load(uri)
                                     .into(imgFootBallField);
-                        }catch (Exception e) {
+                        } catch (Exception e) {
                             imgFootBallField.setImageResource(R.drawable.myfield);
                         }
 
@@ -133,40 +139,15 @@ public class EditFootballFieldActivity extends AppCompatActivity {
                         timePickerAdapter = new TimePickerAdapter(EditFootballFieldActivity.this, timePickerDTOList);
                         lvTimePickerWorking.setAdapter(timePickerAdapter);
 
-                    }catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }else {
+                } else {
                     Toast.makeText(EditFootballFieldActivity.this, "Get data fail", Toast.LENGTH_SHORT).show();
                     finish();
                 }
             }
         });
-
-//        footballFieldDAO.getAllTimePickerOfField(fieldID).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                if (task.isSuccessful()){
-//                    try {
-//                        List<TimePickerDTO> list = new ArrayList<>();
-//                        for (QueryDocumentSnapshot doc: task.getResult()) {
-//                            TimePickerDTO dto = doc.toObject(TimePickerDTO.class);
-//                            list.add(dto);
-//                        }
-//                        timePickerAdapter = new TimePickerAdapter(EditFootballFieldActivity.this, list);
-//                        lvTimePickerWorking.setAdapter(timePickerAdapter);
-//
-//                    }catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                }else {
-//                    Toast.makeText(EditFootballFieldActivity.this, "Get time picker data fail",
-//                            Toast.LENGTH_SHORT).show();
-//                    finish();
-//                }
-//            }
-//        });
 
         btnChooseImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,13 +162,13 @@ public class EditFootballFieldActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    if(fieldDTO != null) {
+                    if (fieldDTO != null) {
                         String fieldName = tlFootballFieldName.getEditText().getText().toString();
                         String location = tlLocation.getEditText().getText().toString();
                         String type = auComTxtType.getText().toString();
                         String status = auComTxtStatus.getText().toString();
 
-                        if(isValidUpdate(fieldName, location, type, status) && timePickerAdapter.isValidTimePicker()) {
+                        if (isValidUpdate(fieldName, location, type, status) && timePickerAdapter.isValidTimePicker()) {
                             fieldDTO.setName(fieldName);
                             fieldDTO.setLocation(location);
                             fieldDTO.setType(type);
@@ -200,7 +181,7 @@ public class EditFootballFieldActivity extends AppCompatActivity {
 
                         }
                     }
-                }catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -214,13 +195,35 @@ public class EditFootballFieldActivity extends AppCompatActivity {
             }
         });
 
+        btnDeleteField.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(EditFootballFieldActivity.this);
+                alert.setTitle("Delete entry");
+                alert.setMessage("Are you sure you want to delete?");
+                alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                       fieldDTO.setStatus(STATUS_INACTIVE);
+                        updateFootballField();
+                    }
+                });
+                alert.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // close dialog
+                        dialog.cancel();
+                    }
+                });
+                alert.show();
+            }
+        });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == RC_IMAGE_PICKER) {
-            if(resultCode == RESULT_OK) {
+        if (requestCode == RC_IMAGE_PICKER) {
+            if (resultCode == RESULT_OK) {
                 try {
                     imgUri = data.getData();
                     imgFootBallField.setImageURI(imgUri);
@@ -228,7 +231,7 @@ public class EditFootballFieldActivity extends AppCompatActivity {
                     utils.showProgressDialog(progressDialog, "Uploading ....", "Please wait for uploading image");
                     uploadImgFootballField(imgUri);
                     progressDialog.cancel();
-                }catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -236,56 +239,47 @@ public class EditFootballFieldActivity extends AppCompatActivity {
         }
     }
 
-    private void updateFootballField () {
+    private void updateFootballField() {
         try {
             FootballFieldDAO fieldDAO = new FootballFieldDAO();
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             List<TimePickerDTO> list = timePickerAdapter.getTimePickerDTOList();
-            fieldDAO.updateFootballField(fieldDTO, fieldOldDTO, user.getUid(), list).addOnCompleteListener(new OnCompleteListener<Void>() {
+            fieldDAO.updateFootballField(fieldDTO ,fieldOldDTO, user.getUid(), list).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()) {
+                    if (task.isSuccessful()) {
                         Toast.makeText(EditFootballFieldActivity.this, "Update field success",
                                 Toast.LENGTH_SHORT).show();
-                    }else {
+                    } else {
                         Toast.makeText(EditFootballFieldActivity.this, "Update field fail",
                                 Toast.LENGTH_SHORT).show();
                         Log.d("USER", "errorrr: " + task.getException());
                     }
                 }
             });
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void uploadImgFootballField (Uri uri) {
+    private void uploadImgFootballField(Uri uri) {
         try {
             FootballFieldDAO fieldDAO = new FootballFieldDAO();
             fieldDAO.uploadImgFootballFieldToFirebase(uri).addOnCompleteListener(new OnCompleteListener<Uri>() {
                 @Override
                 public void onComplete(@NonNull Task<Uri> task) {
-                    if(task.isSuccessful()) {
+                    if (task.isSuccessful()) {
                         Uri uriRes = task.getResult();
                         fieldDTO.setImage(uriRes.toString());
                         updateFootballField();
                     }
                 }
             });
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
-
-//    private void updateTimePicker (List<TimePickerDTO> listDTO, String fieldID) {
-//        try {
-//            FootballFieldDAO fieldDAO = new FootballFieldDAO();
-//            fieldDAO.updateTimePicker(listDTO, fieldID);
-//        }catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     private boolean isValidUpdate(String name, String location, String type, String status) {
         boolean result = true;
@@ -294,7 +288,7 @@ public class EditFootballFieldActivity extends AppCompatActivity {
         utils.clearError(tlType);
         utils.clearError(tlStatus);
 
-        if(val.isEmpty(status)){
+        if (val.isEmpty(status)) {
             utils.showError(tlStatus, "Status must not be blank");
             result = false;
         }
@@ -302,11 +296,11 @@ public class EditFootballFieldActivity extends AppCompatActivity {
             utils.showError(tlType, "Type must not be blank");
             result = false;
         }
-        if(val.isEmpty(location)) {
+        if (val.isEmpty(location)) {
             utils.showError(tlLocation, "Location must not be blank");
             result = false;
         }
-        if(val.isEmpty(name)) {
+        if (val.isEmpty(name)) {
             utils.showError(tlFootballFieldName, "Name must not be blank");
             result = false;
         }
