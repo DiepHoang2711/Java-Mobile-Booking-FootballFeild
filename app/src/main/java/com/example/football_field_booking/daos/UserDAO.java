@@ -227,7 +227,7 @@ public class UserDAO {
         return reference.update("tokens",FieldValue.arrayUnion(token));
     }
 
-    public Task<Void> deleteToken(String token,String userID) throws Exception{
+    public Task<Void> deleteToken(String token,String userID){
         return db.collection(COLLECTION_USERS).document(userID).update("tokens",FieldValue.arrayRemove(token));
     }
 

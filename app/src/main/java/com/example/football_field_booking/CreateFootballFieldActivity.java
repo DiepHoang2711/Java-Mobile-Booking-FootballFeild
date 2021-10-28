@@ -3,8 +3,11 @@ package com.example.football_field_booking;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -26,6 +29,8 @@ import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.example.football_field_booking.utils.Utils;
 import com.example.football_field_booking.validations.Validation;
+import com.firebase.geofire.GeoFireUtils;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,9 +38,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.storage.StorageReference;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,12 +47,12 @@ import java.util.List;
 
 public class CreateFootballFieldActivity extends AppCompatActivity {
 
-    public static final int RC_GALLERY = 1;
+    public static final int RC_GALLERY = 1000;
     public static final String ACTIVE = "active";
-    private Button btnChooseImg;
+    public static final int RC_LOCATION = 1002;
+    private Button btnChooseImg, btnLocation;
     private ImageView imgPhoto;
     private Uri uriImg;
-    private StorageReference storageRef;
     private TextInputLayout tlName, tlLocation, tlType;
     private AutoCompleteTextView auComTxtType;
     private ImageButton imgBtnAdd;
@@ -57,6 +61,8 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
     private List<String> listTypeField;
     private List<TimePickerDTO> list;
     private FootballFieldDTO footballFieldDTO;
+    private GeoPoint geoPoint;
+    private String geoHash;
     private Utils utils;
     private Validation val;
 
@@ -72,6 +78,7 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         auComTxtType = findViewById(R.id.auComTxtType);
         imgPhoto = findViewById(R.id.img_photo);
         btnChooseImg = findViewById(R.id.btnChooseImage);
+        btnLocation = findViewById(R.id.btnLocation);
         imgBtnAdd = findViewById(R.id.imgBtnAdd);
         lvTimePickerWorking = findViewById(R.id.lvTimePickerWorking);
         utils = new Utils();
@@ -83,6 +90,15 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
                 Intent gallery = new Intent(Intent.ACTION_PICK,
                         MediaStore.Images.Media.INTERNAL_CONTENT_URI);
                 startActivityForResult(gallery, RC_GALLERY);
+            }
+        });
+
+        btnLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(CreateFootballFieldActivity.this, GoogleMapActivity.class);
+                intent.putExtra("action", "chooseLocation");
+                startActivityForResult(intent, RC_LOCATION);
             }
         });
 
@@ -132,9 +148,21 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
                 }
 
             }
+        } else if(requestCode == RC_LOCATION && resultCode == RESULT_OK) {
+            try {
+                double lat = data.getDoubleExtra("lat", 0);
+                double lng = data.getDoubleExtra("lng", 0);
+                if(lat != 0 && lng != 0) {
+                    geoPoint = new GeoPoint(lat, lng);
+                    geoHash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(lat, lng));
+                }
+                String location = data.getStringExtra("locationName");
+                tlLocation.getEditText().setText(location);
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
-
 
     public void clickToCreate(View view) {
         String name = tlName.getEditText().getText().toString();
@@ -146,6 +174,8 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
             footballFieldDTO.setName(name);
             footballFieldDTO.setType(type);
             footballFieldDTO.setLocation(location);
+            footballFieldDTO.setGeoPoint(geoPoint);
+            footballFieldDTO.setGeoHash(geoHash);
             footballFieldDTO.setStatus(ACTIVE);
 
             list = new ArrayList<>();
@@ -248,6 +278,10 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         }
         if(val.isEmpty(name)) {
             utils.showError(tlName, "Name must not be blank");
+            result = false;
+        }
+        if(geoPoint == null) {
+            Toast.makeText(this, "ERROR: Please choose geo point", Toast.LENGTH_SHORT).show();
             result = false;
         }
         return result;

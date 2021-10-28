@@ -10,6 +10,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.cardview.widget.CardView;
+
 import com.bumptech.glide.Glide;
 import com.example.football_field_booking.R;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
@@ -21,6 +23,7 @@ public class FootballFieldAdapter extends BaseAdapter {
     private Context context;
     private List<FootballFieldDTO> fieldDTOList;
     private LayoutInflater layoutInflater;
+    private List<Double> distanceList;
 
     public FootballFieldAdapter(Context context, List<FootballFieldDTO> fieldDTOList) {
         this.context = context;
@@ -28,6 +31,13 @@ public class FootballFieldAdapter extends BaseAdapter {
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
+    public List<Double> getDistanceList() {
+        return distanceList;
+    }
+
+    public void setDistanceList(List<Double> distanceList) {
+        this.distanceList = distanceList;
+    }
 
     @Override
     public int getCount() {
@@ -69,6 +79,14 @@ public class FootballFieldAdapter extends BaseAdapter {
         txtType.setText(dto.getType());
         txtRate.setText(dto.getRate()+"");
         Log.d("FootballFieldAdapter",fieldDTOList.size()+"");
+
+        if(distanceList != null) {
+            CardView cardDistance = rowView.findViewById(R.id.cardDistance);
+            cardDistance.setVisibility(View.VISIBLE);
+            TextView txtDistance = rowView.findViewById(R.id.txtDistance);
+            txtDistance.setText(distanceList.get(i)+ " km");
+        }
+
         return rowView;
     }
 }

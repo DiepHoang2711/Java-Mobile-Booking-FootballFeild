@@ -14,6 +14,7 @@
         android:icon="@drawable/outline_location_on_24"
         android:title="Location"
         android:contentDescription="content_description_location"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"
+        android:onClick="clickToSearchByLocation"/>
 
 </menu>
