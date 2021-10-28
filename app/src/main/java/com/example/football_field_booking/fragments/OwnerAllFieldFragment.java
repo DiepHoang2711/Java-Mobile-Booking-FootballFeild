@@ -87,18 +87,14 @@ public class OwnerAllFieldFragment extends Fragment {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 try {
-//                    for (QueryDocumentSnapshot doc: queryDocumentSnapshots) {
-//                        Log.d("USER", "DocID: " + doc.getId());
-//                        Log.d("USER", "Doc: " + doc.get("fieldInfo", FootballFieldDTO.class));
-//                        FootballFieldDTO dto = doc.get("fieldInfo", FootballFieldDTO.class);
-//                        fieldDTOList.add(dto);
-//                    }
                     List<FootballFieldDTO> fieldDTOList = documentSnapshot.toObject(UserDocument.class).getFieldsInfo();
                     Log.d("USER", "dto: " + fieldDTOList);
+                    if(fieldDTOList != null) {
+                        FootballFieldAdapter fieldAdapter = new FootballFieldAdapter(getActivity(), fieldDTOList);
+                        lvFootballFieldOwner.setAdapter(fieldAdapter);
+                        fieldAdapter.notifyDataSetChanged();
+                    }
 
-                    FootballFieldAdapter fieldAdapter = new FootballFieldAdapter(getActivity(), fieldDTOList);
-                    lvFootballFieldOwner.setAdapter(fieldAdapter);
-                    fieldAdapter.notifyDataSetChanged();
                 }catch (Exception e) {
                     e.printStackTrace();
                 }
