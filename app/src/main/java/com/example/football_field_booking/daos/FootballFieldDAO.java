@@ -145,7 +145,7 @@ public class FootballFieldDAO {
         });
     }
 
-    public Task<QuerySnapshot> searchByLikeNameForUser(String name) throws Exception{
+    public Task<QuerySnapshot> searchByLikeNameForUser(String name){
         return db.collection(COLLECTION_FOOTBALL_FIELD).whereGreaterThanOrEqualTo("fieldInfo.name",name).get();
     }
 

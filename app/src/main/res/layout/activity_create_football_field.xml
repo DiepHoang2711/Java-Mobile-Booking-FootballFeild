@@ -59,19 +59,12 @@
                         android:layout_height="wrap_content" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tlLocation"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:layout_marginEnd="30dp"
-                    android:hint="Location"
-                    app:helperText="Require*"
-                    app:helperTextTextColor="@android:color/holo_red_light">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -83,25 +76,18 @@
                         android:hint="Location"
                         app:helperText="Require*"
                         app:helperTextTextColor="@android:color/holo_red_light">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </com.google.android.material.textfield.TextInputLayout>
                         <com.google.android.material.textfield.TextInputEditText
-
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
                     </com.google.android.material.textfield.TextInputLayout>
-
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnLocation"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_gravity="top"
-                        android:backgroundTint="#9DC030"
+                        android:layout_width="40dp"
+                        android:layout_height="59dp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_gravity="right"
                         app:icon="@drawable/outline_location_on_24"
-                        app:iconGravity="start"
+                        app:iconGravity="textStart"
                         app:iconSize="20dp"
                         tools:ignore="SpeakableTextPresentCheck" />
                 </LinearLayout>

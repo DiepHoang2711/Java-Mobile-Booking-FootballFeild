@@ -51,10 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserHomeFragment extends Fragment {
-
-    private ListView lvFootballField;
-    private List<FootballFieldDTO> fieldDTOList;
-    private FootballFieldAdapter fieldAdapter;
+    
     private ImageButton imgBtnField5,imgBtnField7,imgBtnField11;
     public static final int RC_PERMISSTION_LOCATION = 1001;
     public static final int RADIUS_IN_M = 50 * 1000;
