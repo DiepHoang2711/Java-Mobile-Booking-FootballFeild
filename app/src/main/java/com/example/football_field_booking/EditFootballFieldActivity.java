@@ -30,6 +30,8 @@ import com.example.football_field_booking.dtos.FootballFieldDocument;
 import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.utils.Utils;
 import com.example.football_field_booking.validations.Validation;
+import com.firebase.geofire.GeoFireUtils;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -37,6 +39,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -48,8 +51,9 @@ import java.util.Map;
 public class EditFootballFieldActivity extends AppCompatActivity {
 
     public static final int RC_IMAGE_PICKER = 1000;
+    public static final int RC_LOCATION = 1002;
 
-    private Button btnChooseImg, btnUpdateField, btnDeleteField;
+    private Button btnChooseImg, btnUpdateField, btnDeleteField, btnLocation;
     private ImageButton imgBtnAdd;
     private ImageView imgFootBallField;
     private TextInputLayout tlFootballFieldName, tlLocation, tlType, tlStatus;
@@ -58,6 +62,8 @@ public class EditFootballFieldActivity extends AppCompatActivity {
     private AutoCompleteTextView auComTxtType, auComTxtStatus;
     private FootballFieldDTO fieldDTO, fieldOldDTO;
     private TimePickerAdapter timePickerAdapter;
+    private GeoPoint geoPoint;
+    private String geoHash;
     private Utils utils;
     private Validation val;
     public static final String STATUS_INACTIVE = "inactive";
@@ -73,6 +79,7 @@ public class EditFootballFieldActivity extends AppCompatActivity {
         tlStatus = findViewById(R.id.tlStatus);
         btnChooseImg = findViewById(R.id.btnChooseImage);
         btnUpdateField = findViewById(R.id.btnUpdateField);
+        btnLocation = findViewById(R.id.btnLocation);
         imgBtnAdd = findViewById(R.id.imgBtnAdd);
         imgFootBallField = findViewById(R.id.imgFootBallField);
         auComTxtType = findViewById(R.id.auComTxtType);
@@ -158,6 +165,15 @@ public class EditFootballFieldActivity extends AppCompatActivity {
             }
         });
 
+        btnLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(EditFootballFieldActivity.this, GoogleMapActivity.class);
+                intent.putExtra("action", "chooseLocation");
+                startActivityForResult(intent, RC_LOCATION);
+            }
+        });
+
         btnUpdateField.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -171,6 +187,8 @@ public class EditFootballFieldActivity extends AppCompatActivity {
                         if (isValidUpdate(fieldName, location, type, status) && timePickerAdapter.isValidTimePicker()) {
                             fieldDTO.setName(fieldName);
                             fieldDTO.setLocation(location);
+                            fieldDTO.setGeoPoint(geoPoint);
+                            fieldDTO.setGeoHash(geoHash);
                             fieldDTO.setType(type);
                             fieldDTO.setStatus(status);
 
@@ -235,6 +253,19 @@ public class EditFootballFieldActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
+            } else if(requestCode == RC_LOCATION && resultCode == RESULT_OK) {
+                try {
+                    double lat = data.getDoubleExtra("lat", 0);
+                    double lng = data.getDoubleExtra("lng", 0);
+                    if(lat != 0 && lng != 0) {
+                        geoPoint = new GeoPoint(lat, lng);
+                        geoHash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(lat, lng));
+                    }
+                    String location = data.getStringExtra("locationName");
+                    tlLocation.getEditText().setText(location);
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

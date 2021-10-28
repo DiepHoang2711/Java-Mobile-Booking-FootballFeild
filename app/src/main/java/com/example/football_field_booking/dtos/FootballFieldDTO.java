@@ -1,11 +1,15 @@
 package com.example.football_field_booking.dtos;
 
+import com.google.firebase.firestore.GeoPoint;
+
 import java.io.Serializable;
 
 public class FootballFieldDTO implements Serializable {
     private String fieldID;
     private String name;
     private String location;
+    private GeoPoint geoPoint;
+    private String geoHash;
     private String type;
     private String image;
     private double rate;
@@ -15,14 +19,20 @@ public class FootballFieldDTO implements Serializable {
     public FootballFieldDTO() {
     }
 
-    public FootballFieldDTO(String fieldID, String name, String location, String type, String image, String status,double rate) {
-        this.fieldID = fieldID;
-        this.name = name;
-        this.location = location;
-        this.type = type;
-        this.image = image;
-        this.rate=rate;
-        this.status = status;
+    public String getGeoHash() {
+        return geoHash;
+    }
+
+    public void setGeoHash(String geoHash) {
+        this.geoHash = geoHash;
+    }
+
+    public GeoPoint getGeoPoint() {
+        return geoPoint;
+    }
+
+    public void setGeoPoint(GeoPoint geoPoint) {
+        this.geoPoint = geoPoint;
     }
 
     public double getRate() {

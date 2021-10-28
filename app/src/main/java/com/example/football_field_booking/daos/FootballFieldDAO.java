@@ -10,15 +10,19 @@ import com.example.football_field_booking.dtos.CartItemDTO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.dtos.UserDTO;
+import com.firebase.geofire.GeoFireUtils;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQueryBounds;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
@@ -113,6 +117,8 @@ public class FootballFieldDAO {
                 Map<String, Object> dataField = new HashMap<>();
                 dataField.put("fieldInfo.name", fieldDTO.getName());
                 dataField.put("fieldInfo.location", fieldDTO.getLocation());
+                dataField.put("fieldInfo.geoPoint", fieldDTO.getGeoPoint());
+                dataField.put("fieldInfo.geoHash", fieldDTO.getGeoHash());
                 dataField.put("fieldInfo.type", fieldDTO.getType());
                 dataField.put("fieldInfo.image", fieldDTO.getImage());
                 dataField.put("fieldInfo.status", fieldDTO.getStatus());
@@ -139,11 +145,8 @@ public class FootballFieldDAO {
         });
     }
 
-    public Task<QuerySnapshot> searchByLikeNameForUser(String name) {
-        return db.collection(COLLECTION_FOOTBALL_FIELD)
-                .whereGreaterThanOrEqualTo("fieldInfo.name", name)
-                .whereEqualTo("fieldInfo.status", STATUS_ACTIVE)
-                .get();
+    public Task<QuerySnapshot> searchByLikeNameForUser(String name) throws Exception{
+        return db.collection(COLLECTION_FOOTBALL_FIELD).whereGreaterThanOrEqualTo("fieldInfo.name",name).get();
     }
 
     public Task<QuerySnapshot> searchByTypeForUser(String type) {
@@ -196,5 +199,21 @@ public class FootballFieldDAO {
     public Task<QuerySnapshot> getRating(String fieldID) {
         return db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID)
                 .collection(SUB_COLLECTION_RATING).get();
+    }
+
+    public List<Task<QuerySnapshot>> searchNearMe (GeoLocation geoMe, double radiusInM) {
+        List<GeoQueryBounds> bounds = GeoFireUtils.getGeoHashQueryBounds(geoMe, radiusInM);
+        final List<Task<QuerySnapshot>> tasks = new ArrayList<>();
+        for (GeoQueryBounds b : bounds) {
+            Query q = db.collection(COLLECTION_FOOTBALL_FIELD)
+                    .orderBy("fieldInfo.geoHash")
+                    .startAt(b.startHash)
+                    .endAt(b.endHash);
+
+            tasks.add(q.get());
+        }
+
+        // Collect all the query results together into a single list
+        return tasks;
     }
 }
