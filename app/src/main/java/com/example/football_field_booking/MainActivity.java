@@ -100,6 +100,13 @@ public class MainActivity extends AppCompatActivity {
                Fragment historyFragment = new HistoryFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, historyFragment).commit();
                 bottomNavigationView.setSelectedItemId(R.id.pageHistory);
+            } else if(action.equals("check_out_success")){
+                Fragment cartFragment = new CartFragment();
+                Bundle bundle=new Bundle();
+                bundle.putString("check_out_success","check_out_success");
+                cartFragment.setArguments(bundle);
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, cartFragment).commit();
+                bottomNavigationView.setSelectedItemId(R.id.pageCart);
             }
         } else {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new UserHomeFragment()).commit();

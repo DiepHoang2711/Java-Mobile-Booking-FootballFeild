@@ -6,6 +6,7 @@
     tools:context=".fragments.HistoryFragment"
     android:orientation="vertical">
 
+
     <ListView
         android:id="@+id/lvBooking"
         android:layout_width="match_parent"

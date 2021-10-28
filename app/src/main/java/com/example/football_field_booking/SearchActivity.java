@@ -3,19 +3,19 @@ package com.example.football_field_booking;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import com.example.football_field_booking.adapters.FootballFieldAdapter;
 import com.example.football_field_booking.daos.FootballFieldDAO;
@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,8 @@ public class SearchActivity extends AppCompatActivity {
     private EditText edtSearch;
     private String type;
     private TextView txtTitle;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,13 +68,17 @@ public class SearchActivity extends AppCompatActivity {
             txtTitle.setText("Field Type: "+type);
             searchByTypeField();
         }
+
+
     }
 
     private void loadSearchData(QuerySnapshot queryDocumentSnapshots) {
         fieldDTOList=new ArrayList<>();
         for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
             FootballFieldDTO dto = snapshot.get("fieldInfo", FootballFieldDTO.class);
-            fieldDTOList.add(dto);
+            if(dto.getStatus().equals("active")){
+                fieldDTOList.add(dto);
+            }
         }
         fieldAdapter = new FootballFieldAdapter(SearchActivity.this, fieldDTOList);
         lvFootballField.setAdapter(fieldAdapter);
@@ -80,34 +87,44 @@ public class SearchActivity extends AppCompatActivity {
     public void clickToSearchByLikeName(View view) {
         FootballFieldDAO fieldDAO = new FootballFieldDAO();
         String searchName = edtSearch.getText().toString().trim();
-        fieldDAO.searchByLikeNameForUser(searchName)
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        loadSearchData(queryDocumentSnapshots);
-                        txtTitle.setText("Result of: "+searchName);
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                e.printStackTrace();
-            }
-        });
+        try{
+            fieldDAO.searchByLikeNameForUser(searchName)
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            Log.e("List Size:",queryDocumentSnapshots.size()+"");
+                            loadSearchData(queryDocumentSnapshots);
+                            txtTitle.setText("Result of: "+searchName);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     private void searchByTypeField() {
         FootballFieldDAO fieldDAO = new FootballFieldDAO();
-        fieldDAO.searchByTypeForUser(type).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                loadSearchData(queryDocumentSnapshots);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                e.printStackTrace();
-            }
-        });
+
+            fieldDAO.searchByTypeForUser(type).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                    loadSearchData(queryDocumentSnapshots);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
+
     }
 
     @Override

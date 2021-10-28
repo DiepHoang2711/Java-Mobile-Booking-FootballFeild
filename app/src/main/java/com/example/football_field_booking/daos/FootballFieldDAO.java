@@ -139,11 +139,13 @@ public class FootballFieldDAO {
         });
     }
 
-    public Task<QuerySnapshot> searchByLikeNameForUser(String name){
+    public Task<QuerySnapshot> searchByLikeNameForUser(String name) throws Exception{
+
         return db.collection(COLLECTION_FOOTBALL_FIELD)
                 .whereGreaterThanOrEqualTo("fieldInfo.name",name)
-                .whereEqualTo("fieldInfo.status",STATUS_ACTIVE)
                 .get();
+//                .whereEqualTo("fieldInfo.status",STATUS_ACTIVE)
+
     }
 
     public Task<QuerySnapshot> searchByTypeForUser(String type){

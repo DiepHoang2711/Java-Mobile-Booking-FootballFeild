@@ -4,12 +4,12 @@ plugins {
 
 
 android {
-    compileSdk 31
+    compileSdk 30
 
     defaultConfig {
-        applicationId "com.example.football_field_booking"
-        minSdk 22
-        targetSdk 31
+        applicationId "com.example.footballfieldbooking"
+        minSdk 23
+        targetSdk 30
         versionCode 1
         versionName "1.0"
 
@@ -20,6 +20,8 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            shrinkResources false
+            signingConfig signingConfigs.debug
         }
     }
     compileOptions {
@@ -55,6 +57,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.2.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.2.0'
 
+    implementation 'com.paypal.checkout:android-sdk:0.5.1'
 
 }
 apply plugin: 'com.google.gms.google-services'
