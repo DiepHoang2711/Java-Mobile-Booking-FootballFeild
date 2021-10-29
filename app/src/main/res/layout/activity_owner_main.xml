@@ -27,25 +27,14 @@
                 app:liftOnScroll="true"
                 app:logo="@drawable/logo"
                 app:menu="@menu/owner_top_app_bar"
-                app:title="Fast Field">
-            </com.google.android.material.appbar.MaterialToolbar>
+                app:title="Fast Field"></com.google.android.material.appbar.MaterialToolbar>
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.core.widget.NestedScrollView
+        <FrameLayout
+            android:id="@+id/fragmentContainer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:fillViewport="true">
-
-            <FrameLayout
-                android:id="@+id/fragmentContainer"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                />
-
-        </androidx.core.widget.NestedScrollView>
-
+            android:layout_height="match_parent" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

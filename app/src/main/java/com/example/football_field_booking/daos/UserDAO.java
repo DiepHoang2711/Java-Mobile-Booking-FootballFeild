@@ -232,7 +232,7 @@ public class UserDAO {
 
     public Task<QuerySnapshot> getAllBooking (String userID) {
         return db.collection(COLLECTION_USERS).document(userID)
-                .collection(SUB_COLLECTION_BOOKING_INFO).orderBy("bookingDate", Query.Direction.ASCENDING).get();
+                .collection(SUB_COLLECTION_BOOKING_INFO).orderBy("bookingDate", Query.Direction.DESCENDING).get();
     }
 
     public Task<Void> rating (RatingDTO ratingDTO, String bookingID, String bookingDetailID) {

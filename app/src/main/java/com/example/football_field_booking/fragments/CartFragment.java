@@ -171,16 +171,16 @@ public class CartFragment extends Fragment {
                                 ProcessingInstruction.NO_INSTRUCTION
                         );
                         createOrderActions.create(order, (CreateOrderActions.OnOrderCreated) null);
-                        util.showProgressDialog(prdCheckout, "Checkout", "Please wait for checkout");
+
                     }
                 },
                 new OnApprove() {
                     @Override
                     public void onApprove(@NotNull Approval approval) {
+                        util.showProgressDialog(prdCheckout, "Checkout", "Please wait for checkout");
                         approval.getOrderActions().capture(new OnCaptureComplete() {
                             @Override
                             public void onCaptureComplete(@NotNull CaptureOrderResult result) {
-                                Toast.makeText(getContext(),"Check out successfull",Toast.LENGTH_SHORT).show();
                                 try {
                                     booking();
                                 } catch (Exception e) {
@@ -215,7 +215,6 @@ public class CartFragment extends Fragment {
                         cartAdapter.setCart(cart);
                         lvCart.setAdapter(cartAdapter);
                         checkEmptyCart();
-
                     } else {
                         Toast.makeText(getActivity(), "Load cart fail", Toast.LENGTH_SHORT).show();
 
@@ -236,6 +235,7 @@ public class CartFragment extends Fragment {
     }
 
     private void booking() throws Exception {
+
         FootballFieldDAO fieldDAO = new FootballFieldDAO();
         List<CartItemDTO> cart = cartAdapter.getCart();
         if (isValidBookingDate(cart)) {
@@ -252,7 +252,7 @@ public class CartFragment extends Fragment {
                                 for (CartItemDTO itemInCart : cart) {
                                     if (itemInCart.getTimePicker().contains(timePickerDTO)) {
                                         flag = false;
-                                        showError(itemInCart.getFieldInfo().getName() + " in" + timePickerDTO.getStart()
+                                        showError(itemInCart.getFieldInfo().getName() + " in " + timePickerDTO.getStart()
                                                 + "-" + timePickerDTO.getEnd() + " already booking by someone");
                                         break outerLoop;
                                     }
@@ -271,6 +271,7 @@ public class CartFragment extends Fragment {
                                 userDAO.booking(bookingDTO, cart).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
+                                        prdCheckout.cancel();
                                         if (task.isSuccessful()) {
                                             for (CartItemDTO cartItemDTO : cart) {
                                                 fieldDAO.getFieldByID(cartItemDTO.getFieldInfo().getFieldID())
@@ -308,6 +309,7 @@ public class CartFragment extends Fragment {
                                             Toast.makeText(getActivity(), "Booking Fail", Toast.LENGTH_SHORT).show();
                                         }
                                     }
+
                                 });
                             }
 
@@ -319,7 +321,7 @@ public class CartFragment extends Fragment {
                 }
             });
         }
-        prdCheckout.cancel();
+
     }
 
     private void sendNotification(String token, Data data) {
