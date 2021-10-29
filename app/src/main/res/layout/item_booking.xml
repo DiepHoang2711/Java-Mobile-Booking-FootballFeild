@@ -2,36 +2,105 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        app:cardCornerRadius="2dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:outlineSpotShadowColor="@color/black"
+        app:cardUseCompatPadding="true"
+        app:cardElevation="10dp">
 
-        <TextView
-            android:id="@+id/txtBookingID"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Booking ID: "/>
+            android:background="#FFFFFF"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/txtTotal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Total : "/>
 
-        <TextView
-            android:id="@+id/txtBookingDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Date: "/>
-        <TextView
-            android:id="@+id/txtStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Status: "/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:orientation="vertical">
 
-    </LinearLayout>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp">
 
+                    <TextView
+                        android:id="@+id/textView13"
+                        android:layout_width="127dp"
+                        android:layout_height="wrap_content"
+                        android:text="Booking ID:"
+                        android:layout_marginLeft="5dp"
+                        android:textAlignment="textStart"
+                        android:textColor="#000000"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtBookingID"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp">
+
+                    <TextView
+                        android:id="@+id/textView25"
+                        android:layout_width="127dp"
+                        android:layout_height="wrap_content"
+                        android:text="Total:"
+                        android:layout_marginLeft="5dp"
+                        android:textAlignment="textStart"
+                        android:textColor="#000000"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtTotal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp">
+
+                    <TextView
+                        android:layout_width="127dp"
+                        android:layout_height="wrap_content"
+                        android:text="Date:"
+                        android:layout_marginLeft="5dp"
+                        android:textAlignment="textStart"
+                        android:textColor="#000000"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtBookingDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:textStyle="bold" />
+                </TableRow>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 </LinearLayout>

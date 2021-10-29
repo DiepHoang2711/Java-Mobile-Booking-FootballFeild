@@ -39,9 +39,6 @@
             android:name=".GoogleMapActivity"
             android:exported="true" />
         <activity
-            android:name=".CheckOutPaypalActivity"
-            android:exported="true" />
-        <activity
             android:name=".BookingDetailActivity"
             android:exported="true" />
         <activity

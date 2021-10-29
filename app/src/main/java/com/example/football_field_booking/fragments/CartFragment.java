@@ -1,26 +1,21 @@
 package com.example.football_field_booking.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.DataSetObserver;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.football_field_booking.BuildConfig;
-import com.example.football_field_booking.CheckOutPaypalActivity;
-import com.example.football_field_booking.FootballFieldDetailActivity;
 import com.example.football_field_booking.MainActivity;
 import com.example.football_field_booking.R;
 import com.example.football_field_booking.adapters.CartAdapter;
@@ -28,14 +23,13 @@ import com.example.football_field_booking.daos.FootballFieldDAO;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.BookingDTO;
 import com.example.football_field_booking.dtos.CartItemDTO;
-import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.TimePickerDTO;
-import com.example.football_field_booking.dtos.UserDTO;
 import com.example.football_field_booking.dtos.UserDocument;
 import com.example.football_field_booking.utils.APISERVICE;
 import com.example.football_field_booking.utils.Client;
 import com.example.football_field_booking.utils.Data;
 import com.example.football_field_booking.utils.Sender;
+import com.example.football_field_booking.utils.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -43,28 +37,20 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.iid.FirebaseInstanceIdReceiver;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.paypal.checkout.PayPalCheckout;
 import com.paypal.checkout.approve.Approval;
 import com.paypal.checkout.approve.OnApprove;
-import com.paypal.checkout.cancel.OnCancel;
 import com.paypal.checkout.config.CheckoutConfig;
 import com.paypal.checkout.config.Environment;
 import com.paypal.checkout.config.PaymentButtonIntent;
-import com.paypal.checkout.config.SettingsConfig;
 import com.paypal.checkout.createorder.CreateOrder;
 import com.paypal.checkout.createorder.CreateOrderActions;
 import com.paypal.checkout.createorder.CurrencyCode;
 import com.paypal.checkout.createorder.OrderIntent;
 import com.paypal.checkout.createorder.ProcessingInstruction;
 import com.paypal.checkout.createorder.UserAction;
-import com.paypal.checkout.error.ErrorInfo;
-import com.paypal.checkout.error.OnError;
 import com.paypal.checkout.order.Amount;
 import com.paypal.checkout.order.AppContext;
 import com.paypal.checkout.order.CaptureOrderResult;
@@ -72,16 +58,13 @@ import com.paypal.checkout.order.OnCaptureComplete;
 import com.paypal.checkout.order.Order;
 import com.paypal.checkout.order.PurchaseUnit;
 import com.paypal.checkout.paymentbutton.PayPalButton;
-import com.paypal.pyplcheckout.pojo.To;
 import com.squareup.okhttp.ResponseBody;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.security.acl.Owner;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 
 import retrofit2.Call;
@@ -92,7 +75,6 @@ public class CartFragment extends Fragment {
 
     private ListView lvCart;
     private TextView txtTotal, txtCartEmpty;
-    private Button btnBook;
     private Float total = 0f;
     private CartAdapter cartAdapter;
     private static final SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
@@ -103,6 +85,10 @@ public class CartFragment extends Fragment {
     PayPalButton payPalButton;
 
     private APISERVICE apiservice;
+
+    private ProgressDialog prdCheckout;
+
+    private Utils util;
 
     public CartFragment() {
         // Required empty public constructor
@@ -117,9 +103,9 @@ public class CartFragment extends Fragment {
         lvCart = view.findViewById(R.id.lvCart);
         txtTotal = view.findViewById(R.id.txtTotal);
         txtCartEmpty = view.findViewById(R.id.txtCartEmpty);
-        btnBook = view.findViewById(R.id.btnBook);
         payPalButton = view.findViewById(R.id.payPalButton);
 
+        util = new Utils();
         cartAdapter = new CartAdapter(getActivity());
 
         loadData();
@@ -138,15 +124,6 @@ public class CartFragment extends Fragment {
             }
         });
 
-        btnBook.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(getContext(), CheckOutPaypalActivity.class);
-                intent.putExtra("totalMoney",txtTotal.getText().toString());
-                startActivity(intent);
-            }
-        });
-
         Bundle bundle = getArguments();
         if(bundle!=null){
             String action = bundle.getString("check_out_success");
@@ -158,7 +135,7 @@ public class CartFragment extends Fragment {
                 }
             }
         }
-
+        prdCheckout = new ProgressDialog(getContext());
         CheckoutConfig config = new CheckoutConfig(
                 getActivity().getApplication(),
                 YOUR_CLIENT_ID,
@@ -169,7 +146,7 @@ public class CartFragment extends Fragment {
                 PaymentButtonIntent.CAPTURE
         );
         PayPalCheckout.setConfig(config);
-        String totalMoney=txtTotal.getText().toString();
+
         payPalButton.setup(
                 new CreateOrder() {
                     @Override
@@ -180,7 +157,7 @@ public class CartFragment extends Fragment {
                                         .amount(
                                                 new Amount.Builder()
                                                         .currencyCode(CurrencyCode.USD)
-                                                        .value(totalMoney)
+                                                        .value(total+"")
                                                         .build()
                                         )
                                         .build()
@@ -194,6 +171,7 @@ public class CartFragment extends Fragment {
                                 ProcessingInstruction.NO_INSTRUCTION
                         );
                         createOrderActions.create(order, (CreateOrderActions.OnOrderCreated) null);
+                        util.showProgressDialog(prdCheckout, "Checkout", "Please wait for checkout");
                     }
                 },
                 new OnApprove() {
@@ -202,7 +180,12 @@ public class CartFragment extends Fragment {
                         approval.getOrderActions().capture(new OnCaptureComplete() {
                             @Override
                             public void onCaptureComplete(@NotNull CaptureOrderResult result) {
-                                Log.i("CaptureOrder", String.format("CaptureOrderResult: %s", result));
+                                Toast.makeText(getContext(),"Check out successfull",Toast.LENGTH_SHORT).show();
+                                try {
+                                    booking();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                             }
                         });
                     }
@@ -244,12 +227,10 @@ public class CartFragment extends Fragment {
 
     private void checkEmptyCart() {
         if (cartAdapter.getCart().isEmpty()) {
-//            payPalButton.setVisibility(View.GONE);
-            btnBook.setVisibility(View.GONE);
+            payPalButton.setVisibility(View.GONE);
             txtCartEmpty.setVisibility(View.VISIBLE);
         } else {
-//            payPalButton.setVisibility(View.VISIBLE);
-            btnBook.setVisibility(View.VISIBLE);
+            payPalButton.setVisibility(View.VISIBLE);
             txtCartEmpty.setVisibility(View.GONE);
         }
     }
@@ -286,7 +267,7 @@ public class CartFragment extends Fragment {
                             String dateBooking = dfBooking.format(calendar.getTime());
 
                             if (user != null) {
-                                BookingDTO bookingDTO = new BookingDTO(user.getUid(), dateBooking, total, "waiting");
+                                BookingDTO bookingDTO = new BookingDTO(user.getUid(), dateBooking, total);
                                 userDAO.booking(bookingDTO, cart).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
@@ -338,6 +319,7 @@ public class CartFragment extends Fragment {
                 }
             });
         }
+        prdCheckout.cancel();
     }
 
     private void sendNotification(String token, Data data) {

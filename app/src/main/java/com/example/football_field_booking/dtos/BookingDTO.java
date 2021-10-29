@@ -7,24 +7,17 @@ public class BookingDTO implements Serializable {
     private String userID;
     private String bookingDate;
     private float total;
-    private String status;
 
     public BookingDTO() {
     }
 
-    public BookingDTO(String userID, String bookingDate, float total, String status) {
+    public BookingDTO(String userID, String bookingDate, float total) {
         this.bookingID = bookingID;
         this.userID = userID;
         this.bookingDate = bookingDate;
         this.total = total;
-        this.status = status;
     }
 
-    public BookingDTO(String userID, String bookingDate, float total) {
-        this.userID = userID;
-        this.bookingDate = bookingDate;
-        this.total = total;
-    }
 
     public String getBookingID() {
         return bookingID;
@@ -58,13 +51,6 @@ public class BookingDTO implements Serializable {
         this.total = total;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 
     @Override
     public String toString() {
@@ -72,8 +58,7 @@ public class BookingDTO implements Serializable {
                 "bookingID='" + bookingID + '\'' +
                 ", userID='" + userID + '\'' +
                 ", bookingDate='" + bookingDate + '\'' +
-                ", total=" + total +
-                ", status='" + status + '\'' +
+                ", total=" + total + '\'' +
                 '}';
     }
 }
