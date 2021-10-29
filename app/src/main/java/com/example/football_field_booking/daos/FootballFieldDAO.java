@@ -10,15 +10,19 @@ import com.example.football_field_booking.dtos.CartItemDTO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.dtos.UserDTO;
+import com.firebase.geofire.GeoFireUtils;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQueryBounds;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
@@ -42,7 +46,7 @@ public class FootballFieldDAO {
     private static final String COLLECTION_USERS = "users";
     public static final String CONST_OF_PROJECT = "constOfProject";
     public static final String SUB_COLLECTION_RATING = "rating";
-    public static final String STATUS_ACTIVE="active";
+    public static final String STATUS_ACTIVE = "active";
 
 
 
@@ -50,15 +54,15 @@ public class FootballFieldDAO {
         db = FirebaseFirestore.getInstance();
     }
 
-    public Task<Void> createNewFootballField(FootballFieldDTO fieldDTO,UserDTO owner,List<TimePickerDTO> timePickerDTOList) throws Exception {
+    public Task<Void> createNewFootballField(FootballFieldDTO fieldDTO, UserDTO owner, List<TimePickerDTO> timePickerDTOList) throws Exception {
         DocumentReference footballFieldReference = db.collection(COLLECTION_FOOTBALL_FIELD).document();
         fieldDTO.setFieldID(footballFieldReference.getId());
-        WriteBatch batch= db.batch();
+        WriteBatch batch = db.batch();
         Map<String, Object> dataFBField = new HashMap<>();
         dataFBField.put("fieldInfo", fieldDTO);
         batch.set(footballFieldReference, dataFBField, SetOptions.merge());
 
-        Map<String, Object> dataOwner= new HashMap<>();
+        Map<String, Object> dataOwner = new HashMap<>();
         dataOwner.put("ownerInfo", owner);
         batch.set(footballFieldReference, dataOwner, SetOptions.merge());
 
@@ -67,7 +71,7 @@ public class FootballFieldDAO {
         dataInOwner.put("fieldsInfo", FieldValue.arrayUnion(fieldDTO));
         batch.update(footballFieldInfoReference, dataInOwner);
 
-        Map<String, Object> dataTimePicker= new HashMap<>();
+        Map<String, Object> dataTimePicker = new HashMap<>();
         dataTimePicker.put("timePicker", timePickerDTOList);
         batch.set(footballFieldReference, dataTimePicker, SetOptions.merge());
 
@@ -96,12 +100,12 @@ public class FootballFieldDAO {
         return db.collection(COLLECTION_FOOTBALL_FIELD).get();
     }
 
-    public Task<DocumentSnapshot> getFieldByID (String fieldID) {
+    public Task<DocumentSnapshot> getFieldByID(String fieldID) {
         DocumentReference doc = db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID);
         return doc.get();
     }
 
-    public Task<Void> updateFootballField (FootballFieldDTO fieldDTO, FootballFieldDTO fieldOldDTO, String userID, List<TimePickerDTO> timePickerDTOList) throws Exception {
+    public Task<Void> updateFootballField(FootballFieldDTO fieldDTO, FootballFieldDTO fieldOldDTO, String userID, List<TimePickerDTO> timePickerDTOList) throws Exception {
         DocumentReference docField = db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldDTO.getFieldID());
         DocumentReference docOwner = db.collection(COLLECTION_USERS).document(userID);
 
@@ -110,24 +114,26 @@ public class FootballFieldDAO {
             @Nullable
             @Override
             public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-
                 Map<String, Object> dataField = new HashMap<>();
                 dataField.put("fieldInfo.name", fieldDTO.getName());
                 dataField.put("fieldInfo.location", fieldDTO.getLocation());
+                dataField.put("fieldInfo.geoPoint", fieldDTO.getGeoPoint());
+                dataField.put("fieldInfo.geoHash", fieldDTO.getGeoHash());
                 dataField.put("fieldInfo.type", fieldDTO.getType());
                 dataField.put("fieldInfo.image", fieldDTO.getImage());
                 dataField.put("fieldInfo.status", fieldDTO.getStatus());
+
                 transaction.update(docField, dataField);
 
-                Map<String,Object> dataDeleteField = new HashMap<>();
+                Map<String, Object> dataDeleteField = new HashMap<>();
                 dataDeleteField.put("fieldsInfo", FieldValue.arrayRemove(fieldOldDTO));
                 transaction.update(docOwner, dataDeleteField);
 
-                Map<String,Object> dataUpdateField = new HashMap<>();
+                Map<String, Object> dataUpdateField = new HashMap<>();
                 dataUpdateField.put("fieldsInfo", FieldValue.arrayUnion(fieldDTO));
                 transaction.update(docOwner, dataUpdateField);
 
-                Map<String,Object> dataDeleteTimePicker = new HashMap<>();
+                Map<String, Object> dataDeleteTimePicker = new HashMap<>();
                 dataDeleteTimePicker.put("timePicker", FieldValue.delete());
                 transaction.update(docField, dataDeleteTimePicker);
 
@@ -139,19 +145,14 @@ public class FootballFieldDAO {
         });
     }
 
-    public Task<QuerySnapshot> searchByLikeNameForUser(String name) throws Exception{
-
-        return db.collection(COLLECTION_FOOTBALL_FIELD)
-                .whereGreaterThanOrEqualTo("fieldInfo.name",name)
-                .get();
-//                .whereEqualTo("fieldInfo.status",STATUS_ACTIVE)
-
+    public Task<QuerySnapshot> searchByLikeNameForUser(String name){
+        return db.collection(COLLECTION_FOOTBALL_FIELD).whereGreaterThanOrEqualTo("fieldInfo.name",name).get();
     }
 
-    public Task<QuerySnapshot> searchByTypeForUser(String type){
+    public Task<QuerySnapshot> searchByTypeForUser(String type) {
         return db.collection(COLLECTION_FOOTBALL_FIELD)
-                .whereEqualTo("fieldInfo.type",type)
-                .whereEqualTo("fieldInfo.status",STATUS_ACTIVE)
+                .whereEqualTo("fieldInfo.type", type)
+                .whereEqualTo("fieldInfo.status", STATUS_ACTIVE)
                 .get();
     }
 
@@ -162,20 +163,20 @@ public class FootballFieldDAO {
 //                .whereGreaterThanOrEqualTo("fieldInfo.name",name).get();
 //    }
 
-    public Task<QuerySnapshot> getBookingByFieldAndDate (List<CartItemDTO> cart) {
+    public Task<QuerySnapshot> getBookingByFieldAndDate(List<CartItemDTO> cart) {
         List<String> listFieldAndDate = new ArrayList<>();
-        for (CartItemDTO cartItemDTO: cart) {
+        for (CartItemDTO cartItemDTO : cart) {
             listFieldAndDate.add(cartItemDTO.getFieldInfo().getFieldID() + cartItemDTO.getDate());
         }
         return db.collectionGroup(SUB_COLLECTION_BOOKING).whereIn("fieldAndDate", listFieldAndDate).get();
     }
 
-    public Task<QuerySnapshot> getBookingOfAFieldByDate (String fieldID, String date) {
+    public Task<QuerySnapshot> getBookingOfAFieldByDate(String fieldID, String date) {
         return db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID)
                 .collection(SUB_COLLECTION_BOOKING).whereEqualTo("date", date).get();
     }
 
-    public void countRating (String fieldID) throws Exception{
+    public void countRating(String fieldID) throws Exception {
         getRating(fieldID).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -195,8 +196,24 @@ public class FootballFieldDAO {
         });
     }
 
-    public Task<QuerySnapshot> getRating (String fieldID) {
+    public Task<QuerySnapshot> getRating(String fieldID) {
         return db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID)
                 .collection(SUB_COLLECTION_RATING).get();
+    }
+
+    public List<Task<QuerySnapshot>> searchNearMe (GeoLocation geoMe, double radiusInM) {
+        List<GeoQueryBounds> bounds = GeoFireUtils.getGeoHashQueryBounds(geoMe, radiusInM);
+        final List<Task<QuerySnapshot>> tasks = new ArrayList<>();
+        for (GeoQueryBounds b : bounds) {
+            Query q = db.collection(COLLECTION_FOOTBALL_FIELD)
+                    .orderBy("fieldInfo.geoHash")
+                    .startAt(b.startHash)
+                    .endAt(b.endHash);
+
+            tasks.add(q.get());
+        }
+
+        // Collect all the query results together into a single list
+        return tasks;
     }
 }

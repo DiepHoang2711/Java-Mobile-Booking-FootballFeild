@@ -21,6 +21,7 @@ import com.example.football_field_booking.R;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -79,11 +80,12 @@ public class ProfileFragment extends Fragment {
                 FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
                     @Override
                     public void onSuccess(String s) {
-                        try {
-                            userDAO.deleteToken(s,user.getUid());
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                        userDAO.deleteToken(s, user.getUid()).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                e.printStackTrace();
+                            }
+                        });
                     }
                 });
                 FirebaseAuth.getInstance().signOut();

@@ -8,6 +8,25 @@
     tools:context=".CreateFootballFieldActivity">
 
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
+            style="@style/Widget.MaterialComponents.Toolbar.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/green"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
+            app:liftOnScroll="true"
+            app:logo="@drawable/logo"
+            app:titleCentered="true"
+            app:title="Create Football Field">
+        </com.google.android.material.appbar.MaterialToolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -17,28 +36,20 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
             android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Create Football Field"
-                android:textSize="20dp"
-                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-
-
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tlFootballFieldName"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="30dp"
                     android:hint="Name"
                     app:helperText="Require*"
                     app:helperTextTextColor="@android:color/holo_red_light">
@@ -48,26 +59,46 @@
                         android:layout_height="wrap_content" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tlLocation"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Location"
-                    app:helperText="Require*"
-                    app:helperTextTextColor="@android:color/holo_red_light">
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:orientation="horizontal">
 
-                    <com.google.android.material.textfield.TextInputEditText
-
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tlLocation"
+                        android:layout_weight="1"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:hint="Location"
+                        app:helperText="Require*"
+                        app:helperTextTextColor="@android:color/holo_red_light">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnLocation"
+                        android:layout_width="40dp"
+                        android:layout_height="59dp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_gravity="right"
+                        app:icon="@drawable/outline_location_on_24"
+                        app:iconGravity="textStart"
+                        app:iconSize="20dp"
+                        tools:ignore="SpeakableTextPresentCheck" />
+                </LinearLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tlType"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="30dp"
                     android:hint="Type"
                     app:helperText="Require*"
                     app:helperTextTextColor="@android:color/holo_red_light">
@@ -78,31 +109,20 @@
                         android:layout_height="wrap_content"
                         android:inputType="none" />
                 </com.google.android.material.textfield.TextInputLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Image: "
-                        android:textSize="16dp" />
-
-                    <Button
-                        android:id="@+id/btnChooseImage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Choose image" />
-                </LinearLayout>
-
                 <ImageView
                     android:id="@+id/img_photo"
                     android:layout_width="200dp"
                     android:layout_height="100dp"
                     android:layout_gravity="center"
-                    android:scaleType="fitStart" />
+                    android:src="@drawable/img_not_available"
+                    android:scaleType="fitCenter" />
+                <Button
+                    android:layout_gravity="center"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:id="@+id/btnChooseImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Choose image" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -113,6 +133,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
+                        android:layout_marginStart="10dp"
                         android:text="Working hours"
                         android:textSize="20dp"
                         android:textStyle="bold" />
@@ -127,14 +148,11 @@
                         android:contentDescription="Add"
                         android:src="@drawable/ic_baseline_add_circle_24" />
                 </RelativeLayout>
-
-
                 <ListView
                     android:id="@+id/lvTimePickerWorking"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="200dp"
                     android:layout_margin="20dp" />
-
 
             </LinearLayout>
         </LinearLayout>
@@ -143,12 +161,17 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:orientation="vertical">
 
         <Button
             android:id="@+id/btnCreateNewField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            style="@style/ButtonLoginRegister"
+            android:backgroundTint="#9DC030"
+            android:padding="10dp"
             android:layout_gravity="center"
             android:onClick="clickToCreate"
             android:text="Create" />

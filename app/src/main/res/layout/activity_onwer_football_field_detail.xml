@@ -49,8 +49,8 @@
                         android:id="@+id/cardView1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="60dp"
                         android:layout_marginTop="160dp"
+                        android:layout_marginBottom="60dp"
                         android:background="@drawable/bg_football_field_detail">
 
                         <LinearLayout
@@ -197,59 +197,58 @@
                                 android:layout_marginRight="25dp"
                                 android:gravity="center"
                                 android:orientation="horizontal"
-                                android:visibility="gone">
-                            </LinearLayout>
+                                android:visibility="gone"/>
                         </LinearLayout>
                     </LinearLayout>
+
                     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
                         android:id="@+id/btnEdit"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|start"
                         android:layout_margin="10dp"
                         android:backgroundTint="@android:color/holo_blue_dark"
                         android:text="Edit"
-                        android:layout_gravity="bottom|start"
                         android:textColor="@color/white"
-                        android:visibility="gone"
-                        />
+                        android:visibility="gone" />
 
                     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
                         android:id="@+id/btnDelete"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|center"
                         android:layout_margin="10dp"
                         android:backgroundTint="@android:color/holo_red_dark"
                         android:text="Delete"
+                        android:textAlignment="center"
                         android:textColor="@color/white"
-                        android:layout_gravity="bottom|center"
-                        android:visibility="gone"
-                        android:textAlignment="center" />
+                        android:visibility="gone" />
 
-<!--                    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginBottom="10dp"-->
-<!--                        android:layout_marginRight="10dp"-->
-<!--                        android:layout_margin="10dp"-->
-<!--                        android:textColor="@color/white"-->
-<!--                        android:layout_gravity="bottom|end"-->
-<!--                        android:textAlignment="center"-->
-<!--                        android:visibility="gone"-->
-<!--                        android:text="Report" />-->
+                    <!--                    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
+                    <!--                        android:layout_width="wrap_content"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:layout_marginBottom="10dp"-->
+                    <!--                        android:layout_marginRight="10dp"-->
+                    <!--                        android:layout_margin="10dp"-->
+                    <!--                        android:textColor="@color/white"-->
+                    <!--                        android:layout_gravity="bottom|end"-->
+                    <!--                        android:textAlignment="center"-->
+                    <!--                        android:visibility="gone"-->
+                    <!--                        android:text="Report" />-->
                     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
                         android:id="@+id/btnAddToCart"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|center"
                         android:layout_marginLeft="25dp"
                         android:layout_marginTop="20dp"
                         android:layout_marginRight="25dp"
                         android:layout_marginBottom="10dp"
                         android:backgroundTint="#9DC030"
-                        android:layout_gravity="bottom|center"
+                        android:text="Add to cart"
                         android:textAlignment="center"
                         android:textColor="@color/white"
-                        android:text="Add to cart"
-                        android:visibility="gone"/>
+                        android:visibility="gone" />
                 </androidx.coordinatorlayout.widget.CoordinatorLayout>
             </RelativeLayout>
         </LinearLayout>

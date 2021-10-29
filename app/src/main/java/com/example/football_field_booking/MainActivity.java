@@ -1,6 +1,7 @@
 package com.example.football_field_booking;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -16,18 +17,22 @@ import com.example.football_field_booking.fragments.HistoryFragment;
 import com.example.football_field_booking.fragments.ProfileFragment;
 import com.example.football_field_booking.fragments.UserHomeFragment;
 import com.example.football_field_booking.validations.Validation;
+import com.firebase.geofire.GeoFireUtils;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.GeoPoint;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final int RC_LOCATION = 1002;
     private MaterialToolbar topAppBar;
     private BottomNavigationView bottomNavigationView;
-
+    private GeoPoint geoMe;
     private Validation validation = new Validation();
 
     @Override
@@ -156,5 +161,32 @@ public class MainActivity extends AppCompatActivity {
     public void clickToGoToSearchActivity(MenuItem item) {
         Intent intent=new Intent(this, SearchActivity.class);
         startActivity(intent);
+    }
+
+    public void clickToSearchByLocation (MenuItem item){
+        Intent intent = new Intent(MainActivity.this, GoogleMapActivity.class);
+        intent.putExtra("action", "chooseLocation");
+        startActivityForResult(intent, RC_LOCATION);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == RC_LOCATION && resultCode == RESULT_OK) {
+            try {
+                double lat = data.getDoubleExtra("lat", 0);
+                double lng = data.getDoubleExtra("lng", 0);
+                if(lat != 0 && lng != 0) {
+                    geoMe = new GeoPoint(lat, lng);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new UserHomeFragment()).commit();
+                }
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public GeoPoint getGeoMe() {
+        return geoMe;
     }
 }
