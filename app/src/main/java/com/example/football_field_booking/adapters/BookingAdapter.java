@@ -60,15 +60,12 @@ public class BookingAdapter extends BaseAdapter {
         TextView txtBookingID = rowView.findViewById(R.id.txtBookingID);
         TextView txtTotal = rowView.findViewById(R.id.txtTotal);
         TextView txtBookingDate = rowView.findViewById(R.id.txtBookingDate);
-        TextView txtStatus = rowView.findViewById(R.id.txtStatus);
-        Log.d("USER", "hello history fragment: ");
 
         BookingDTO bookingDTO = listBooking.get(i);
 
         txtBookingID.setText(bookingDTO.getBookingID());
         txtTotal.setText("$"+bookingDTO.getTotal());
         txtBookingDate.setText(bookingDTO.getBookingDate());
-        txtStatus.setText(bookingDTO.getStatus());
 
         return rowView;
     }
