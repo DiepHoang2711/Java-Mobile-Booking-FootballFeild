@@ -6,16 +6,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
 
 import com.example.football_field_booking.daos.UserDAO;
-import com.example.football_field_booking.dtos.UserDTO;
 import com.example.football_field_booking.fragments.CartFragment;
 import com.example.football_field_booking.fragments.HistoryFragment;
 import com.example.football_field_booking.fragments.ProfileFragment;
@@ -52,8 +48,6 @@ public class MainActivity extends AppCompatActivity {
         View logo = topAppBar.getChildAt(0);
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
-
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new UserHomeFragment()).commit();
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -99,6 +93,30 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Intent intent = this.getIntent();
+        String action = intent.getStringExtra("action");
+        if (action != null) {
+            Log.d("action", action);
+            if (action.equals("add to cart")) {
+                Fragment cartFragment = new CartFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, cartFragment).commit();
+                bottomNavigationView.setSelectedItemId(R.id.pageCart);
+            } else if (action.equals("view history")) {
+               Fragment historyFragment = new HistoryFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, historyFragment).commit();
+                bottomNavigationView.setSelectedItemId(R.id.pageHistory);
+            } else if(action.equals("check_out_success")){
+                Fragment cartFragment = new CartFragment();
+                Bundle bundle=new Bundle();
+                bundle.putString("check_out_success","check_out_success");
+                cartFragment.setArguments(bundle);
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, cartFragment).commit();
+                bottomNavigationView.setSelectedItemId(R.id.pageCart);
+            }
+        } else {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new UserHomeFragment()).commit();
+        }
+
         logo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -141,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void clickToGoToSearchActivity(MenuItem item) {
-        Intent intent=new Intent(this,SearchByNameActivity.class);
+        Intent intent=new Intent(this, SearchActivity.class);
         startActivity(intent);
     }
 

@@ -14,6 +14,13 @@
         <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/drawable/ic_baseline_star_rate_24.xml" value="0.2526041666666667" />
         <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/abc.xml" value="0.25416666666666665" />
         <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/activity_admin_main.xml" value="0.23645833333333333" />
+        <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/activity_check_out_paypal.xml" value="0.23645833333333333" />
+        <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/activity_create_football_field.xml" value="0.264" />
+        <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/activity_create_user.xml" value="0.264" />
+        <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/activity_edit_football_field.xml" value="0.176" />
+        <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/activity_edit_profile.xml" value="0.22239583333333332" />
+        <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/activity_edit_profile_by_admin.xml" value="0.23645833333333333" />
+        <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/activity_check_out_paypal.xml" value="0.23645833333333333" />
         <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/activity_create_football_field.xml" value="0.2" />
         <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/activity_create_user.xml" value="0.23645833333333333" />
         <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/activity_login.xml" value="0.25416666666666665" />
@@ -26,8 +33,11 @@
         <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/activity_profile_edit_by_admin.xml" value="0.23645833333333333" />
         <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/activity_register.xml" value="0.25416666666666665" />
         <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/activity_search_by_name.xml" value="0.23645833333333333" />
+        <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/activity_search_user.xml" value="0.23645833333333333" />
         <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/activity_update_football_field.xml" value="0.23645833333333333" />
         <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/fragment_admin_home.xml" value="0.23645833333333333" />
+        <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/fragment_cart.xml" value="0.23645833333333333" />
+        <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/fragment_history.xml" value="0.23282051282051283" />
         <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/fragment_owner_all_field.xml" value="0.23645833333333333" />
         <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/fragment_owner_home.xml" value="0.23645833333333333" />
         <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/fragment_time__picker_.xml" value="0.22239583333333332" />
@@ -36,6 +46,7 @@
         <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/item_football_field_owner.xml" value="0.128" />
         <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/item_time_picker.xml" value="0.264" />
         <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/layout/item_type_football_field.xml" value="0.23645833333333333" />
+        <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.264" />
         <entry key="..\:/FPT-Course/Fall 2021/PRM391(Mobile programing)/PROJECT_PRM391/app/src/main/res/menu/top_app_bar.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/tienx/AndroidStudioProjects/Football_Field_Booking/app/src/main/res/drawable/ic_launcher_background.xml" value="0.22552083333333334" />
         <entry key="..\:/Users/tienx/AndroidStudioProjects/Football_Field_Booking/app/src/main/res/drawable/outline_account_circle_24.xml" value="0.22552083333333334" />
@@ -69,7 +80,6 @@
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_create_football_field.xml" value="0.25" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_edit_football_field.xml" value="0.19166666666666668" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_edit_profile.xml" value="0.19166666666666668" />
-        <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_google_map.xml" value="0.1838768115942029" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_login.xml" value="0.22" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_onwer_football_field_detail.xml" value="0.19166666666666668" />
@@ -82,14 +92,12 @@
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/fragment_admin_home.xml" value="0.32407407407407407" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/fragment_cart.xml" value="0.19166666666666668" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/fragment_history.xml" value="0.1" />
-        <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/fragment_map_choose_location.xml" value="0.33" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/fragment_owner_all_field.xml" value="0.10507246376811594" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/fragment_profile.xml" value="0.13134057971014493" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/fragment_user_home.xml" value="0.19166666666666668" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/item_booking.xml" value="0.22" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/item_booking_detail.xml" value="0.22" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/item_cart.xml" value="0.25" />
-        <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/item_football_field.xml" value="0.1598731884057971" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/item_football_field_owner.xml" value="0.13541666666666666" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/item_time_picker.xml" value="0.33" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/item_time_picker_detail.xml" value="0.19166666666666668" />

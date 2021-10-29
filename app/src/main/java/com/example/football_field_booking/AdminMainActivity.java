@@ -6,12 +6,10 @@ import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.example.football_field_booking.fragments.AdminHomeFragment;
 import com.example.football_field_booking.fragments.ProfileFragment;
-import com.example.football_field_booking.fragments.UserHomeFragment;
 import com.example.football_field_booking.validations.Validation;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -62,7 +60,7 @@ public class AdminMainActivity extends AppCompatActivity {
     }
 
     public void clickToGoToSearchActivity(MenuItem item) {
-        Intent intent=new Intent(this,SearchByNameActivity.class);
+        Intent intent=new Intent(this, SearchActivity.class);
         startActivity(intent);
     }
 }

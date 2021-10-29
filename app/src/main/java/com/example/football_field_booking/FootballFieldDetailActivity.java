@@ -183,6 +183,9 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                                     loadData(fieldDTO.getFieldID());
                                     Toast.makeText(FootballFieldDetailActivity.this, "Add to cart success"
                                             , Toast.LENGTH_SHORT).show();
+                                    Intent intent=new Intent(FootballFieldDetailActivity.this,MainActivity.class);
+                                    intent.putExtra("action","add to cart");
+                                    startActivity(intent);
                                 } else {
                                     Toast.makeText(FootballFieldDetailActivity.this, "Add to cart fail"
                                             , Toast.LENGTH_SHORT).show();

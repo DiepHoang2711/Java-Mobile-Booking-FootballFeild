@@ -7,6 +7,7 @@ import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -16,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,9 +25,11 @@ import android.widget.Toast;
 import com.example.football_field_booking.FootballFieldDetailActivity;
 import com.example.football_field_booking.MainActivity;
 import com.example.football_field_booking.R;
+import com.example.football_field_booking.SearchActivity;
 import com.example.football_field_booking.adapters.FootballFieldAdapter;
 import com.example.football_field_booking.daos.FootballFieldDAO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.firebase.geofire.GeoFireUtils;
 import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -47,7 +51,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserHomeFragment extends Fragment {
-
+    
+    private ImageButton imgBtnField5,imgBtnField7,imgBtnField11;
     public static final int RC_PERMISSTION_LOCATION = 1001;
     public static final int RADIUS_IN_M = 50 * 1000;
     private ListView lvFootballField, lvFieldNearMe;
@@ -69,6 +74,10 @@ public class UserHomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_user_home, container, false);
 
         lvFootballField=view.findViewById(R.id.lvFootballField);
+        imgBtnField5=view.findViewById(R.id.imgBtnField5);
+        imgBtnField7=view.findViewById(R.id.imgBtnField7);
+        imgBtnField11=view.findViewById(R.id.imgBtnField11);
+
         lvFieldNearMe = view.findViewById(R.id.lvFieldNearME);
         ttxErrorNearMe = view.findViewById(R.id.txtErrorNearMe);
         cardFieldNearME = view.findViewById(R.id.cardFieldNearME);
@@ -90,6 +99,30 @@ public class UserHomeFragment extends Fragment {
             }
         });
 
+        imgBtnField5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String type="5 people";
+                searchByType(type,view);
+            }
+        });
+
+        imgBtnField7.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String type="7 people";
+                searchByType(type,view);
+            }
+        });
+
+        imgBtnField11.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String type="11 people";
+                searchByType(type,view);
+            }
+        });
+
         lvFieldNearMe.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -102,6 +135,13 @@ public class UserHomeFragment extends Fragment {
 
         return view;
     }
+
+    private void searchByType(String type,View view) {
+        Intent intent=new Intent(view.getContext(), SearchActivity.class);
+        intent.putExtra("typeField",type);
+        startActivity(intent);
+    }
+
 
     @Override
     public void onStart() {

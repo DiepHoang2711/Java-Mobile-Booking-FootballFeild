@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "253666236099",
+    "firebase_url": "https://booking-football-field-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "booking-football-field",
     "storage_bucket": "booking-football-field.appspot.com"
   },
@@ -10,6 +11,51 @@
         "mobilesdk_app_id": "1:253666236099:android:c57ee2943499abeb157476",
         "android_client_info": {
           "package_name": "com.example.football_field_booking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "253666236099-48ecfomabd10bs9b557d8b4mve6c97mt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.football_field_booking",
+            "certificate_hash": "50e406c55a3d01074ea4034a63f2b3af3b1aa431"
+          }
+        },
+        {
+          "client_id": "253666236099-g5eit1kecvr1vjiufj6eok2ogd2veugq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.football_field_booking",
+            "certificate_hash": "018b178731d1618fd7eab3306a5203d4c1a652f3"
+          }
+        },
+        {
+          "client_id": "253666236099-6hp907darl75h3l0rr8djjuodt9mn32b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDt5y74ZKMA6xgVavg1Hhmo3vdML5Zufik"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "253666236099-6hp907darl75h3l0rr8djjuodt9mn32b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:253666236099:android:d652418f773053b5157476",
+        "android_client_info": {
+          "package_name": "com.example.footballfieldbooking"
         }
       },
       "oauth_client": [
