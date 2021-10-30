@@ -90,6 +90,8 @@ public class CartFragment extends Fragment {
 
     private Utils util;
 
+    private boolean outOfStock = true;
+
     public CartFragment() {
         // Required empty public constructor
     }
@@ -125,9 +127,9 @@ public class CartFragment extends Fragment {
         });
 
         Bundle bundle = getArguments();
-        if(bundle!=null){
+        if (bundle != null) {
             String action = bundle.getString("check_out_success");
-            if (action!=null && action.equals("check_out_success")) {
+            if (action != null && action.equals("check_out_success")) {
                 try {
                     booking();
                 } catch (Exception e) {
@@ -157,7 +159,7 @@ public class CartFragment extends Fragment {
                                         .amount(
                                                 new Amount.Builder()
                                                         .currencyCode(CurrencyCode.USD)
-                                                        .value(total+"")
+                                                        .value(total + "")
                                                         .build()
                                         )
                                         .build()
@@ -178,24 +180,28 @@ public class CartFragment extends Fragment {
                     @Override
                     public void onApprove(@NotNull Approval approval) {
                         util.showProgressDialog(prdCheckout, "Checkout", "Please wait for checkout");
+                        try {
+                            booking();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        if (outOfStock) {
+                            Toast.makeText(getContext(), "Check out fail", Toast.LENGTH_LONG).show();
+                            prdCheckout.cancel();
+                            return;
+                        }
                         approval.getOrderActions().capture(new OnCaptureComplete() {
                             @Override
                             public void onCaptureComplete(@NotNull CaptureOrderResult result) {
-                                try {
-                                    booking();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                prdCheckout.cancel();
                             }
                         });
                     }
                 }
         );
-
         apiservice = Client.getRetrofit("https://fcm.googleapis.com/").create(APISERVICE.class);
         return view;
     }
-
 
     private void loadData() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -235,7 +241,6 @@ public class CartFragment extends Fragment {
     }
 
     private void booking() throws Exception {
-
         FootballFieldDAO fieldDAO = new FootballFieldDAO();
         List<CartItemDTO> cart = cartAdapter.getCart();
         if (isValidBookingDate(cart)) {
@@ -259,7 +264,7 @@ public class CartFragment extends Fragment {
                                 }
                             }
                         }
-
+                        outOfStock = flag;
                         if (flag) {
                             UserDAO userDAO = new UserDAO();
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -271,7 +276,7 @@ public class CartFragment extends Fragment {
                                 userDAO.booking(bookingDTO, cart).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
-                                        prdCheckout.cancel();
+
                                         if (task.isSuccessful()) {
                                             for (CartItemDTO cartItemDTO : cart) {
                                                 fieldDAO.getFieldByID(cartItemDTO.getFieldInfo().getFieldID())
@@ -313,6 +318,8 @@ public class CartFragment extends Fragment {
                                 });
                             }
 
+                        } else {
+                            return;
                         }
                     } else {
                         task.getException().printStackTrace();
@@ -321,7 +328,6 @@ public class CartFragment extends Fragment {
                 }
             });
         }
-
     }
 
     private void sendNotification(String token, Data data) {

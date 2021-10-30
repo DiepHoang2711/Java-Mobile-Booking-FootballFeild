@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -65,6 +66,7 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
     private String geoHash;
     private Utils utils;
     private Validation val;
+    private ProgressDialog prdWaitCreate;
 
 
     @Override
@@ -184,6 +186,8 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
                     list.add(dto);
                 }
             }
+            prdWaitCreate=new ProgressDialog(this);
+            utils.showProgressDialog(prdWaitCreate,"Create","Please wait to create football field");
             if (uriImg != null) {
                 uploadImageToStorage();
             } else {
@@ -241,6 +245,10 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
                                         }).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void unused) {
+                                        prdWaitCreate.cancel();
+                                        Intent intent=new Intent(CreateFootballFieldActivity.this,OwnerMainActivity.class);
+                                        intent.putExtra("action","view_my_field");
+                                        startActivity(intent);
                                         Toast.makeText(CreateFootballFieldActivity.this, "Create Successfull", Toast.LENGTH_SHORT).show();
                                         finish();
                                     }

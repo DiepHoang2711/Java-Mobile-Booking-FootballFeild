@@ -1,6 +1,8 @@
 package com.example.football_field_booking.adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
+import com.example.football_field_booking.EditFootballFieldActivity;
 import com.example.football_field_booking.R;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.CartItemDTO;
@@ -111,21 +114,36 @@ public class CartAdapter extends BaseAdapter {
         btnRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                UserDAO userDAO = new UserDAO();
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if(user != null) {
-                    userDAO.deleteCartItem(user.getUid(), cartItemDTO.getID()).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()){
-                                cart.remove(cartItemDTO);
-                                CartAdapter.this.notifyDataSetChanged();
-                            }else {
-                                Toast.makeText(btnRemove.getContext(), "Remove fail", Toast.LENGTH_SHORT).show();
-                            }
+                AlertDialog.Builder alert = new AlertDialog.Builder(view.getContext());
+                alert.setTitle("Remove booking");
+                alert.setMessage("Are you sure you want to remove?");
+                alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        UserDAO userDAO = new UserDAO();
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        if(user != null) {
+                            userDAO.deleteCartItem(user.getUid(), cartItemDTO.getID()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful()){
+                                        cart.remove(cartItemDTO);
+                                        CartAdapter.this.notifyDataSetChanged();
+                                    }else {
+                                        Toast.makeText(btnRemove.getContext(), "Remove fail", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
                         }
-                    });
-                }
+                    }
+                });
+                alert.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // close dialog
+                        dialog.cancel();
+                    }
+                });
+                alert.show();
 
             }
         });
