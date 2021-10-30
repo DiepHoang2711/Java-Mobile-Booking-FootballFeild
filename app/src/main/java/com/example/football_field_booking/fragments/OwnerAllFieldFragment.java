@@ -90,7 +90,7 @@ public class OwnerAllFieldFragment extends Fragment {
                     List<FootballFieldDTO> fieldDTOList = documentSnapshot.toObject(UserDocument.class).getFieldsInfo();
                     Log.d("USER", "dto: " + fieldDTOList);
                     if(fieldDTOList != null) {
-                        FootballFieldAdapter fieldAdapter = new FootballFieldAdapter(getActivity(), fieldDTOList);
+                        FootballFieldAdapter fieldAdapter = new FootballFieldAdapter(getContext(), fieldDTOList);
                         lvFootballFieldOwner.setAdapter(fieldAdapter);
                         fieldAdapter.notifyDataSetChanged();
                     }

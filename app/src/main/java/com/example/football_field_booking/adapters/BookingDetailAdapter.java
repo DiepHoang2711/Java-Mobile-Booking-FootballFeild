@@ -107,6 +107,7 @@ public class BookingDetailAdapter extends BaseAdapter {
         txtDate.setText(bookingDetailDTO.getDate());
         txtTotal.setText("$"+bookingDetailDTO.getTotal());
 
+
         if (fieldDTO.getImage() != null) {
             Uri uri = Uri.parse(fieldDTO.getImage());
             Glide.with(imgField.getContext())
