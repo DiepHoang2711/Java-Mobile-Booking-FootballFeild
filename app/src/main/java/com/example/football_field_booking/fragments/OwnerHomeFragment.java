@@ -41,7 +41,7 @@ public class OwnerHomeFragment extends Fragment {
         View view=inflater.inflate(R.layout.fragment_owner_home, container, false);
         lvBooking=view.findViewById(R.id.lvBooking);
 
-        loadData();
+//        loadData();
         return view;
     }
 
