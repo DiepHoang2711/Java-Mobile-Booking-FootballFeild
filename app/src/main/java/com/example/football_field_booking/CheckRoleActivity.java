@@ -13,6 +13,7 @@ import com.example.football_field_booking.daos.UserDAO;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -20,12 +21,17 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 public class CheckRoleActivity extends AppCompatActivity {
 
+    private MaterialButton btnDiscover,btnLogin;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_role);
+        btnDiscover=findViewById(R.id.btnDiscover);
+        btnLogin=findViewById(R.id.btnLogin);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
+            btnLogin.setVisibility(View.GONE);
+            btnDiscover.setVisibility(View.GONE);
             UserDAO userDAO = new UserDAO();
             userDAO.getUserById(user.getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
@@ -79,6 +85,9 @@ public class CheckRoleActivity extends AppCompatActivity {
                     }
                 }
             });
+        }else{
+            btnLogin.setVisibility(View.VISIBLE);
+            btnDiscover.setVisibility(View.VISIBLE);
         }
     }
 

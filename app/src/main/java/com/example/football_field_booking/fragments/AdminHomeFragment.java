@@ -20,6 +20,7 @@ import com.example.football_field_booking.adapters.UserAdapter;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -29,7 +30,7 @@ import java.util.List;
 public class AdminHomeFragment extends Fragment {
 
     private ListView listViewUser;
-    private Button btnCreateUser;
+    private FloatingActionButton btnCreateUser;
 
     public AdminHomeFragment() {
     }

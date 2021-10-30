@@ -13,6 +13,8 @@ import android.view.View;
 
 import com.example.football_field_booking.daos.FootballFieldDAO;
 import com.example.football_field_booking.daos.UserDAO;
+import com.example.football_field_booking.fragments.CartFragment;
+import com.example.football_field_booking.fragments.HistoryFragment;
 import com.example.football_field_booking.fragments.OwnerAllFieldFragment;
 import com.example.football_field_booking.fragments.OwnerHomeFragment;
 import com.example.football_field_booking.fragments.ProfileFragment;
@@ -46,7 +48,18 @@ public class OwnerMainActivity extends AppCompatActivity {
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new OwnerHomeFragment()).commit();
+        Intent intent=getIntent();
+        String action=intent.getStringExtra("action");
+        if (action != null) {
+            if (action.equals("view_my_field")) {
+                Fragment fragment = new OwnerAllFieldFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
+                bottomNavigationView.setSelectedItemId(R.id.pageField);
+            }
+        } else {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new OwnerHomeFragment()).commit();
+        }
+
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -69,6 +82,8 @@ public class OwnerMainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+
 
         logo.setOnClickListener(new View.OnClickListener() {
             @Override

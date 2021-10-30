@@ -60,6 +60,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"
         android:onClick="clickToDiscover"/>
 
     <com.google.android.material.button.MaterialButton
@@ -80,5 +81,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnDiscover"
         app:layout_constraintVertical_bias="0.0"
+        android:visibility="gone"
         android:onClick="clickToLogin"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

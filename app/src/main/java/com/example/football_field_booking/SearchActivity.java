@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -69,7 +70,19 @@ public class SearchActivity extends AppCompatActivity {
             searchByTypeField();
         }
 
-
+        lvFootballField.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                try {
+                    FootballFieldDTO dto = (FootballFieldDTO) lvFootballField.getItemAtPosition(i);
+                    Intent intent = new Intent(SearchActivity.this, FootballFieldDetailActivity.class);
+                    intent.putExtra("fieldID", dto.getFieldID());
+                    startActivity(intent);
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private void loadSearchData(QuerySnapshot queryDocumentSnapshots) {
@@ -92,9 +105,13 @@ public class SearchActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
                         public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                            Log.e("List Size:",queryDocumentSnapshots.size()+"");
                             loadSearchData(queryDocumentSnapshots);
-                            txtTitle.setText("Result of: "+searchName);
+                            if(queryDocumentSnapshots.size()>0){
+                                txtTitle.setText("Result of: "+searchName);
+                            }else{
+                                txtTitle.setText("--Empty--");
+                            }
+
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -114,8 +131,10 @@ public class SearchActivity extends AppCompatActivity {
             fieldDAO.searchByTypeForUser(type).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
                     loadSearchData(queryDocumentSnapshots);
+                    if(queryDocumentSnapshots.size()==0){
+                        txtTitle.setText("--Empty--");
+                    }
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
