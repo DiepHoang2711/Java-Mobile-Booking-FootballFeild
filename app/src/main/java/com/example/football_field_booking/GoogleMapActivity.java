@@ -3,17 +3,14 @@ package com.example.football_field_booking;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.example.football_field_booking.fragments.MapChooseLocationFragment;
-import com.example.football_field_booking.fragments.MapSearchNearMeFragment;
 
 public class GoogleMapActivity extends AppCompatActivity {
 
@@ -39,9 +36,6 @@ public class GoogleMapActivity extends AppCompatActivity {
 
         if (action.equals("chooseLocation")){
             MapChooseLocationFragment fragment = new MapChooseLocationFragment();
-            getSupportFragmentManager().beginTransaction().replace(R.id.layoutGoogleMap, fragment).commit();
-        }else if(action.equals("searchNearMe")) {
-            MapSearchNearMeFragment fragment = new MapSearchNearMeFragment();
             getSupportFragmentManager().beginTransaction().replace(R.id.layoutGoogleMap, fragment).commit();
         }else {
             Toast.makeText(this, getResources().getString(R.string.something_went_wrong),

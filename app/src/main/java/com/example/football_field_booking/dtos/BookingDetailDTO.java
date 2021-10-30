@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 public class BookingDetailDTO implements Serializable {
-    private String cartItemID;
+    private String ID;
     private UserDTO userInfo;
     private FootballFieldDTO fieldInfo;
     private String date;
@@ -16,12 +16,12 @@ public class BookingDetailDTO implements Serializable {
     public BookingDetailDTO() {
     }
 
-    public String getCartItemID() {
-        return cartItemID;
+    public String getID() {
+        return ID;
     }
 
-    public void setCartItemID(String cartItemID) {
-        this.cartItemID = cartItemID;
+    public void setID(String ID) {
+        this.ID = ID;
     }
 
     public UserDTO getUserInfo() {

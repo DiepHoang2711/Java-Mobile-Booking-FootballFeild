@@ -77,7 +77,8 @@ public class FootballFieldAdapter extends BaseAdapter {
         txtFieldName.setText(dto.getName());
         txtLocation.setText(dto.getLocation());
         txtType.setText(dto.getType());
-        txtRate.setText(dto.getRate()+"");
+        float rate = Math.round(dto.getRate() * 10f) / 10f;
+        txtRate.setText(rate+"");
         Log.d("FootballFieldAdapter",fieldDTOList.size()+"");
 
         if(distanceList != null) {

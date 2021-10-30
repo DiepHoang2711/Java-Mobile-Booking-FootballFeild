@@ -128,6 +128,8 @@ public class EditFootballFieldActivity extends AppCompatActivity {
                         fieldOldDTO = doc.get("fieldInfo", FootballFieldDTO.class);
                         Log.d("USER", "dto: " + fieldDTO);
 
+                        geoPoint = fieldDTO.getGeoPoint();
+                        geoHash = fieldDTO.getGeoHash();
                         tlFootballFieldName.getEditText().setText(fieldDTO.getName());
                         tlLocation.getEditText().setText(fieldDTO.getLocation());
                         auComTxtType.setText(fieldDTO.getType(), false);
@@ -253,19 +255,19 @@ public class EditFootballFieldActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-            } else if(requestCode == RC_LOCATION && resultCode == RESULT_OK) {
-                try {
-                    double lat = data.getDoubleExtra("lat", 0);
-                    double lng = data.getDoubleExtra("lng", 0);
-                    if(lat != 0 && lng != 0) {
-                        geoPoint = new GeoPoint(lat, lng);
-                        geoHash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(lat, lng));
-                    }
-                    String location = data.getStringExtra("locationName");
-                    tlLocation.getEditText().setText(location);
-                }catch (Exception e) {
-                    e.printStackTrace();
+            }
+        }else if(requestCode == RC_LOCATION && resultCode == RESULT_OK) {
+            try {
+                double lat = data.getDoubleExtra("lat", 0);
+                double lng = data.getDoubleExtra("lng", 0);
+                if(lat != 0 && lng != 0) {
+                    geoPoint = new GeoPoint(lat, lng);
+                    geoHash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(lat, lng));
                 }
+                String location = data.getStringExtra("locationName");
+                tlLocation.getEditText().setText(location);
+            }catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -333,6 +335,10 @@ public class EditFootballFieldActivity extends AppCompatActivity {
         }
         if (val.isEmpty(name)) {
             utils.showError(tlFootballFieldName, "Name must not be blank");
+            result = false;
+        }
+        if(geoPoint == null) {
+            Toast.makeText(this, "ERROR: Please choose geo point", Toast.LENGTH_SHORT).show();
             result = false;
         }
         return result;

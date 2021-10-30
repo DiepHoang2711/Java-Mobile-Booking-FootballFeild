@@ -1,8 +1,6 @@
 package com.example.football_field_booking;
 
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -185,7 +183,7 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                         }
                         String date = txtSelectDate.getText().toString();
                         CartItemDTO cartItemDTO = new CartItemDTO(userDTO, fieldDTO, date, total, list);
-                        userDAO.addToCart(cartItemDTO, cartItemAvailable.getCartItemID(), user.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        userDAO.addToCart(cartItemDTO, cartItemAvailable.getID(), user.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {

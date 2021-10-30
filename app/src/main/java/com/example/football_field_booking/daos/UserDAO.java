@@ -1,7 +1,6 @@
 package com.example.football_field_booking.daos;
 
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,10 +12,7 @@ import com.example.football_field_booking.dtos.RatingDTO;
 import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -25,16 +21,13 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
-import com.google.firebase.firestore.core.OrderBy;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.google.firestore.v1.StructuredQuery;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -144,7 +137,7 @@ public class UserDAO {
     public Task<Void> addToCart(CartItemDTO cartItemDTO, String cartItemID, String userID) {
         if (cartItemID == null) {
             DocumentReference doc = db.collection(COLLECTION_USERS).document(userID).collection(SUB_COLLECTION_CART).document();
-            cartItemDTO.setCartItemID(doc.getId());
+            cartItemDTO.setID(doc.getId());
             cartItemDTO.setFieldAndDate(cartItemDTO.getFieldInfo().getFieldID() + cartItemDTO.getDate());
             return doc.set(cartItemDTO);
         } else {
@@ -186,11 +179,11 @@ public class UserDAO {
                 .collection(SUB_COLLECTION_BOOKING_INFO).document();
         bookingDTO.setBookingID(docBooking.getId());
         for (CartItemDTO cartItemDTO : cart) {
-            DocumentReference docUser = docBooking.collection(SUB_COLLECTION_BOOKING_DETAIL).document(cartItemDTO.getCartItemID());
+            DocumentReference docUser = docBooking.collection(SUB_COLLECTION_BOOKING_DETAIL).document(cartItemDTO.getID());
             DocumentReference docField = db.collection(COLLECTION_FOOTBALL_FIELD).document(cartItemDTO.getFieldInfo().getFieldID())
-                    .collection(SUB_COLLECTION_BOOKING).document(cartItemDTO.getCartItemID());
+                    .collection(SUB_COLLECTION_BOOKING).document(cartItemDTO.getID());
             DocumentReference docCart = db.collection(COLLECTION_USERS).document(bookingDTO.getUserID())
-                    .collection(SUB_COLLECTION_CART).document(cartItemDTO.getCartItemID());
+                    .collection(SUB_COLLECTION_CART).document(cartItemDTO.getID());
             listDocInUser.add(docUser);
             listDocInField.add(docField);
             listDocCart.add(docCart);
