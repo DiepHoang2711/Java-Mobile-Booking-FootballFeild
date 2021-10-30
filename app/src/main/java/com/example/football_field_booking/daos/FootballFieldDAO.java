@@ -217,11 +217,9 @@ public class FootballFieldDAO {
         return tasks;
     }
 
-    public Task<QuerySnapshot> getListFieldByOwnerID(String ownerID) {
-        return db.collection(COLLECTION_FOOTBALL_FIELD).whereEqualTo("ownerInfo.userID",ownerID).get();
-    }
-
-    public Task<QuerySnapshot> getListBookingByFieldID(String fieldID){
-        return db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID).collection(SUB_COLLECTION_BOOKING).get();
+    public Task<QuerySnapshot> getListBookingByFieldID(String fieldID) {
+        return db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID)
+                .collection(SUB_COLLECTION_BOOKING)
+                .get();
     }
 }

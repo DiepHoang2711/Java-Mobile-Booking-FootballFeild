@@ -253,19 +253,19 @@ public class EditFootballFieldActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-            } else if(requestCode == RC_LOCATION && resultCode == RESULT_OK) {
-                try {
-                    double lat = data.getDoubleExtra("lat", 0);
-                    double lng = data.getDoubleExtra("lng", 0);
-                    if(lat != 0 && lng != 0) {
-                        geoPoint = new GeoPoint(lat, lng);
-                        geoHash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(lat, lng));
-                    }
-                    String location = data.getStringExtra("locationName");
-                    tlLocation.getEditText().setText(location);
-                }catch (Exception e) {
-                    e.printStackTrace();
+            }
+        }else if(requestCode == RC_LOCATION && resultCode == RESULT_OK) {
+            try {
+                double lat = data.getDoubleExtra("lat", 0);
+                double lng = data.getDoubleExtra("lng", 0);
+                if(lat != 0 && lng != 0) {
+                    geoPoint = new GeoPoint(lat, lng);
+                    geoHash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(lat, lng));
                 }
+                String location = data.getStringExtra("locationName");
+                tlLocation.getEditText().setText(location);
+            }catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

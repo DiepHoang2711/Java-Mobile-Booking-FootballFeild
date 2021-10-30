@@ -1,35 +1,32 @@
 package com.example.football_field_booking.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.football_field_booking.R;
-import com.example.football_field_booking.adapters.BookingAdapterOfOwner;
-import com.example.football_field_booking.daos.FootballFieldDAO;
-import com.example.football_field_booking.dtos.CartItemDTO;
+import com.example.football_field_booking.ViewListBookingOfAFieldActivity;
+import com.example.football_field_booking.adapters.FootballFieldAdapter;
+import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
-import com.google.android.gms.tasks.OnFailureListener;
+import com.example.football_field_booking.dtos.UserDocument;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.DocumentSnapshot;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class OwnerHomeFragment extends Fragment {
 
-    private List<CartItemDTO> bookingList;
-    private ListView lvBooking;
-    private BookingAdapterOfOwner adapter;
+    private ListView lvFootballFieldOwner;
 
     public OwnerHomeFragment() {
         // Required empty public constructor
@@ -39,46 +36,40 @@ public class OwnerHomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.fragment_owner_home, container, false);
-        lvBooking=view.findViewById(R.id.lvBooking);
-
-//        loadData();
+        lvFootballFieldOwner=view.findViewById(R.id.lvFootballFieldOwner);
+        loadData();
         return view;
     }
 
-    private void loadData(){
-        FootballFieldDAO fieldDAO=new FootballFieldDAO();
-        FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
-        fieldDAO.getListFieldByOwnerID(user.getUid())
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+    private void loadData() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        UserDAO dao = new UserDAO();
+        dao.getUserById(user.getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<CartItemDTO> list=new ArrayList<>();
-                for (QueryDocumentSnapshot snapshot:queryDocumentSnapshots){
-                    String fieldID= snapshot.getString("fieldInfo.fieldID");
-                    fieldDAO.getListBookingByFieldID(fieldID)
-                            .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                        @Override
-                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                            for (QueryDocumentSnapshot snapshot1:queryDocumentSnapshots){
-                                CartItemDTO cartItemDTO=snapshot.toObject(CartItemDTO.class);
-                                list.add(cartItemDTO);
-                                adapter=new BookingAdapterOfOwner(getContext());
-                                adapter.setListBooking(list);
-                                lvBooking.setAdapter(adapter);
-                            }
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            e.printStackTrace();
-                        }
-                    });
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                try {
+                    List<FootballFieldDTO> fieldDTOList = documentSnapshot.toObject(UserDocument.class).getFieldsInfo();
+                    if (fieldDTOList != null) {
+                        FootballFieldAdapter fieldAdapter = new FootballFieldAdapter(getActivity(), fieldDTOList);
+                        lvFootballFieldOwner.setAdapter(fieldAdapter);
+                        fieldAdapter.notifyDataSetChanged();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-        }).addOnFailureListener(new OnFailureListener() {
+        });
+        lvFootballFieldOwner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onFailure(@NonNull Exception e) {
-                e.printStackTrace();
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                try {
+                    FootballFieldDTO dto = (FootballFieldDTO) lvFootballFieldOwner.getItemAtPosition(i);
+                    Intent intent = new Intent(getActivity(), ViewListBookingOfAFieldActivity.class);
+                    intent.putExtra("fieldID", dto.getFieldID());
+                    startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

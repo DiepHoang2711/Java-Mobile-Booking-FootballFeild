@@ -27,14 +27,16 @@
                 app:liftOnScroll="true"
                 app:logo="@drawable/logo"
                 app:menu="@menu/owner_top_app_bar"
-                app:title="Fast Field"></com.google.android.material.appbar.MaterialToolbar>
+                app:title="Fast Field"/>
 
         </com.google.android.material.appbar.AppBarLayout>
 
         <FrameLayout
             android:id="@+id/fragmentContainer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_marginTop="55dp"
+            android:layout_marginBottom="55dp"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
