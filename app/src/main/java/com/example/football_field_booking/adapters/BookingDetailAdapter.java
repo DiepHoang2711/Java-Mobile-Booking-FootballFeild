@@ -148,6 +148,7 @@ public class BookingDetailAdapter extends BaseAdapter {
                                     FootballFieldDAO fieldDAO = new FootballFieldDAO();
                                     try {
                                         fieldDAO.countRating(fieldDTO.getFieldID());
+                                        BookingDetailAdapter.this.notifyDataSetChanged();
                                     }catch (Exception e) {
                                         e.printStackTrace();
                                     }
