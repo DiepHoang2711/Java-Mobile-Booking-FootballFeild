@@ -176,8 +176,8 @@ public class FootballFieldDAO {
                 .collection(SUB_COLLECTION_BOOKING).whereEqualTo("date", date).get();
     }
 
-    public void countRating(String fieldID) throws Exception {
-        getRating(fieldID).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+    public void countRating(FootballFieldDTO fieldDTO, String ownerID) throws Exception {
+        getRating(fieldDTO.getFieldID()).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 float sumRating = 0f;
@@ -188,10 +188,28 @@ public class FootballFieldDAO {
                     totalRating++;
                 }
                 float avgRating = sumRating / totalRating;
-                DocumentReference doc = db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID);
-                Map<String, Object> data = new HashMap<>();
-                data.put("fieldInfo.rate", avgRating);
-                doc.update(data);
+                Log.d("USER", "rating: " + avgRating);
+
+                WriteBatch batch = db.batch();
+
+                DocumentReference docField = db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldDTO.getFieldID());
+                DocumentReference docUser = db.collection(COLLECTION_USERS).document(ownerID);
+
+                Map<String, Object> dataUserDelete = new HashMap<>();
+                dataUserDelete.put("fieldsInfo", FieldValue.arrayRemove(fieldDTO));
+                batch.update(docUser, dataUserDelete);
+
+                fieldDTO.setRate(avgRating);
+                Map<String, Object> dataUserUpdate = new HashMap<>();
+                dataUserUpdate.put("fieldsInfo", FieldValue.arrayUnion(fieldDTO));
+                batch.update(docUser, dataUserUpdate);
+
+                Map<String, Object> dataField = new HashMap<>();
+                dataField.put("fieldInfo.rate", avgRating);
+                batch.update(docField, dataField);
+
+                batch.commit();
+
             }
         });
     }

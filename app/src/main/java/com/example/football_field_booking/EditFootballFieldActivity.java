@@ -128,6 +128,8 @@ public class EditFootballFieldActivity extends AppCompatActivity {
                         fieldOldDTO = doc.get("fieldInfo", FootballFieldDTO.class);
                         Log.d("USER", "dto: " + fieldDTO);
 
+                        geoPoint = fieldDTO.getGeoPoint();
+                        geoHash = fieldDTO.getGeoHash();
                         tlFootballFieldName.getEditText().setText(fieldDTO.getName());
                         tlLocation.getEditText().setText(fieldDTO.getLocation());
                         auComTxtType.setText(fieldDTO.getType(), false);
@@ -333,6 +335,10 @@ public class EditFootballFieldActivity extends AppCompatActivity {
         }
         if (val.isEmpty(name)) {
             utils.showError(tlFootballFieldName, "Name must not be blank");
+            result = false;
+        }
+        if(geoPoint == null) {
+            Toast.makeText(this, "ERROR: Please choose geo point", Toast.LENGTH_SHORT).show();
             result = false;
         }
         return result;

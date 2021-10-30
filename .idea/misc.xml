@@ -91,6 +91,7 @@
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_onwer_football_field_detail.xml" value="0.19166666666666668" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_owner_home.xml" value="0.13269927536231885" />
+        <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_owner_main.xml" value="0.11775362318840579" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_profile.xml" value="0.1" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_register.xml" value="0.25" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/activity_search_by_name.xml" value="0.19166666666666668" />
@@ -99,12 +100,15 @@
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/fragment_admin_home.xml" value="0.32407407407407407" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/fragment_cart.xml" value="0.19166666666666668" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/fragment_history.xml" value="0.1" />
+        <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/fragment_map_search_near_me.xml" value="0.1" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/fragment_owner_all_field.xml" value="0.10507246376811594" />
-        <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/fragment_profile.xml" value="0.13134057971014493" />
+        <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/fragment_owner_home.xml" value="0.13451086956521738" />
+        <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/fragment_profile.xml" value="0.25" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/fragment_user_home.xml" value="0.19166666666666668" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/item_booking.xml" value="0.22" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/item_booking_detail.xml" value="0.22" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/item_cart.xml" value="0.25" />
+        <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/item_football_field.xml" value="0.12092391304347826" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/item_football_field_owner.xml" value="0.13541666666666666" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/item_time_picker.xml" value="0.33" />
         <entry key="..\:/Users/tienx/Desktop/PROJECT_PRM391/app/src/main/res/layout/item_time_picker_detail.xml" value="0.19166666666666668" />

@@ -26,8 +26,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,7 +114,7 @@ public class CartAdapter extends BaseAdapter {
                 UserDAO userDAO = new UserDAO();
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if(user != null) {
-                    userDAO.deleteCartItem(user.getUid(), cartItemDTO.getCartItemID()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    userDAO.deleteCartItem(user.getUid(), cartItemDTO.getID()).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if(task.isSuccessful()){

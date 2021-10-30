@@ -13,23 +13,23 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
-import com.example.football_field_booking.BookingDetailActivity;
 import com.example.football_field_booking.R;
 import com.example.football_field_booking.daos.FootballFieldDAO;
 import com.example.football_field_booking.daos.UserDAO;
-import com.example.football_field_booking.dtos.BookingDTO;
 import com.example.football_field_booking.dtos.BookingDetailDTO;
-import com.example.football_field_booking.dtos.CartItemDTO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
+import com.example.football_field_booking.dtos.FootballFieldDocument;
 import com.example.football_field_booking.dtos.RatingDTO;
 import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -99,6 +99,7 @@ public class BookingDetailAdapter extends BaseAdapter {
 
         BookingDetailDTO bookingDetailDTO = booking.get(i);
         FootballFieldDTO fieldDTO = bookingDetailDTO.getFieldInfo();
+        List<TimePickerDTO> timePickerDTOList = bookingDetailDTO.getTimePicker();
 
         txtFieldName.setText(fieldDTO.getName());
         txtType.setText(fieldDTO.getType());
@@ -114,7 +115,7 @@ public class BookingDetailAdapter extends BaseAdapter {
                     .into(imgField);
         }
 
-        for (TimePickerDTO dto: bookingDetailDTO.getTimePicker()) {
+        for (TimePickerDTO dto: timePickerDTOList) {
             TextView txtTime = new TextView(context);
             TextView txtPrice = new TextView(context);
             txtTime.setText(dto.getStart()+"h "+"- " + dto.getEnd()+ "h");
@@ -122,6 +123,7 @@ public class BookingDetailAdapter extends BaseAdapter {
             gridLayout.addView(txtTime);
             gridLayout.addView(txtPrice);
         }
+
         Calendar calendar = Calendar.getInstance();
         String now = df.format(calendar.getTime());
         try {
@@ -140,16 +142,25 @@ public class BookingDetailAdapter extends BaseAdapter {
                         RatingDTO ratingDTO = new RatingDTO(bookingDetailDTO.getUserInfo(), fieldDTO, rating, now);
                         UserDAO userDAO = new UserDAO();
                         Log.d("USER", "onClickSubmit: ");
-                        userDAO.rating(ratingDTO, bookingID, bookingDetailDTO.getCartItemID()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        userDAO.rating(ratingDTO, bookingID, bookingDetailDTO.getID()).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if(task.isSuccessful()){
                                     FootballFieldDAO fieldDAO = new FootballFieldDAO();
-                                    try {
-                                        fieldDAO.countRating(fieldDTO.getFieldID());
-                                    }catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
+                                    fieldDAO.getFieldByID(fieldDTO.getFieldID()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            try {
+                                                FootballFieldDocument document = documentSnapshot.toObject(FootballFieldDocument.class);
+                                                fieldDAO.countRating(document.getFieldInfo(), document.getOwnerInfo().getUserID());
+                                                booking.get(i).setAlreadyRating(true);
+                                                layoutFeedback.setVisibility(View.GONE);
+                                                Toast.makeText(context, "Rating success", Toast.LENGTH_SHORT).show();
+                                            }catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
 
                                 }else {
                                     task.getException().printStackTrace();

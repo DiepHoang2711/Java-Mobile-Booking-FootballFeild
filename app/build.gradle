@@ -36,14 +36,13 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.1'
-    implementation platform('com.google.firebase:firebase-bom:28.4.1')
+    implementation platform('com.google.firebase:firebase-bom:29.0.0')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-storage'
     implementation 'com.firebaseui:firebase-ui-storage:7.2.0'
     implementation 'com.google.firebase:firebase-storage:20.0.0'
-    implementation 'com.firebaseui:firebase-ui-storage:7.2.0'
     implementation 'com.firebase:geofire-android-common:3.1.0'
     implementation 'com.google.android.gms:play-services-auth:19.2.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'

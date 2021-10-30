@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 public class CartItemDTO implements Serializable {
-    private String cartItemID;
+    private String ID;
     private UserDTO userInfo;
     private FootballFieldDTO fieldInfo;
     private String date;
@@ -15,8 +15,8 @@ public class CartItemDTO implements Serializable {
     public CartItemDTO() {
     }
 
-    public String getCartItemID() {
-        return cartItemID;
+    public String getID() {
+        return ID;
     }
 
     public CartItemDTO(UserDTO userInfo, FootballFieldDTO fieldInfo, String date, float total, List<TimePickerDTO> timePicker) {
@@ -27,8 +27,8 @@ public class CartItemDTO implements Serializable {
         this.timePicker = timePicker;
     }
 
-    public void setCartItemID(String cartItemID) {
-        this.cartItemID = cartItemID;
+    public void setID(String ID) {
+        this.ID = ID;
     }
 
     public UserDTO getUserInfo() {
@@ -82,7 +82,7 @@ public class CartItemDTO implements Serializable {
     @Override
     public String toString() {
         return "CartItemDTO{" +
-                "cartItemID='" + cartItemID + '\'' +
+                "cartItemID='" + ID + '\'' +
                 ", userInfo=" + userInfo +
                 ", fieldInfo=" + fieldInfo +
                 ", date='" + date + '\'' +
