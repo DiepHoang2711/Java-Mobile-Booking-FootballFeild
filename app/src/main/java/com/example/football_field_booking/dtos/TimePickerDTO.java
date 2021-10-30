@@ -6,16 +6,14 @@ public class TimePickerDTO {
     private int start;
     private int end;
     private float price;
-    private String timePickerID;
 
     public TimePickerDTO() {
     }
 
-    public TimePickerDTO(int start, int end, float price, String timePickerID) {
+    public TimePickerDTO(int start, int end, float price) {
         this.start = start;
         this.end = end;
         this.price = price;
-        this.timePickerID = timePickerID;
     }
 
     public int getStart() {
@@ -42,13 +40,6 @@ public class TimePickerDTO {
         this.price = price;
     }
 
-    public String getTimePickerID() {
-        return timePickerID;
-    }
-
-    public void setTimePickerID(String timePickerID) {
-        this.timePickerID = timePickerID;
-    }
 
     @Override
     public boolean equals(@Nullable Object obj) {
@@ -65,8 +56,7 @@ public class TimePickerDTO {
         return "TimePickerDTO{" +
                 "start=" + start +
                 ", end=" + end +
-                ", price=" + price +
-                ", timePickerID='" + timePickerID + '\'' +
+                ", price=" + price + '\'' +
                 '}';
     }
 }

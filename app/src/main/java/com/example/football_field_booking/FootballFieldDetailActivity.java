@@ -1,6 +1,8 @@
 package com.example.football_field_booking;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -48,7 +50,7 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
     private int year, month, day;
     private Calendar calendar;
     private FloatingActionButton btnBack;
-    private Button btnAddToCart,btnEdit,btnDelete;
+    private Button btnAddToCart,btnLogin;
     private TextView txtFieldName, txtLocation, txtRate, txtType, txtSelectDate;
     private List<TimePickerDTO> timePickerDTOList;
     private TimePickerDetailAdapter timePickerDetailAdapter;
@@ -68,14 +70,13 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
         txtSelectDate = findViewById(R.id.txtSelectDate);
         btnBack = findViewById(R.id.btnBack);
         btnAddToCart = findViewById(R.id.btnAddToCart);
-        btnEdit=findViewById(R.id.btnEdit);
-        btnDelete=findViewById(R.id.btnDelete);
         txtFieldName = findViewById(R.id.txtFieldName);
         txtLocation = findViewById(R.id.txtLocation);
         txtRate = findViewById(R.id.txtRate);
         txtType = findViewById(R.id.txtType);
         lvTimePickerDetail = findViewById(R.id.lvTimePickerDetail);
         imgFootBallField = findViewById(R.id.imgFootBallField);
+        btnLogin=findViewById(R.id.btnLogin);
 
         txtSelectDate.setText(df.format(calendar.getTime()));
 
@@ -94,29 +95,37 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
             public void onClick(View view) {
                 try {
                     addToCart();
-                }catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user != null) {
+        if (user != null) {
             UserDAO userDAO = new UserDAO();
             userDAO.getUserById(user.getUid())
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            UserDTO dto = documentSnapshot.get("userInfo",UserDTO.class);
+                            UserDTO dto = documentSnapshot.get("userInfo", UserDTO.class);
                             String role = dto.getRole();
-                            if (role.equals("owner")) {
-                                btnEdit.setVisibility(View.VISIBLE);
-                                btnDelete.setVisibility(View.VISIBLE);
-                            } else if(role.equals("user")){
+                            if (role.equals("user")) {
                                 btnAddToCart.setVisibility(View.VISIBLE);
+                                btnLogin.setVisibility(View.GONE);
                             }
                         }
                     });
+        }else{
+            btnLogin.setVisibility(View.VISIBLE);
+            btnAddToCart.setVisibility(View.GONE);
+            btnLogin.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(FootballFieldDetailActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                }
+            });
         }
 
         Intent intent = this.getIntent();
@@ -157,21 +166,21 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    private void addToCart () throws Exception{
+    private void addToCart() throws Exception {
         List<TimePickerDTO> list = timePickerDetailAdapter.getChooseList();
-        if(list.isEmpty()){
+        if (list.isEmpty()) {
             Toast.makeText(this, "Please choose at least one time slot", Toast.LENGTH_LONG).show();
-        }else {
+        } else {
 
             UserDAO userDAO = new UserDAO();
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            if(user != null) {
+            if (user != null) {
                 userDAO.getUserById(user.getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         UserDTO userDTO = documentSnapshot.get("userInfo", UserDTO.class);
                         float total = 0;
-                        for (TimePickerDTO dto: list) {
+                        for (TimePickerDTO dto : list) {
                             total += dto.getPrice();
                         }
                         String date = txtSelectDate.getText().toString();
@@ -179,12 +188,12 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                         userDAO.addToCart(cartItemDTO, cartItemAvailable.getCartItemID(), user.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()){
+                                if (task.isSuccessful()) {
                                     loadData(fieldDTO.getFieldID());
                                     Toast.makeText(FootballFieldDetailActivity.this, "Add to cart success"
                                             , Toast.LENGTH_SHORT).show();
-                                    Intent intent=new Intent(FootballFieldDetailActivity.this,MainActivity.class);
-                                    intent.putExtra("action","add to cart");
+                                    Intent intent = new Intent(FootballFieldDetailActivity.this, MainActivity.class);
+                                    intent.putExtra("action", "add to cart");
                                     startActivity(intent);
                                 } else {
                                     Toast.makeText(FootballFieldDetailActivity.this, "Add to cart fail"
@@ -194,13 +203,11 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                         });
                     }
                 });
-
-
             }
         }
     }
 
-    private void loadData (String fieldID) {
+    private void loadData(String fieldID) {
         try {
             FootballFieldDAO fieldDAO = new FootballFieldDAO();
             UserDAO userDAO = new UserDAO();
@@ -208,7 +215,7 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
             fieldDAO.getFieldByID(fieldID).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    fieldDTO=documentSnapshot.get("fieldInfo",FootballFieldDTO.class);
+                    fieldDTO = documentSnapshot.get("fieldInfo", FootballFieldDTO.class);
                     txtFieldName.setText(fieldDTO.getName());
                     txtLocation.setText(fieldDTO.getLocation());
                     txtRate.setText(fieldDTO.getRate() + "");
@@ -226,14 +233,14 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                             List<TimePickerDTO> bookedTimeList = new ArrayList<>();
-                            for (QueryDocumentSnapshot doc: queryDocumentSnapshots) {
+                            for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                                 List<TimePickerDTO> listDto = doc.toObject(CartItemDTO.class).getTimePicker();
                                 bookedTimeList.addAll(listDto);
                             }
 
-                            if(user != null) {
+                            if (user != null) {
                                 Log.d("USER", "date is: " + date);
-                                userDAO.getItemInCartByFieldAndDate(user.getUid(), fieldDTO.getFieldID(), date ).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                userDAO.getItemInCartByFieldAndDate(user.getUid(), fieldDTO.getFieldID(), date).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                     @Override
                                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                                         if (!queryDocumentSnapshots.isEmpty()) {
@@ -241,14 +248,14 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                                             cartItemAvailable = doc.toObject(CartItemDTO.class);
                                             Log.d("USER", "listInCart: " + cartItemAvailable.toString());
                                         }
-                                        timePickerDetailAdapter = new TimePickerDetailAdapter(FootballFieldDetailActivity.this,timePickerDTOList, cartItemAvailable.getTimePicker(), bookedTimeList);
+                                        timePickerDetailAdapter = new TimePickerDetailAdapter(FootballFieldDetailActivity.this, timePickerDTOList, cartItemAvailable.getTimePicker(), bookedTimeList);
                                         lvTimePickerDetail.setScrollContainer(false);
                                         lvTimePickerDetail.setAdapter(timePickerDetailAdapter);
 
                                     }
                                 });
                             } else {
-                                timePickerDetailAdapter = new TimePickerDetailAdapter(FootballFieldDetailActivity.this,timePickerDTOList, cartItemAvailable.getTimePicker(), bookedTimeList);
+                                timePickerDetailAdapter = new TimePickerDetailAdapter(FootballFieldDetailActivity.this, timePickerDTOList, cartItemAvailable.getTimePicker(), bookedTimeList);
                                 lvTimePickerDetail.setScrollContainer(false);
                                 lvTimePickerDetail.setAdapter(timePickerDetailAdapter);
                             }
@@ -257,10 +264,9 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                     });
 
 
-
                 }
             });
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.football_field_booking.CheckRoleActivity;
 import com.example.football_field_booking.MainActivity;
 import com.example.football_field_booking.EditProfileActivity;
 import com.example.football_field_booking.R;
@@ -89,7 +90,7 @@ public class ProfileFragment extends Fragment {
                     }
                 });
                 FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(getActivity(), MainActivity.class);
+                Intent intent = new Intent(getActivity(), CheckRoleActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }

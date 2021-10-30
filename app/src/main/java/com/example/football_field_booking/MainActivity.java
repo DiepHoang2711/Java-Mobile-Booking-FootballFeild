@@ -5,6 +5,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -61,8 +63,7 @@ public class MainActivity extends AppCompatActivity {
                         if (validation.isUser()) {
                             selectedFragment = new ProfileFragment();
                         } else {
-                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                            startActivity(intent);
+                            showAlert();
                             return true;
                         }
                         break;
@@ -70,8 +71,7 @@ public class MainActivity extends AppCompatActivity {
                         if (validation.isUser()) {
                             selectedFragment = new CartFragment();
                         } else {
-                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                            startActivity(intent);
+                            showAlert();
                             return true;
                         }
                         break;
@@ -79,12 +79,10 @@ public class MainActivity extends AppCompatActivity {
                         if (validation.isUser()) {
                             selectedFragment = new HistoryFragment();
                         } else {
-                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                            startActivity(intent);
+                            showAlert();
                             return true;
                         }
                         break;
-
                     default:
                         return false;
                 }
@@ -126,6 +124,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void showAlert(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+        alert.setTitle("Function need to log in");
+        alert.setMessage("Please login with your account to experience this function");
+        alert.setPositiveButton("Log in", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+        alert.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // close dialog
+                dialog.cancel();
+            }
+        });
+        alert.show();
     }
 
     private void updateUI(FirebaseUser user) {
