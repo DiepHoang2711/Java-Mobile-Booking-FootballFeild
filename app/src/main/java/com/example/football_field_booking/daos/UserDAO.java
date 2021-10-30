@@ -247,7 +247,6 @@ public class UserDAO {
             @Nullable
             @Override
             public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-
                 transaction.set(docUser, ratingDTO);
                 transaction.set(docField, ratingDTO);
                 Map<String, Object> data = new HashMap<>();
