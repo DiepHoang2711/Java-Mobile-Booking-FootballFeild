@@ -97,7 +97,7 @@ public class FootballFieldDAO {
     }
 
     public Task<QuerySnapshot> getAllFootballField() {
-        return db.collection(COLLECTION_FOOTBALL_FIELD).get();
+        return db.collection(COLLECTION_FOOTBALL_FIELD).whereEqualTo("fieldInfo.status",STATUS_ACTIVE).get();
     }
 
     public Task<DocumentSnapshot> getFieldByID(String fieldID) {
@@ -215,5 +215,13 @@ public class FootballFieldDAO {
 
         // Collect all the query results together into a single list
         return tasks;
+    }
+
+    public Task<QuerySnapshot> getListFieldByOwnerID(String ownerID) {
+        return db.collection(COLLECTION_FOOTBALL_FIELD).whereEqualTo("ownerInfo.userID",ownerID).get();
+    }
+
+    public Task<QuerySnapshot> getListBookingByFieldID(String fieldID){
+        return db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID).collection(SUB_COLLECTION_BOOKING).get();
     }
 }

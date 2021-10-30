@@ -94,7 +94,6 @@ public class OwnerAllFieldFragment extends Fragment {
                         lvFootballFieldOwner.setAdapter(fieldAdapter);
                         fieldAdapter.notifyDataSetChanged();
                     }
-
                 }catch (Exception e) {
                     e.printStackTrace();
                 }
