@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
@@ -25,6 +26,7 @@ import com.example.football_field_booking.dtos.BookingDetailDTO;
 import com.example.football_field_booking.dtos.CartItemDTO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.RatingDTO;
+import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
@@ -92,9 +94,12 @@ public class BookingDetailAdapter extends BaseAdapter {
         TextView txtDate = rowView.findViewById(R.id.txtDate);
         TextView txtTotal = rowView.findViewById(R.id.txtTotal);
         ImageView imgField = rowView.findViewById(R.id.imgField);
+        GridLayout gridLayout = rowView.findViewById(R.id.gridLayoutTimePicker);
+        gridLayout.removeAllViewsInLayout();
 
         BookingDetailDTO bookingDetailDTO = booking.get(i);
         FootballFieldDTO fieldDTO = bookingDetailDTO.getFieldInfo();
+        List<TimePickerDTO> timePickerDTOList = bookingDetailDTO.getTimePicker();
 
         txtFieldName.setText(fieldDTO.getName());
         txtType.setText(fieldDTO.getType());
@@ -107,6 +112,15 @@ public class BookingDetailAdapter extends BaseAdapter {
             Glide.with(imgField.getContext())
                     .load(uri)
                     .into(imgField);
+        }
+
+        for (TimePickerDTO dto: timePickerDTOList) {
+            TextView txtTime = new TextView(context);
+            TextView txtPrice = new TextView(context);
+            txtTime.setText(dto.getStart()+"h "+"- " + dto.getEnd()+ "h");
+            txtPrice.setText("$"+dto.getPrice());
+            gridLayout.addView(txtTime);
+            gridLayout.addView(txtPrice);
         }
 
         Calendar calendar = Calendar.getInstance();
