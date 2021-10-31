@@ -41,7 +41,7 @@ public class SearchFieldActivity extends AppCompatActivity {
     private EditText edtSearch;
     private String type;
     private TextView txtTitle;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,6 +97,19 @@ public class SearchFieldActivity extends AppCompatActivity {
         });
 
 
+        lvFootballField.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                try {
+                    FootballFieldDTO dto = (FootballFieldDTO) lvFootballField.getItemAtPosition(i);
+                    Intent intent = new Intent(SearchFieldActivity.this, FootballFieldDetailActivity.class);
+                    intent.putExtra("fieldID", dto.getFieldID());
+                    startActivity(intent);
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private void loadSearchData(QuerySnapshot queryDocumentSnapshots) {
@@ -123,20 +136,29 @@ public class SearchFieldActivity extends AppCompatActivity {
     private void searchByLikeName () throws Exception {
         FootballFieldDAO fieldDAO = new FootballFieldDAO();
         String searchName = edtSearch.getText().toString().trim();
-        fieldDAO.searchByLikeNameForUser(searchName)
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        Log.e("List Size:",queryDocumentSnapshots.size()+"");
-                        loadSearchData(queryDocumentSnapshots);
-                        txtTitle.setText("Result of: "+searchName);
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                e.printStackTrace();
-            }
-        });
+        try{
+            fieldDAO.searchByLikeNameForUser(searchName)
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            loadSearchData(queryDocumentSnapshots);
+                            if(queryDocumentSnapshots.size()>0){
+                                txtTitle.setText("Result of: "+searchName);
+                            }else{
+                                txtTitle.setText("--Empty--");
+                            }
+
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     private void searchByTypeField() {
@@ -145,8 +167,10 @@ public class SearchFieldActivity extends AppCompatActivity {
             fieldDAO.searchByTypeForUser(type).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
                     loadSearchData(queryDocumentSnapshots);
+                    if(queryDocumentSnapshots.size()==0){
+                        txtTitle.setText("--Empty--");
+                    }
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override

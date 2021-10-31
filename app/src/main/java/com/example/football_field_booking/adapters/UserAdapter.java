@@ -29,8 +29,6 @@ public class UserAdapter extends BaseAdapter {
     private Context context;
     private List<UserDTO> listUser;
     private LayoutInflater layoutInflater;
-    public static final String USER_FOLDER_IMAGES = "user_images";
-    private FirebaseStorage storage;
 
     public UserAdapter(Context context, List<UserDTO> listUser) {
         this.context = context;
@@ -61,8 +59,10 @@ public class UserAdapter extends BaseAdapter {
         }
         ImageView imgUser = rowView.findViewById(R.id.imgUser);
         TextView txtFullName = rowView.findViewById(R.id.txtFullName);
-        TextView txtUserID = rowView.findViewById(R.id.txtUserID);
-        storage = FirebaseStorage.getInstance();
+        TextView txtEmail = rowView.findViewById(R.id.txtEmail);
+        TextView txtStatus = rowView.findViewById(R.id.txtStatus);
+        TextView txtPhone = rowView.findViewById(R.id.txtPhone);
+
 
         UserDTO user = listUser.get(i);
 
@@ -74,8 +74,15 @@ public class UserAdapter extends BaseAdapter {
         } else {
             imgUser.setImageResource(R.drawable.outline_account_circle_24);
         }
+        txtEmail.setText(user.getEmail());
         txtFullName.setText(user.getFullName());
-        txtUserID.setText(user.getUserID());
+        txtStatus.setText(user.getStatus());
+        String phone=user.getPhone();
+        if(phone.equals("") || phone==null){
+            txtPhone.setText("empty");
+        }else{
+            txtPhone.setText(phone);
+        }
 
         return rowView;
     }

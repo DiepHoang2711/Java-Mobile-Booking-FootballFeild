@@ -4,18 +4,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.AdminHomeFragment"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btnCreateUser"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="create user"/>
-
-    <ListView
-        android:id="@+id/listViewUser"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
-
+        android:layout_height="match_parent">
+        <ListView
+            android:id="@+id/listViewUser"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnCreateUser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:backgroundTint="#9DC030"
+            android:elevation="6dp"
+            app:srcCompat="@drawable/ic_add_white_24px"
+            android:layout_gravity="bottom|right"
+            />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </LinearLayout>

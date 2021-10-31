@@ -4,22 +4,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.OwnerAllFieldFragment">
 
-    <androidx.cardview.widget.CardView
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
+        <ListView
+            android:id="@+id/lvFootballFieldOwner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-        <Button
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnCreateFootballField"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Create Football Field" />
-    </androidx.cardview.widget.CardView>
+            android:layout_margin="20dp"
+            android:backgroundTint="@android:color/darker_gray"
+            android:elevation="4dp"
+            app:srcCompat="@drawable/ic_add_white_24px"
+            android:layout_gravity="bottom|right"
+            />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <ListView
-        android:id="@+id/lvFootballFieldOwner"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
 </LinearLayout>

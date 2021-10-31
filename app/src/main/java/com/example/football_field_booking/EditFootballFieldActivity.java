@@ -281,12 +281,14 @@ public class EditFootballFieldActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
+                        Intent intent=new Intent(EditFootballFieldActivity.this,OwnerMainActivity.class);
+                        intent.putExtra("action","view_my_field");
+                        startActivity(intent);
                         Toast.makeText(EditFootballFieldActivity.this, "Update field success",
                                 Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(EditFootballFieldActivity.this, "Update field fail",
                                 Toast.LENGTH_SHORT).show();
-                        Log.d("USER", "errorrr: " + task.getException());
                     }
                 }
             });
