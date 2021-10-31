@@ -60,7 +60,7 @@ public class AdminMainActivity extends AppCompatActivity {
     }
 
     public void clickToGoToSearchActivity(MenuItem item) {
-        Intent intent=new Intent(this, SearchActivity.class);
+        Intent intent=new Intent(this, SearchFieldActivity.class);
         startActivity(intent);
     }
 }

@@ -146,7 +146,10 @@ public class FootballFieldDAO {
     }
 
     public Task<QuerySnapshot> searchByLikeNameForUser(String name){
-        return db.collection(COLLECTION_FOOTBALL_FIELD).whereGreaterThanOrEqualTo("fieldInfo.name",name).get();
+        return db.collection(COLLECTION_FOOTBALL_FIELD)
+                .whereGreaterThanOrEqualTo("fieldInfo.name",name)
+                .whereLessThanOrEqualTo("fieldInfo.name", name + "\uf8ff")
+                .get();
     }
 
     public Task<QuerySnapshot> searchByTypeForUser(String type) {

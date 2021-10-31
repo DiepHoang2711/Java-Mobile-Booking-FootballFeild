@@ -153,8 +153,8 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                 Date date = null;
                 try {
                     date = df.parse(y + "/" + (m + 1) + "/" + d);
-
                     txtSelectDate.setText(df.format(date));
+                    loadData(fieldDTO.getFieldID());
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -216,7 +216,8 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                     fieldDTO = documentSnapshot.get("fieldInfo", FootballFieldDTO.class);
                     txtFieldName.setText(fieldDTO.getName());
                     txtLocation.setText(fieldDTO.getLocation());
-                    txtRate.setText(fieldDTO.getRate() + "");
+                    float rate = Math.round(fieldDTO.getRate() * 10f) / 10f;
+                    txtRate.setText(rate+"");
                     txtType.setText(fieldDTO.getType());
                     if (fieldDTO.getImage() != null) {
                         Uri uri = Uri.parse(fieldDTO.getImage());
@@ -241,6 +242,7 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
                                 userDAO.getItemInCartByFieldAndDate(user.getUid(), fieldDTO.getFieldID(), date).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                     @Override
                                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        cartItemAvailable = new CartItemDTO();
                                         if (!queryDocumentSnapshots.isEmpty()) {
                                             DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
                                             cartItemAvailable = doc.toObject(CartItemDTO.class);
@@ -267,31 +269,6 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-//        private List<CartItemDTO> cartItemDTOList;
-//        private List<BookingDocument> bookingDocumentList;
-//
-//        getBookingforUser(user ID).addsusssecc {
-//
-//            for( bookingDoc: bookingDocs){
-//                bookingDTO = bookingDoc.toObject(BookingDTO.class);
-//                BookingDocument bookingDocument = new BookingDocumnet();
-//                bookingDocument.setbookingDTO(bookingDTO);
-//                getAllFieldsInBooking(bookingDoc.getID).addsussecc {
-//                    for(doc: docs) {
-//                        field = doc.toocject(CartItemDTO.class);
-//                        cartItemDTOList.add(field);
-//                    }
-//                    bookingDocument.setCartItemDTOList(cartItemDTOList);
-//                    bookingDocumentList.add(bookingDocument);
-//                    adapter.set(bookingDocumentList);
-//                    lv.setAdpter(adapter);
-//                }
-//            }
-//
-//
-//        }
-
 
     }
 }
