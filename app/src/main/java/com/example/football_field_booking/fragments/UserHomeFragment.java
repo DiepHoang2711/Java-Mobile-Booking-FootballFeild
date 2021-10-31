@@ -23,7 +23,7 @@ import android.widget.TextView;
 import com.example.football_field_booking.FootballFieldDetailActivity;
 import com.example.football_field_booking.MainActivity;
 import com.example.football_field_booking.R;
-import com.example.football_field_booking.SearchFootballFieldActivity;
+import com.example.football_field_booking.SearchFieldActivity;
 import com.example.football_field_booking.adapters.FootballFieldAdapter;
 import com.example.football_field_booking.daos.FootballFieldDAO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
@@ -130,7 +130,7 @@ public class UserHomeFragment extends Fragment {
     }
 
     private void searchByType(String type,View view) {
-        Intent intent=new Intent(view.getContext(), SearchFootballFieldActivity.class);
+        Intent intent=new Intent(view.getContext(), SearchFieldActivity.class);
         intent.putExtra("typeField",type);
         startActivity(intent);
     }

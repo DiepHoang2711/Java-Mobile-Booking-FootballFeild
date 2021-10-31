@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void clickToGoToSearchActivity(MenuItem item) {
-        Intent intent=new Intent(this, SearchFootballFieldActivity.class);
+        Intent intent=new Intent(this, SearchFieldActivity.class);
         startActivity(intent);
     }
 

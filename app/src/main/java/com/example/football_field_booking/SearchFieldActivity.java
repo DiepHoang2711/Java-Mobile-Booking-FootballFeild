@@ -29,7 +29,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchFootballFieldActivity extends AppCompatActivity {
+public class SearchFieldActivity extends AppCompatActivity {
 
     private ListView lvFootballField;
     private FootballFieldAdapter fieldAdapter;
@@ -74,7 +74,7 @@ public class SearchFootballFieldActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
                     FootballFieldDTO dto = (FootballFieldDTO) lvFootballField.getItemAtPosition(i);
-                    Intent intent = new Intent(SearchFootballFieldActivity.this, FootballFieldDetailActivity.class);
+                    Intent intent = new Intent(SearchFieldActivity.this, FootballFieldDetailActivity.class);
                     intent.putExtra("fieldID", dto.getFieldID());
                     startActivity(intent);
                 }catch (Exception e) {
@@ -92,7 +92,7 @@ public class SearchFootballFieldActivity extends AppCompatActivity {
                 fieldDTOList.add(dto);
             }
         }
-        fieldAdapter = new FootballFieldAdapter(SearchFootballFieldActivity.this, fieldDTOList);
+        fieldAdapter = new FootballFieldAdapter(SearchFieldActivity.this, fieldDTOList);
         lvFootballField.setAdapter(fieldAdapter);
     }
 
