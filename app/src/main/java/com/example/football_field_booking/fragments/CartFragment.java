@@ -90,7 +90,7 @@ public class CartFragment extends Fragment {
 
     private Utils util;
 
-    private boolean outOfStock = true;
+    private boolean success = true;
 
     public CartFragment() {
         // Required empty public constructor
@@ -185,7 +185,7 @@ public class CartFragment extends Fragment {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        if (outOfStock) {
+                        if (!success) {
                             Toast.makeText(getContext(), "Check out fail", Toast.LENGTH_LONG).show();
                             prdCheckout.cancel();
                             return;
@@ -199,6 +199,7 @@ public class CartFragment extends Fragment {
                     }
                 }
         );
+
         apiservice = Client.getRetrofit("https://fcm.googleapis.com/").create(APISERVICE.class);
         return view;
     }
@@ -264,7 +265,7 @@ public class CartFragment extends Fragment {
                                 }
                             }
                         }
-                        outOfStock = flag;
+
                         if (flag) {
                             UserDAO userDAO = new UserDAO();
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -319,6 +320,7 @@ public class CartFragment extends Fragment {
                             }
 
                         } else {
+                            success = flag;
                             return;
                         }
                     } else {
