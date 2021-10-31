@@ -7,7 +7,6 @@ import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -20,24 +19,18 @@ import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.football_field_booking.FootballFieldDetailActivity;
 import com.example.football_field_booking.MainActivity;
 import com.example.football_field_booking.R;
-import com.example.football_field_booking.SearchActivity;
+import com.example.football_field_booking.SearchFootballFieldActivity;
 import com.example.football_field_booking.adapters.FootballFieldAdapter;
 import com.example.football_field_booking.daos.FootballFieldDAO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.firebase.geofire.GeoFireUtils;
 import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -137,7 +130,7 @@ public class UserHomeFragment extends Fragment {
     }
 
     private void searchByType(String type,View view) {
-        Intent intent=new Intent(view.getContext(), SearchActivity.class);
+        Intent intent=new Intent(view.getContext(), SearchFootballFieldActivity.class);
         intent.putExtra("typeField",type);
         startActivity(intent);
     }

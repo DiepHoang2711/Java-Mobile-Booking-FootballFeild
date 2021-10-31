@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -30,7 +29,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchFootballFieldActivity extends AppCompatActivity {
 
     private ListView lvFootballField;
     private FootballFieldAdapter fieldAdapter;
@@ -44,7 +43,7 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search_user);
+        setContentView(R.layout.activity_search_field);
         edtSearch = findViewById(R.id.edtSearch);
         lvFootballField = findViewById(R.id.lvFootballField);
         txtTitle=findViewById(R.id.txtTitle);
@@ -75,7 +74,7 @@ public class SearchActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
                     FootballFieldDTO dto = (FootballFieldDTO) lvFootballField.getItemAtPosition(i);
-                    Intent intent = new Intent(SearchActivity.this, FootballFieldDetailActivity.class);
+                    Intent intent = new Intent(SearchFootballFieldActivity.this, FootballFieldDetailActivity.class);
                     intent.putExtra("fieldID", dto.getFieldID());
                     startActivity(intent);
                 }catch (Exception e) {
@@ -93,7 +92,7 @@ public class SearchActivity extends AppCompatActivity {
                 fieldDTOList.add(dto);
             }
         }
-        fieldAdapter = new FootballFieldAdapter(SearchActivity.this, fieldDTOList);
+        fieldAdapter = new FootballFieldAdapter(SearchFootballFieldActivity.this, fieldDTOList);
         lvFootballField.setAdapter(fieldAdapter);
     }
 

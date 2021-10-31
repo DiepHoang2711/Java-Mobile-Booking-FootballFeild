@@ -49,7 +49,7 @@
             android:name=".EditFootballFieldActivity"
             android:exported="true" />
         <activity
-            android:name=".SearchActivity"
+            android:name=".SearchFootballFieldActivity"
             android:exported="true" />
         <activity
             android:name=".OwnerMainActivity"
