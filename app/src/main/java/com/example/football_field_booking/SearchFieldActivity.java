@@ -8,8 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -18,6 +21,7 @@ import android.widget.TextView;
 
 
 import com.example.football_field_booking.adapters.FootballFieldAdapter;
+import com.example.football_field_booking.adapters.TimePickerAdapter;
 import com.example.football_field_booking.daos.FootballFieldDAO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -38,8 +42,6 @@ public class SearchFieldActivity extends AppCompatActivity {
     private String type;
     private TextView txtTitle;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,17 +52,6 @@ public class SearchFieldActivity extends AppCompatActivity {
 
         edtSearch.requestFocus();
         edtSearch.setMaxLines(1);
-//        edtSearch.setOnKeyListener(new View.OnKeyListener() {
-//            @Override
-//            public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
-//                if ((keyEvent.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-//                    // Perform action on key press
-//                    clickToSearchByLikeName(view);
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
 
         Intent intent = this.getIntent();
         type = intent.getStringExtra("typeField");
@@ -68,6 +59,43 @@ public class SearchFieldActivity extends AppCompatActivity {
             txtTitle.setText("Field Type: "+type);
             searchByTypeField();
         }
+
+        lvFootballField.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                try {
+                    FootballFieldDTO dto = (FootballFieldDTO) lvFootballField.getItemAtPosition(i);
+                    Intent intent = new Intent(SearchFieldActivity.this, FootballFieldDetailActivity.class);
+                    intent.putExtra("fieldID", dto.getFieldID());
+                    startActivity(intent);
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        edtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                        actionId == EditorInfo.IME_ACTION_DONE ||
+                        event != null &&
+                                event.getAction() == KeyEvent.ACTION_DOWN &&
+                                event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                    if (event == null || !event.isShiftPressed()) {
+                        // the user is done typing.
+                        try {
+                            searchByLikeName();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+
 
         lvFootballField.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -97,6 +125,15 @@ public class SearchFieldActivity extends AppCompatActivity {
     }
 
     public void clickToSearchByLikeName(View view) {
+        try{
+            searchByLikeName();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    private void searchByLikeName () throws Exception {
         FootballFieldDAO fieldDAO = new FootballFieldDAO();
         String searchName = edtSearch.getText().toString().trim();
         try{

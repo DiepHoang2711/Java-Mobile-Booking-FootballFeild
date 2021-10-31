@@ -11,11 +11,13 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.football_field_booking.BuildConfig;
+import com.example.football_field_booking.FootballFieldDetailActivity;
 import com.example.football_field_booking.MainActivity;
 import com.example.football_field_booking.R;
 import com.example.football_field_booking.adapters.CartAdapter;
@@ -221,6 +223,17 @@ public class CartFragment extends Fragment {
                         txtTotal.setText("$" + total);
                         cartAdapter.setCart(cart);
                         lvCart.setAdapter(cartAdapter);
+
+                        lvCart.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                CartItemDTO dto = (CartItemDTO) lvCart.getItemAtPosition(i);
+                                Intent intent = new Intent(getActivity(), FootballFieldDetailActivity.class);
+                                intent.putExtra("fieldID", dto.getFieldInfo().getFieldID());
+                                startActivity(intent);
+                            }
+                        });
+
                         checkEmptyCart();
                     } else {
                         Toast.makeText(getActivity(), "Load cart fail", Toast.LENGTH_SHORT).show();
