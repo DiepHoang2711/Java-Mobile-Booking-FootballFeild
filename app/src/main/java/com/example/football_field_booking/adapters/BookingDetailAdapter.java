@@ -29,6 +29,7 @@ import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.text.SimpleDateFormat;
@@ -131,6 +132,7 @@ public class BookingDetailAdapter extends BaseAdapter {
                 LinearLayout layoutFeedback = rowView.findViewById(R.id.layoutFeedback);
                 layoutFeedback.setVisibility(View.VISIBLE);
                 RatingBar rbRating = rowView.findViewById(R.id.rbRating);
+                TextInputLayout tlComment = rowView.findViewById(R.id.tlComment);
                 Button btnSubmit = rowView.findViewById(R.id.btnSubmit);
 
                 btnSubmit.setOnClickListener(new View.OnClickListener() {
@@ -139,7 +141,8 @@ public class BookingDetailAdapter extends BaseAdapter {
                         float rating = rbRating.getRating();
                         Calendar calendar = Calendar.getInstance();
                         String now = df.format(calendar.getTime());
-                        RatingDTO ratingDTO = new RatingDTO(bookingDetailDTO.getUserInfo(), fieldDTO, rating, now);
+                        String comment = tlComment.getEditText().getText().toString();
+                        RatingDTO ratingDTO = new RatingDTO(bookingDetailDTO.getUserInfo(), fieldDTO, comment, rating, now);
                         UserDAO userDAO = new UserDAO();
                         Log.d("USER", "onClickSubmit: ");
                         userDAO.rating(ratingDTO, bookingID, bookingDetailDTO.getID()).addOnCompleteListener(new OnCompleteListener<Void>() {

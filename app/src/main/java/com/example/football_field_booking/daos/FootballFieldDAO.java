@@ -159,13 +159,6 @@ public class FootballFieldDAO {
                 .get();
     }
 
-//    public Task<QuerySnapshot> searchByTypeAndNameForUser(String type,String name){
-//        return db.collection(COLLECTION_FOOTBALL_FIELD)
-//                .whereEqualTo("fieldInfo.type",type)
-//                .whereEqualTo("fieldInfo.status",STATUS_ACTIVE)
-//                .whereGreaterThanOrEqualTo("fieldInfo.name",name).get();
-//    }
-
     public Task<QuerySnapshot> getBookingByFieldAndDate(List<CartItemDTO> cart) {
         List<String> listFieldAndDate = new ArrayList<>();
         for (CartItemDTO cartItemDTO : cart) {
