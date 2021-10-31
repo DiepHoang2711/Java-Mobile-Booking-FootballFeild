@@ -141,7 +141,7 @@ public class BookingDetailAdapter extends BaseAdapter {
                         float rating = rbRating.getRating();
                         Calendar calendar = Calendar.getInstance();
                         String now = df.format(calendar.getTime());
-                        String comment = tlComment.getEditText().toString();
+                        String comment = tlComment.getEditText().getText().toString();
                         RatingDTO ratingDTO = new RatingDTO(bookingDetailDTO.getUserInfo(), fieldDTO, comment, rating, now);
                         UserDAO userDAO = new UserDAO();
                         Log.d("USER", "onClickSubmit: ");
