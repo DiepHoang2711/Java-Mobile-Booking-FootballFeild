@@ -17,12 +17,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.example.football_field_booking.adapters.RatingAdapter;
 import com.example.football_field_booking.adapters.TimePickerDetailAdapter;
 import com.example.football_field_booking.daos.FootballFieldDAO;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.CartItemDTO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.FootballFieldDocument;
+import com.example.football_field_booking.dtos.RatingDTO;
 import com.example.football_field_booking.dtos.TimePickerDTO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -52,7 +54,7 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
     private TextView txtFieldName, txtLocation, txtRate, txtType, txtSelectDate;
     private List<TimePickerDTO> timePickerDTOList;
     private TimePickerDetailAdapter timePickerDetailAdapter;
-    private ListView lvTimePickerDetail;
+    private ListView lvTimePickerDetail, lvFeedback;
     private ImageView imgFootBallField;
     private static final SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
     private FootballFieldDTO fieldDTO;
@@ -73,6 +75,7 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
         txtRate = findViewById(R.id.txtRate);
         txtType = findViewById(R.id.txtType);
         lvTimePickerDetail = findViewById(R.id.lvTimePickerDetail);
+        lvFeedback = findViewById(R.id.lvFeedback);
         imgFootBallField = findViewById(R.id.imgFootBallField);
         btnLogin=findViewById(R.id.btnLogin);
 
@@ -130,13 +133,13 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
         String fieldID = intent.getStringExtra("fieldID");
         if (fieldID != null) {
             loadData(fieldID);
+            loadRating(fieldID);
         }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
     }
 
 
@@ -270,5 +273,27 @@ public class FootballFieldDetailActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+    }
+
+    private void loadRating(String fieldID) {
+        FootballFieldDAO fieldDAO = new FootballFieldDAO();
+        RatingAdapter ratingAdapter = new RatingAdapter(this);
+        fieldDAO.getRating(fieldID).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()){
+                    List<RatingDTO> list = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : task.getResult()){
+                        RatingDTO dto = doc.toObject(RatingDTO.class);
+                        list.add(dto);
+                    }
+                    ratingAdapter.setRatingDTOList(list);
+                    lvFeedback.setAdapter(ratingAdapter);
+                }else {
+                    task.getException().printStackTrace();
+                }
+
+            }
+        });
     }
 }

@@ -7,11 +7,6 @@
     android:orientation="vertical"
     tools:context=".FootballFieldDetailActivity">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -181,11 +176,43 @@
                             <ListView
                                 android:id="@+id/lvTimePickerDetail"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="200dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginTop="10dp"
                                 android:layout_marginRight="10dp"
                                 android:scrollbars="none" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginTop="20dp"
+                                android:background="@color/white">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="25dp"
+                                    android:layout_marginRight="25dp"
+                                    android:layout_marginBottom="20dp"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="10dp"
+                                        android:layout_marginBottom="10dp"
+                                        android:text="Comments"
+                                        android:textSize="18dp"
+                                        android:textStyle="bold" />
+
+                                    <ListView
+                                        android:id="@+id/lvFeedback"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="100dp"/>
+
+
+                                </LinearLayout>
+                            </LinearLayout>
 
 
                             <LinearLayout
@@ -231,7 +258,6 @@
                 </androidx.coordinatorlayout.widget.CoordinatorLayout>
             </RelativeLayout>
         </LinearLayout>
-    </ScrollView>
 
 
 </LinearLayout>
