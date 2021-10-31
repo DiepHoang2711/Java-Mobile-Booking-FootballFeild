@@ -62,6 +62,7 @@ public class UserAdapter extends BaseAdapter {
         TextView txtEmail = rowView.findViewById(R.id.txtEmail);
         TextView txtStatus = rowView.findViewById(R.id.txtStatus);
         TextView txtPhone = rowView.findViewById(R.id.txtPhone);
+        TextView txtRole = rowView.findViewById(R.id.txtRole);
 
 
         UserDTO user = listUser.get(i);
@@ -77,13 +78,14 @@ public class UserAdapter extends BaseAdapter {
         txtEmail.setText(user.getEmail());
         txtFullName.setText(user.getFullName());
         txtStatus.setText(user.getStatus());
-        String phone=user.getPhone();
-        if(phone.equals("") || phone==null){
-            txtPhone.setText("empty");
-        }else{
-            txtPhone.setText(phone);
-        }
 
+        String phone=user.getPhone();
+        if(phone!=null){
+            txtPhone.setText(phone);
+        }else{
+            txtPhone.setText("empty");
+        }
+        txtRole.setText(user.getRole());
         return rowView;
     }
 }

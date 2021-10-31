@@ -27,6 +27,7 @@ import com.example.football_field_booking.utils.Utils;
 import com.example.football_field_booking.validations.Validation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
 
@@ -36,8 +37,7 @@ public class EditProfileByAdminActivity extends AppCompatActivity {
 
     public static final int RC_IMAGE_PICKER = 1000;
 
-    private TextView txtUserId, txtEmail;
-    private TextInputLayout txtFullName, txtPhone, tilRole, tilStatus;
+    private TextInputLayout txtFullName, txtPhone, tilRole, tilStatus,txtEmail;
     private AutoCompleteTextView txtRole, txtStatus;
     private Button btnUpdate, btnDelete;
     private ImageView imgUser;
@@ -47,12 +47,13 @@ public class EditProfileByAdminActivity extends AppCompatActivity {
     private Utils util;
     private Validation val;
 
+    private MaterialToolbar topAppBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile_by_admin);
 
-        txtUserId = findViewById(R.id.txtUserID);
         txtEmail = findViewById(R.id.txtEmail);
         txtFullName = findViewById(R.id.txtFullName);
         txtPhone = findViewById(R.id.txtPhone);
@@ -65,7 +66,14 @@ public class EditProfileByAdminActivity extends AppCompatActivity {
         imgUser = findViewById(R.id.imgUser);
         util = new Utils();
         val = new Validation();
+        topAppBar=findViewById(R.id.topAppBar);
 
+        topAppBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         Intent intent = this.getIntent();
         String userID = intent.getStringExtra("userID");
         if(userID == null) {
@@ -104,8 +112,8 @@ public class EditProfileByAdminActivity extends AppCompatActivity {
                             try {
                                 userDTO = task.getResult().get("userInfo",UserDTO.class);
 
-                                txtUserId.setText(userDTO.getUserID());
-                                txtEmail.setText(userDTO.getEmail());
+                                txtEmail.getEditText().setText(userDTO.getEmail());
+                                txtEmail.setEnabled(false);
                                 txtPhone.getEditText().setText(userDTO.getPhone());
                                 txtFullName.getEditText().setText(userDTO.getFullName());
                                 txtRole.setText(userDTO.getRole(), false);

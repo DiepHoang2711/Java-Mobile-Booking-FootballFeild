@@ -7,5 +7,13 @@
         android:title="Search"
         android:contentDescription="content_description_search"
         app:showAsAction="ifRoom"
-        android:onClick="clickToSearch"/>
+        android:onClick="clickToGoToSearchActivity"/>
+
+    <item
+        android:id="@+id/itemProfle"
+        android:icon="@drawable/outline_account_circle_24"
+        android:title="Profile"
+        android:contentDescription="content_description_search"
+        app:showAsAction="ifRoom"
+        android:onClick="clickToViewProfile"/>
 </menu>

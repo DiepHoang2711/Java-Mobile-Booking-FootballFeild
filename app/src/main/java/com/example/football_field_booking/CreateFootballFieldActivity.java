@@ -36,6 +36,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -68,6 +69,8 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
     private Validation val;
     private ProgressDialog prdWaitCreate;
 
+    private MaterialToolbar topAppBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,8 +86,16 @@ public class CreateFootballFieldActivity extends AppCompatActivity {
         btnLocation = findViewById(R.id.btnLocation);
         imgBtnAdd = findViewById(R.id.imgBtnAdd);
         lvTimePickerWorking = findViewById(R.id.lvTimePickerWorking);
+        topAppBar=findViewById(R.id.topAppBar);
         utils = new Utils();
         val = new Validation();
+
+        topAppBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         btnChooseImg.setOnClickListener(new View.OnClickListener() {
             @Override

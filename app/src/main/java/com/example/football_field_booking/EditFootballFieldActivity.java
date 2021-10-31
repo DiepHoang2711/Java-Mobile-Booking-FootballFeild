@@ -35,6 +35,7 @@ import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -68,6 +69,8 @@ public class EditFootballFieldActivity extends AppCompatActivity {
     private Validation val;
     public static final String STATUS_INACTIVE = "inactive";
 
+    private MaterialToolbar topAppBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +92,14 @@ public class EditFootballFieldActivity extends AppCompatActivity {
         utils = new Utils();
         val = new Validation();
 
+        topAppBar=findViewById(R.id.topAppBar);
+
+        topAppBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         Intent intent = this.getIntent();
         String fieldID = intent.getStringExtra("fieldID");
         if (fieldID == null) {
