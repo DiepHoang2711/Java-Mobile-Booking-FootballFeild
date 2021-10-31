@@ -23,6 +23,7 @@ import com.example.football_field_booking.utils.Utils;
 import com.example.football_field_booking.validations.Validation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -49,6 +50,7 @@ public class CreateUserActivity extends AppCompatActivity {
     private UserDTO userDTO = null;
     private Validation val;
     private String password;
+    private MaterialToolbar topAppBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +70,14 @@ public class CreateUserActivity extends AppCompatActivity {
         tilStatus = findViewById(R.id.tilStatus);
         imgUser = findViewById(R.id.imgUser);
         progressDialog = new ProgressDialog(this);
+        topAppBar=findViewById(R.id.topAppBar);
+
+        topAppBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         util = new Utils();
         val = new Validation();
         mAuth = FirebaseAuth.getInstance();

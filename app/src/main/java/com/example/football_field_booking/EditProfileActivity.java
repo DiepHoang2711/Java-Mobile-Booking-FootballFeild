@@ -41,8 +41,7 @@ import java.util.List;
 public class EditProfileActivity extends AppCompatActivity {
 
     public static final int RC_IMAGE_PICKER = 1000;
-    private TextView txtUserId, txtEmail;
-    private TextInputLayout txtFullName, txtPhone;
+    private TextInputLayout txtFullName, txtPhone,txtEmail;
     private Button btnUpdate;
     private ImageView imgUser;
     private UserDTO userDTO = null;
@@ -55,7 +54,6 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        txtUserId = findViewById(R.id.txtUserID);
         txtEmail = findViewById(R.id.txtEmail);
         txtFullName = findViewById(R.id.txtFullName);
         txtPhone = findViewById(R.id.txtPhone);
@@ -88,13 +86,10 @@ public class EditProfileActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-
                         try {
                             userDTO = documentSnapshot.get("userInfo", UserDTO.class);
-
-                            Log.d("USER","Is verify: " + String.valueOf(user.isEmailVerified()));
-                            txtUserId.setText(userDTO.getUserID());
-                            txtEmail.setText(userDTO.getEmail());
+                            txtEmail.getEditText().setText(userDTO.getEmail());
+                            txtEmail.setEnabled(false);
                             txtPhone.getEditText().setText(userDTO.getPhone());
                             txtFullName.getEditText().setText(userDTO.getFullName());
                             if (userDTO.getPhotoUri() != null) {
@@ -109,15 +104,6 @@ public class EditProfileActivity extends AppCompatActivity {
                             FootballFieldDAO fieldDAO = new FootballFieldDAO();
                             if(userDTO.getRole().equals("owner")){
                                 fieldDTOList = documentSnapshot.toObject(UserDocument.class).getFieldsInfo();
-//                                fieldDAO.getAllFootballFieldOfOwner(userDTO.getUserID()).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-//                                    @Override
-//                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-//                                        for (QueryDocumentSnapshot doc: queryDocumentSnapshots) {
-//                                            FootballFieldDTO dto = doc.get("fieldInfo", FootballFieldDTO.class);
-//                                            fieldDTOList.add(dto);
-//                                        }
-//                                    }
-//                                });
                             }
 
                         } catch (Exception e) {
