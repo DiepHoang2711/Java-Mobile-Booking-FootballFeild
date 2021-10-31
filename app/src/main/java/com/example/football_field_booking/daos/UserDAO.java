@@ -44,6 +44,7 @@ public class UserDAO {
     public static final String SUB_COLLECTION_BOOKING_DETAIL = "bookingDetail";
     public static final String SUB_COLLECTION_BOOKING = "booking";
     public static final String SUB_COLLECTION_RATING = "rating";
+    public static final String STATUS_ACTIVE = "active";
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private static final String COLLECTION_USERS = "users";
@@ -255,6 +256,13 @@ public class UserDAO {
         return db.collection(COLLECTION_USERS).document(userID)
                 .collection(SUB_COLLECTION_BOOKING_INFO).document(bookingID)
                 .collection(SUB_COLLECTION_BOOKING_DETAIL).orderBy("date", Query.Direction.ASCENDING).get();
+    }
+
+    public Task<QuerySnapshot> searchByLikeNameForAdmin (String name) {
+        return db.collection(COLLECTION_USERS)
+                .whereGreaterThanOrEqualTo("userInfo.fullName",name)
+                .whereLessThanOrEqualTo("userInfo.fullName", name + "\uf8ff")
+                .get();
     }
 
 }
