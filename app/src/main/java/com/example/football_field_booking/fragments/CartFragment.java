@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,8 +92,6 @@ public class CartFragment extends Fragment {
     private ProgressDialog prdCheckout;
 
     private Utils util;
-
-    private boolean success = true;
 
     public CartFragment() {
         // Required empty public constructor
@@ -182,22 +181,56 @@ public class CartFragment extends Fragment {
                     @Override
                     public void onApprove(@NotNull Approval approval) {
                         util.showProgressDialog(prdCheckout, "Checkout", "Please wait for checkout");
+                        FootballFieldDAO fieldDAO = new FootballFieldDAO();
+                        List<CartItemDTO> cart = cartAdapter.getCart();
                         try {
-                            booking();
+                            if (isValidBookingDate(cart)) {
+                                fieldDAO.getBookingByFieldAndDate(cart).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            boolean flag = true;
+                                            outerLoop:
+                                            for (QueryDocumentSnapshot doc : task.getResult()) {
+                                                CartItemDTO itemInBooking = doc.toObject(CartItemDTO.class);
+                                                List<TimePickerDTO> timePickerInBooking = itemInBooking.getTimePicker();
+                                                for (TimePickerDTO timePickerDTO : timePickerInBooking) {
+                                                    for (CartItemDTO itemInCart : cart) {
+                                                        if (itemInCart.getTimePicker().contains(timePickerDTO)) {
+                                                            flag = false;
+                                                            showError(itemInCart.getFieldInfo().getName() + " in " + timePickerDTO.getStart()
+                                                                    + "-" + timePickerDTO.getEnd() + " already booking by someone");
+                                                            break outerLoop;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            if (flag) {
+                                                approval.getOrderActions().capture(new OnCaptureComplete() {
+                                                    @Override
+                                                    public void onCaptureComplete(@NotNull CaptureOrderResult result) {
+                                                        Toast.makeText(getContext(), "Check out success", Toast.LENGTH_LONG).show();
+                                                        try {
+                                                            booking();
+                                                        } catch (Exception e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                    }
+                                                });
+                                            }else{
+                                                Toast.makeText(getContext(), "Check out fail", Toast.LENGTH_LONG).show();
+                                                prdCheckout.cancel();
+                                            }
+                                        } else {
+                                            task.getException().printStackTrace();
+                                            Toast.makeText(getActivity(), "Get data booking fail", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        if (!success) {
-                            Toast.makeText(getContext(), "Check out fail", Toast.LENGTH_LONG).show();
-                            prdCheckout.cancel();
-                            return;
-                        }
-                        approval.getOrderActions().capture(new OnCaptureComplete() {
-                            @Override
-                            public void onCaptureComplete(@NotNull CaptureOrderResult result) {
-                                prdCheckout.cancel();
-                            }
-                        });
                     }
                 }
         );
@@ -257,91 +290,56 @@ public class CartFragment extends Fragment {
     private void booking() throws Exception {
         FootballFieldDAO fieldDAO = new FootballFieldDAO();
         List<CartItemDTO> cart = cartAdapter.getCart();
-        if (isValidBookingDate(cart)) {
-            fieldDAO.getBookingByFieldAndDate(cart).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        UserDAO userDAO = new UserDAO();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        Calendar calendar = Calendar.getInstance();
+        String dateBooking = dfBooking.format(calendar.getTime());
+        if (user != null) {
+            BookingDTO bookingDTO = new BookingDTO(user.getUid(), dateBooking, total);
+            userDAO.booking(bookingDTO, cart).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
-                        boolean flag = true;
-                        outerLoop:
-                        for (QueryDocumentSnapshot doc : task.getResult()) {
-                            CartItemDTO itemInBooking = doc.toObject(CartItemDTO.class);
-                            List<TimePickerDTO> timePickerInBooking = itemInBooking.getTimePicker();
-                            for (TimePickerDTO timePickerDTO : timePickerInBooking) {
-                                for (CartItemDTO itemInCart : cart) {
-                                    if (itemInCart.getTimePicker().contains(timePickerDTO)) {
-                                        flag = false;
-                                        showError(itemInCart.getFieldInfo().getName() + " in " + timePickerDTO.getStart()
-                                                + "-" + timePickerDTO.getEnd() + " already booking by someone");
-                                        break outerLoop;
-                                    }
-                                }
-                            }
-                        }
-
-                        if (flag) {
-                            UserDAO userDAO = new UserDAO();
-                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            Calendar calendar = Calendar.getInstance();
-                            String dateBooking = dfBooking.format(calendar.getTime());
-
-                            if (user != null) {
-                                BookingDTO bookingDTO = new BookingDTO(user.getUid(), dateBooking, total);
-                                userDAO.booking(bookingDTO, cart).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-
-                                        if (task.isSuccessful()) {
-                                            for (CartItemDTO cartItemDTO : cart) {
-                                                fieldDAO.getFieldByID(cartItemDTO.getFieldInfo().getFieldID())
-                                                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                            @Override
-                                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                                String userID = documentSnapshot.getString("ownerInfo.userID");
-                                                                userDAO.getUserById(userID).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                                                    @Override
-                                                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                                        List<String> tokens = task.getResult().toObject(UserDocument.class).getTokens();
-                                                                        if (tokens != null) {
-                                                                            for (String token : tokens) {
-                                                                                String title = "You have a new booking";
-                                                                                String body = cartItemDTO.getFieldInfo().getName() + " is booked by" + user.getDisplayName();
-                                                                                Data data = new Data(body, title);
-                                                                                sendNotification(token, data);
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }).addOnFailureListener(new OnFailureListener() {
-                                                                    @Override
-                                                                    public void onFailure(@NonNull Exception e) {
-                                                                        e.printStackTrace();
-                                                                    }
-                                                                });
-                                                            }
-                                                        });
-                                            }
-                                            Toast.makeText(getActivity(), "Booking Success", Toast.LENGTH_SHORT).show();
-                                            Intent intent = new Intent(getActivity(), MainActivity.class);
-                                            intent.putExtra("action", "view history");
-                                            startActivity(intent);
-                                        } else {
-                                            Toast.makeText(getActivity(), "Booking Fail", Toast.LENGTH_SHORT).show();
+                        for (CartItemDTO cartItemDTO : cart) {
+                            fieldDAO.getFieldByID(cartItemDTO.getFieldInfo().getFieldID())
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            String userID = documentSnapshot.getString("ownerInfo.userID");
+                                            userDAO.getUserById(userID).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                    List<String> tokens = task.getResult().toObject(UserDocument.class).getTokens();
+                                                    if (tokens != null) {
+                                                        for (String token : tokens) {
+                                                            String title = "You have a new booking";
+                                                            String body = cartItemDTO.getFieldInfo().getName() + " is booked by" + user.getDisplayName();
+                                                            Data data = new Data(body, title);
+                                                            sendNotification(token, data);
+                                                        }
+                                                    }
+                                                }
+                                            }).addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                            });
                                         }
-                                    }
-
-                                });
-                            }
-
-                        } else {
-                            success = flag;
-                            return;
+                                    });
                         }
+                        Toast.makeText(getActivity(), "Booking Success", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getActivity(), MainActivity.class);
+                        intent.putExtra("action", "view history");
+                        startActivity(intent);
                     } else {
-                        task.getException().printStackTrace();
-                        Toast.makeText(getActivity(), "Get data booking fail", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Booking Fail", Toast.LENGTH_SHORT).show();
                     }
+                    prdCheckout.cancel();
                 }
+
             });
+
         }
     }
 

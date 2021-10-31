@@ -26,9 +26,9 @@
                 android:background="@drawable/green"
                 app:layout_scrollFlags="scroll|enterAlways|snap"
                 app:liftOnScroll="true"
-                app:logo="@drawable/logo"
-                app:title="Fast Field">
-
+                app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+                app:title="Edit Profile"
+                app:titleCentered="true">
             </com.google.android.material.appbar.MaterialToolbar>
 
         </com.google.android.material.appbar.AppBarLayout>
@@ -43,34 +43,49 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/imgUser"
+                <androidx.cardview.widget.CardView
+                    android:layout_gravity="center"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:scaleType="centerCrop"/>
+                    app:cardCornerRadius="100dp"
+                    android:layout_margin="10dp"
+                    >
+                    <ImageView
+                        android:id="@+id/imgUser"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:scaleType="centerCrop"
+                        />
+                </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:id="@+id/txtUserID"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    />
-
-                <TextView
-                    android:id="@+id/txtEmail"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    />
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/txtFullName"
-                    style="@style/TextFieldUpdate"
+                    android:id="@+id/txtEmail"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="24dp"
+                    android:hint="Email">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/EditTextLoginRegister"
+                        />
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/txtFullName"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="24dp"
                     android:hint="Full name">
-
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -80,11 +95,11 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/txtPhone"
-                    style="@style/TextFieldUpdate"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="24dp"
                     android:hint="Phone">
 
@@ -98,11 +113,16 @@
 
                 <Button
                     android:id="@+id/btnUpdateUser"
+                    style="@style/ButtonLoginRegister"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
                     android:layout_marginTop="20dp"
-                    android:text="Update"/>
-
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:backgroundTint="#9DC030"
+                    android:padding="10dp"
+                    android:text="Update" />
 
             </LinearLayout>
 

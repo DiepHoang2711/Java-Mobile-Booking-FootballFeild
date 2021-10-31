@@ -24,7 +24,7 @@
                 android:background="@drawable/green"
                 app:layout_scrollFlags="scroll|enterAlways|snap"
                 app:liftOnScroll="true"
-                app:logo="@drawable/logo"
+                app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
                 app:titleCentered="true"
                 app:title="Create user">
 
@@ -42,18 +42,29 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/imgUser"
+
+                <androidx.cardview.widget.CardView
+                    android:layout_gravity="center"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:scaleType="centerCrop"
-                    android:layout_gravity="center" />
+                    app:cardCornerRadius="100dp"
+                    android:layout_margin="10dp"
+                    >
+                    <ImageView
+                        android:id="@+id/imgUser"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:scaleType="centerCrop"
+                        android:layout_gravity="center"/>
+                </androidx.cardview.widget.CardView>
 
                 <Button
                     android:layout_gravity="center"
                     android:id="@+id/btnChoiceImage"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textSize="10dp"
                     android:text="choice image"
                     />
 
@@ -64,7 +75,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="24dp"
                     android:hint="Email">
 
@@ -102,7 +113,7 @@
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="24dp"
-                    android:hint="Confirm ">
+                    android:hint="Confirm Password">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
@@ -182,17 +193,19 @@
                         android:layout_height="wrap_content"
                         android:inputType="none"
                         />
-
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Button
                     android:id="@+id/btnCreateUser"
+                    style="@style/ButtonLoginRegister"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:backgroundTint="#9DC030"
+                    android:padding="10dp"
                     android:text="Create"/>
-
-
             </LinearLayout>
 
         </androidx.core.widget.NestedScrollView>
