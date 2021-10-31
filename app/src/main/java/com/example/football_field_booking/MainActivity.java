@@ -19,8 +19,6 @@ import com.example.football_field_booking.fragments.HistoryFragment;
 import com.example.football_field_booking.fragments.ProfileFragment;
 import com.example.football_field_booking.fragments.UserHomeFragment;
 import com.example.football_field_booking.validations.Validation;
-import com.firebase.geofire.GeoFireUtils;
-import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -177,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void clickToGoToSearchActivity(MenuItem item) {
-        Intent intent=new Intent(this, SearchActivity.class);
+        Intent intent=new Intent(this, SearchFootballFieldActivity.class);
         startActivity(intent);
     }
 
