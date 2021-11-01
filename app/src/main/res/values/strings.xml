@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Football_Field_Booking</string>
+    <string name="app_name">Fast Field</string>
     <string name="forgot_password"><u>Forgot Password?</u></string>
     <string name="default_web_client_id_bookingFF">253666236099-6hp907darl75h3l0rr8djjuodt9mn32b.apps.googleusercontent.com</string>
     <string name="something_went_wrong">Something went wrong</string>
