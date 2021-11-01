@@ -30,6 +30,7 @@ public class CheckRoleActivity extends AppCompatActivity {
         btnLogin=findViewById(R.id.btnLogin);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
+            Log.e("MY_USER_ID",user.getDisplayName());
             btnLogin.setVisibility(View.GONE);
             btnDiscover.setVisibility(View.GONE);
             UserDAO userDAO = new UserDAO();

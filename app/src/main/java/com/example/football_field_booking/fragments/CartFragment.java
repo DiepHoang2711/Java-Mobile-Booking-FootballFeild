@@ -299,6 +299,7 @@ public class CartFragment extends Fragment {
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
                         for (CartItemDTO cartItemDTO : cart) {
+                            Log.e("MY_NOTIFICATION_FIELD",cartItemDTO.getFieldInfo().getName()+"HELLO");
                             fieldDAO.getFieldByID(cartItemDTO.getFieldInfo().getFieldID())
                                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                         @Override
@@ -311,7 +312,7 @@ public class CartFragment extends Fragment {
                                                     if (tokens != null) {
                                                         for (String token : tokens) {
                                                             String title = "You have a new booking";
-                                                            String body = cartItemDTO.getFieldInfo().getName() + " is booked by" + user.getDisplayName();
+                                                            String body = cartItemDTO.getFieldInfo().getName() + " is booked by " + user.getDisplayName();
                                                             Data data = new Data(body, title);
                                                             sendNotification(token, data);
                                                         }
@@ -343,6 +344,7 @@ public class CartFragment extends Fragment {
 
     private void sendNotification(String token, Data data) {
         Sender sender = new Sender(data, token);
+        Log.e("MY_NOTIFICATION",data.getBody());
         apiservice.sendNotification(sender)
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
