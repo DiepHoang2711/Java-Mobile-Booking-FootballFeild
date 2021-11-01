@@ -76,6 +76,8 @@ public class UserHomeFragment extends Fragment {
         cardFieldNearME = view.findViewById(R.id.cardFieldNearME);
         fieldNearMeList = new ArrayList<>();
         distanceList = new ArrayList<>();
+
+
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         lvFootballField.setOnItemClickListener(new AdapterView.OnItemClickListener() {
