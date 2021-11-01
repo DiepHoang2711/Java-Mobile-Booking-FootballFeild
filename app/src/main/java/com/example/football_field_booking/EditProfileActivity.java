@@ -28,6 +28,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -48,6 +49,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private Validation val;
     private Utils util;
     private List<FootballFieldDTO> fieldDTOList;
+    private MaterialToolbar topAppBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,11 +61,19 @@ public class EditProfileActivity extends AppCompatActivity {
         txtPhone = findViewById(R.id.txtPhone);
         btnUpdate = findViewById(R.id.btnUpdateUser);
         imgUser = findViewById(R.id.imgUser);
+        topAppBar=findViewById(R.id.topAppBar);
+
         val = new Validation();
         util = new Utils();
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        topAppBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (!val.isUser()) {
             Toast.makeText(this, R.string.something_went_wrong, Toast.LENGTH_SHORT).show();
             Intent intentBackToMain = new Intent(this, MainActivity.class);
