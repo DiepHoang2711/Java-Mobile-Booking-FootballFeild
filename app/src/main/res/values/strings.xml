@@ -5,4 +5,19 @@
     <string name="something_went_wrong">Something went wrong</string>
     <string name="user_share_pref">userSharePref</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="YOUR_CLIENT_ID">ARTqXCWVhoLOErc8bqtN1roic2_EthtELpK9uZ20N4YSXQQ4qLSBhtR9eXovZuaXADlpx6XS-M9DWlwd</string>
+
+
+    <string name="sign_up">Sign Up</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="log_in">Log in</string>
+    <string name="fast_field">Fast Field</string>
+    <string name="welcome_to">Welcome to</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="sign_in_with_google">Sign in with google</string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
+    <string name="full_name">Full name</string>
+    <string name="confirm_password">Confirm password</string>
 </resources>

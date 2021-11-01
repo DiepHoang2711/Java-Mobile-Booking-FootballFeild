@@ -83,8 +83,6 @@ public class CartFragment extends Fragment {
     private static final SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
     private static final SimpleDateFormat dfBooking = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
 
-    public static final String YOUR_CLIENT_ID = "ARTqXCWVhoLOErc8bqtN1roic2_EthtELpK9uZ20N4YSXQQ4qLSBhtR9eXovZuaXADlpx6XS-M9DWlwd";
-
     PayPalButton payPalButton;
 
     private APISERVICE apiservice;
@@ -141,7 +139,7 @@ public class CartFragment extends Fragment {
         prdCheckout = new ProgressDialog(getContext());
         CheckoutConfig config = new CheckoutConfig(
                 getActivity().getApplication(),
-                YOUR_CLIENT_ID,
+                getString(R.string.YOUR_CLIENT_ID),
                 Environment.SANDBOX,
                 String.format("%s://paypalpay", BuildConfig.APPLICATION_ID),
                 CurrencyCode.USD,
