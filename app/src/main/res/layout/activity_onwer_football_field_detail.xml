@@ -59,8 +59,8 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:minHeight="400dp"
                             android:layout_marginBottom="10dp"
+                            android:minHeight="400dp"
                             android:orientation="vertical">
 
                             <LinearLayout
@@ -202,9 +202,9 @@
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:minHeight="300dp"
                                 android:layout_marginLeft="25dp"
                                 android:layout_marginRight="25dp"
+                                android:minHeight="300dp"
                                 android:orientation="vertical">
 
                                 <TextView
@@ -215,10 +215,11 @@
                                     android:text="Comments"
                                     android:textSize="18dp"
                                     android:textStyle="bold" />
+
                                 <ListView
                                     android:id="@+id/lvFeedback"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="300dp"
                                     android:nestedScrollingEnabled="true" />
                             </LinearLayout>
                         </LinearLayout>

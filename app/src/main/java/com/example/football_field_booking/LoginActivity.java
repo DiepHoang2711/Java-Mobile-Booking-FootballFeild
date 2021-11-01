@@ -162,7 +162,7 @@ public class LoginActivity extends AppCompatActivity {
                                     e.printStackTrace();
                                 }
                             }
-                            updateUI(user);
+                            checkActive(user);
 
                         } else {
                             // If sign in fails, display a message to the user.
@@ -189,7 +189,7 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(EMAIL_LOG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             if (user.isEmailVerified()) {
-                                updateUI(user);
+                                checkActive(user);
                             } else {
                                 Toast.makeText(LoginActivity.this, "Please verify your email address",
                                         Toast.LENGTH_SHORT).show();
@@ -197,13 +197,40 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         } else {
                             // If sign in fails, display a message to the user.
-                            //Log.w(EMAIL_LOG, "signInWithEmail:failure", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                             updateUI(null);
                         }
                     }
                 });
+    }
+
+    private void checkActive (FirebaseUser user) {
+        UserDAO userDAO = new UserDAO();
+        userDAO.getUserById(user.getUid()).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    String status = task.getResult().getString("userInfo.status");
+                    if(status.equals("active")){
+                        updateUI(user);
+                    } else if (status.equals("inactive")) {
+                        Toast.makeText(LoginActivity.this, "Your account has been deleted", Toast.LENGTH_SHORT).show();
+                        mAuth.signOut();
+                        updateUI(null);
+                    } else {
+                        Toast.makeText(LoginActivity.this, getResources().getString(R.string.something_went_wrong)
+                                , Toast.LENGTH_SHORT).show();
+                        mAuth.signOut();
+                        updateUI(null);
+                    }
+                }else {
+                    Toast.makeText(LoginActivity.this, "Load data fail", Toast.LENGTH_SHORT).show();
+                    mAuth.signOut();
+                    updateUI(null);
+                }
+            }
+        });
     }
 
     private void updateUI(FirebaseUser user) {

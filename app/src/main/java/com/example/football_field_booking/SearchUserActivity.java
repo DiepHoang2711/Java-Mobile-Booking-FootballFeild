@@ -22,6 +22,8 @@ import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -95,10 +97,11 @@ public class SearchUserActivity extends AppCompatActivity {
     }
 
     private void loadSearchData(QuerySnapshot queryDocumentSnapshots) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         userDTOList = new ArrayList<>();
         for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
             UserDTO dto = snapshot.get("userInfo", UserDTO.class);
-            if(dto.getStatus().equals("active")){
+            if (!user.getUid().equals(dto.getUserID())) {
                 userDTOList.add(dto);
             }
         }
