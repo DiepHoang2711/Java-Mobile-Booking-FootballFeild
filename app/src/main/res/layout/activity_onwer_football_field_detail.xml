@@ -12,51 +12,55 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <RelativeLayout
+
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/cdl1"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/imgFootBallField"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/footbal_field_2" />
-
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/btnBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="15dp"
-                android:alpha="0.5"
-                android:backgroundTint="@android:color/white"
-                android:src="@drawable/ic_baseline_arrow_back_24"
-                app:fabSize="mini" />
 
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <androidx.coordinatorlayout.widget.CoordinatorLayout
-                    android:id="@+id/cdl1"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/imgFootBallField"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/footbal_field_2" />
+
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/btnBack"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginTop="15dp"
+                        android:alpha="0.5"
+                        android:backgroundTint="@android:color/white"
+                        android:src="@drawable/ic_baseline_arrow_back_24"
+                        app:fabSize="mini" />
+
 
                     <LinearLayout
                         android:id="@+id/cardView1"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_marginTop="160dp"
                         android:layout_marginBottom="60dp"
-                        android:orientation="vertical"
-                        android:background="@drawable/bg_football_field_detail">
+                        android:background="@drawable/bg_football_field_detail"
+                        android:orientation="vertical">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="0dp"
+                            android:minHeight="400dp"
+                            android:layout_marginBottom="10dp"
                             android:orientation="vertical">
 
                             <LinearLayout
@@ -181,12 +185,13 @@
                             <ListView
                                 android:id="@+id/lvTimePickerDetail"
                                 android:layout_width="match_parent"
-                                android:layout_height="265dp"
+                                android:layout_height="300dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginTop="10dp"
                                 android:layout_marginRight="10dp"
                                 android:nestedScrollingEnabled="true" />
                         </LinearLayout>
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -197,6 +202,7 @@
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:minHeight="300dp"
                                 android:layout_marginLeft="25dp"
                                 android:layout_marginRight="25dp"
                                 android:orientation="vertical">
@@ -209,7 +215,6 @@
                                     android:text="Comments"
                                     android:textSize="18dp"
                                     android:textStyle="bold" />
-
                                 <ListView
                                     android:id="@+id/lvFeedback"
                                     android:layout_width="match_parent"
@@ -218,38 +223,38 @@
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
-
-                    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                        android:id="@+id/btnAddToCart"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginLeft="25dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginRight="25dp"
-                        android:layout_marginBottom="10dp"
-                        android:backgroundTint="#9DC030"
-                        android:text="Add to cart"
-                        android:textAlignment="center"
-                        android:textColor="@color/white"
-                        android:visibility="gone" />
-                    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                        android:id="@+id/btnLogin"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginLeft="25dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginRight="25dp"
-                        android:layout_marginBottom="10dp"
-                        android:backgroundTint="#d1e6c3"
-                        android:text="Log in to book"
-                        android:textAlignment="center"
-                        android:textColor="#555754"
-                        android:visibility="visible" />
-                </androidx.coordinatorlayout.widget.CoordinatorLayout>
+                </RelativeLayout>
             </ScrollView>
-        </RelativeLayout>
+
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:id="@+id/btnAddToCart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="25dp"
+                android:backgroundTint="#9DC030"
+                android:text="Add to cart"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:visibility="gone" />
+
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:id="@+id/btnLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="25dp"
+                android:backgroundTint="#d1e6c3"
+                android:text="Log in to book"
+                android:textAlignment="center"
+                android:textColor="#555754"
+                android:visibility="visible" />
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 
     </LinearLayout>
 
