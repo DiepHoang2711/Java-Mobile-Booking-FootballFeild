@@ -21,6 +21,8 @@ import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -43,25 +45,6 @@ public class AdminHomeFragment extends Fragment {
 
         listViewUser = view.findViewById(R.id.listViewUser);
         btnCreateUser = view.findViewById(R.id.btnCreateUser);
-
-        UserDAO userDAO = new UserDAO();
-        List<UserDTO> listUser = new ArrayList<>();
-        userDAO.getAllUser().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (QueryDocumentSnapshot doc: queryDocumentSnapshots) {
-                    UserDTO dto = doc.get("userInfo", UserDTO.class);
-                    listUser.add(dto);
-                    Log.d("USER", "Add : " + doc.toObject(UserDTO.class).toString());
-
-                }
-                UserAdapter adapter = new UserAdapter(getActivity(),listUser );
-                listViewUser.setAdapter(adapter);
-                Log.d("USER", "LIST : " + listUser.toString());
-                Log.d("USER", "adapter : " + adapter.getCount());
-            }
-        });
-        Log.d("USER", "Size : " + listUser.size());
 
         listViewUser.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -90,4 +73,30 @@ public class AdminHomeFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        UserDAO userDAO = new UserDAO();
+        List<UserDTO> listUser = new ArrayList<>();
+        userDAO.getAllUser().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (QueryDocumentSnapshot doc: queryDocumentSnapshots) {
+                    UserDTO dto = doc.get("userInfo", UserDTO.class);
+                    if(!user.getUid().equals(dto.getUserID())){
+                        listUser.add(dto);
+                    }
+                }
+                UserAdapter adapter = new UserAdapter(getActivity(),listUser );
+                listViewUser.setAdapter(adapter);
+                Log.d("USER", "LIST : " + listUser.toString());
+                Log.d("USER", "adapter : " + adapter.getCount());
+            }
+        });
+        Log.d("USER", "Size : " + listUser.size());
+
+    }
 }

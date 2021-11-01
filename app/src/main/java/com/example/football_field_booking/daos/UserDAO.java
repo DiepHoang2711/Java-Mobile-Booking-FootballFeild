@@ -113,7 +113,7 @@ public class UserDAO {
 
         DocumentReference doc = db.collection(COLLECTION_USERS).document(userID);
         Map<String, Object> data = new HashMap<>();
-        data.put("userInfo.status", "deleted");
+        data.put("userInfo.status", "inactive");
         return doc.update(data);
     }
 

@@ -26,7 +26,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class RegisterActivity extends AppCompatActivity {
 
     public static final String EMAIL_LOG = "Email";
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth mAuth;
     private Utils util;
     private Validation val;
@@ -144,6 +143,7 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
+                            mAuth.signOut();
                             Log.d(EMAIL_LOG, "Email sent.");
                             Toast.makeText(RegisterActivity.this, "Email send to verify!",
                                     Toast.LENGTH_LONG).show();
