@@ -44,26 +44,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private void sendNotification(String title, String message) {
 
         try {
-
-//            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//            intent=new Intent(MyFirebaseMessagingService.this, LoginActivity.class);
-//            if(user!=null){
-//                UserDAO userDAO=new UserDAO();
-//                userDAO.getUserById(user.getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-//                    @Override
-//                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-//                        String role= documentSnapshot.getString("userInfo.role");
-//                        Log.e("UserDTO ROLE:",role);
-//                        if(role.equals("owner") && user.getUid().equals(receiverID)){
-//                            intent=new Intent(MyFirebaseMessagingService.this, OwnerMainActivity.class);
-//                        }else{
-//                            FirebaseAuth.getInstance().signOut();
-////                            intent=new Intent(MyFirebaseMessagingService.this, LoginActivity.class);
-////                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-//                        }
-//                    }
-//                });
-//            }
             intent = new Intent(MyFirebaseMessagingService.this, OwnerMainActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(MyFirebaseMessagingService.this, 0
                     , intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -71,8 +51,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(MyFirebaseMessagingService.this, MyApplication.CHANEL_ID)
                     .setContentTitle(title)
                     .setContentText(message)
-                    .setSmallIcon(R.drawable.logo)
-                    .setContentIntent(pendingIntent);
+                    .setSmallIcon(R.mipmap.ic_launcher_round)
+                    .setContentIntent(pendingIntent)
+                    .setAutoCancel(true);
             Notification notification = builder.getNotification();
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             if (manager != null) {
