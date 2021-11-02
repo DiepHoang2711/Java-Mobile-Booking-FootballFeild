@@ -106,7 +106,7 @@ public class CartAdapter extends BaseAdapter {
             TextView txtTime = new TextView(context);
             TextView txtPrice = new TextView(context);
             txtTime.setText(dto.getStart()+"h "+"- " + dto.getEnd()+ "h");
-            txtPrice.setText("$"+dto.getPrice());
+            txtPrice.setText("                               $"+dto.getPrice());
             gridLayout.addView(txtTime);
             gridLayout.addView(txtPrice);
         }
