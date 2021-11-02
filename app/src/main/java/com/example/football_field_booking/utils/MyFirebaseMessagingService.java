@@ -30,6 +30,8 @@ import java.util.Map;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private Intent intent;
+    public static final String  GROUP_KEY="group_key";
+    private int i=1;
 
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
@@ -45,19 +47,21 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         try {
             intent = new Intent(MyFirebaseMessagingService.this, OwnerMainActivity.class);
+
             PendingIntent pendingIntent = PendingIntent.getActivity(MyFirebaseMessagingService.this, 0
                     , intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(MyFirebaseMessagingService.this, MyApplication.CHANEL_ID)
                     .setContentTitle(title)
                     .setContentText(message)
-                    .setSmallIcon(R.mipmap.ic_launcher_round)
+                    .setSmallIcon(R.mipmap.ic_logo_round)
                     .setContentIntent(pendingIntent)
                     .setAutoCancel(true);
             Notification notification = builder.getNotification();
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             if (manager != null) {
-                manager.notify(1, notification);
+                manager.notify(i++, notification);
+                onDeletedMessages();
             }
         } catch (Exception e) {
             e.printStackTrace();
