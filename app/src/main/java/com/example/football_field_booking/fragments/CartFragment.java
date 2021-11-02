@@ -194,11 +194,14 @@ public class CartFragment extends Fragment {
                                                 List<TimePickerDTO> timePickerInBooking = itemInBooking.getTimePicker();
                                                 for (TimePickerDTO timePickerDTO : timePickerInBooking) {
                                                     for (CartItemDTO itemInCart : cart) {
-                                                        if (itemInCart.getTimePicker().contains(timePickerDTO)) {
-                                                            flag = false;
-                                                            showError(itemInCart.getFieldInfo().getName() + " in " + timePickerDTO.getStart()
-                                                                    + "-" + timePickerDTO.getEnd() + " already booking by someone");
-                                                            break outerLoop;
+                                                        if ((itemInCart.getFieldInfo().getFieldID().equals(itemInBooking.getFieldInfo().getFieldID())
+                                                                && (itemInCart.getDate().equals(itemInBooking.getDate())))) {
+                                                            if (itemInCart.getTimePicker().contains(timePickerDTO)) {
+                                                                flag = false;
+                                                                showError(itemInCart.getFieldInfo().getName() + " in " + timePickerDTO.getStart()
+                                                                        + "-" + timePickerDTO.getEnd() + " already booking by someone");
+                                                                break outerLoop;
+                                                            }
                                                         }
                                                     }
                                                 }
