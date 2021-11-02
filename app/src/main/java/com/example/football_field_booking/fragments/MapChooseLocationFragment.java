@@ -23,6 +23,9 @@ import android.widget.Toast;
 import com.example.football_field_booking.CreateFootballFieldActivity;
 import com.example.football_field_booking.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -63,6 +66,14 @@ public class MapChooseLocationFragment extends Fragment {
                 getActivity().finish();
                 return;
             }
+
+            LocationRequest mLocationRequest = LocationRequest.create();
+            mLocationRequest.setInterval(60000);
+            mLocationRequest.setFastestInterval(5000);
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            LocationCallback mLocationCallback = new LocationCallback() {};
+
+            fusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
 
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override

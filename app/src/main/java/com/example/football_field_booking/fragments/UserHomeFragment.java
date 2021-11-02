@@ -30,6 +30,9 @@ import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.firebase.geofire.GeoFireUtils;
 import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -44,7 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserHomeFragment extends Fragment {
-    
+
     private ImageButton imgBtnField5,imgBtnField7,imgBtnField11;
     public static final int RC_PERMISSTION_LOCATION = 1001;
     public static final int RADIUS_IN_M = 50 * 1000;
@@ -76,7 +79,6 @@ public class UserHomeFragment extends Fragment {
         cardFieldNearME = view.findViewById(R.id.cardFieldNearME);
         fieldNearMeList = new ArrayList<>();
         distanceList = new ArrayList<>();
-
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
@@ -185,6 +187,14 @@ public class UserHomeFragment extends Fragment {
                 return;
             }
 
+            LocationRequest mLocationRequest = LocationRequest.create();
+            mLocationRequest.setInterval(60000);
+            mLocationRequest.setFastestInterval(5000);
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            LocationCallback mLocationCallback = new LocationCallback() {};
+
+            fusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+
             if(geoMe == null) {
                 fusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                     @Override
@@ -277,7 +287,6 @@ public class UserHomeFragment extends Fragment {
                 loadDataNearMe();
             } else {
                 ttxErrorNearMe.setVisibility(View.VISIBLE);
-                loadDataNearMe();
             }
         }
     }
