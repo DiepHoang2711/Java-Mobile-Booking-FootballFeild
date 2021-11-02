@@ -58,6 +58,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             if (manager != null) {
                 manager.notify(1, notification);
+                onDeletedMessages();
             }
         } catch (Exception e) {
             e.printStackTrace();
