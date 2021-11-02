@@ -16,6 +16,7 @@ import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.BookingDetailDTO;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -31,6 +32,7 @@ public class BookingDetailActivity extends AppCompatActivity {
     private BookingDetailAdapter bookingDetailAdapter;
     private String bookingID;
     private float total;
+    private MaterialToolbar topAppBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +41,14 @@ public class BookingDetailActivity extends AppCompatActivity {
         txtTotal = findViewById(R.id.txtTotal);
         lvBookingDetail = findViewById(R.id.lvBookingDetail);
         bookingDetailAdapter = new BookingDetailAdapter(this);
+        topAppBar=findViewById(R.id.topAppBar);
 
+        topAppBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         Intent intent = this.getIntent();
         bookingID = intent.getStringExtra("bookingID");
         total = intent.getFloatExtra("total", -1);
