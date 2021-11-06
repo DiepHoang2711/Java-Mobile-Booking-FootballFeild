@@ -75,6 +75,14 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="25dp"/>
 
+    <Button
+        android:id="@+id/btnChangePassword"
+        style="@style/TextButtonProfile"
+        android:text="Change password"
+        android:drawableRight="@drawable/ic_baseline_arrow_forward_ios_24"
+        android:visibility="gone"
+        />
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
