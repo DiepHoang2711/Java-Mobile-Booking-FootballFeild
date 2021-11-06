@@ -44,6 +44,7 @@ public class BookingDetailAdapter extends BaseAdapter {
     private LayoutInflater layoutInflater;
     private String bookingID;
     private static final SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
+    private static final SimpleDateFormat dfFull = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
 
     public BookingDetailAdapter(Context context) {
         this.context = context;
@@ -140,7 +141,7 @@ public class BookingDetailAdapter extends BaseAdapter {
                     public void onClick(View view) {
                         float rating = rbRating.getRating();
                         Calendar calendar = Calendar.getInstance();
-                        String now = df.format(calendar.getTime());
+                        String now = dfFull.format(calendar.getTime());
                         String comment = tlComment.getEditText().getText().toString();
                         RatingDTO ratingDTO = new RatingDTO(bookingDetailDTO.getUserInfo(), fieldDTO, comment, rating, now);
                         UserDAO userDAO = new UserDAO();

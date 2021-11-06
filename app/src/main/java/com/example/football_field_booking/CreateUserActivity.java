@@ -223,9 +223,9 @@ public class CreateUserActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             try {
                                 Log.d("EMAIL", "createUserWithEmail:success");
-                                FirebaseUser user = authCreate.getCurrentUser();
+                                FirebaseUser userCreate = authCreate.getCurrentUser();
                                 UserDAO dao = new UserDAO();
-                                userDTO.setUserID(user.getUid());
+                                userDTO.setUserID(userCreate.getUid());
 
                                 dao.createUser(userDTO).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
@@ -237,8 +237,7 @@ public class CreateUserActivity extends AppCompatActivity {
                                         }
                                     }
                                 });
-                                sendEmailVerification();
-                                authCreate.signOut();
+                                sendEmailVerification(userCreate);
                                 progressDialog.cancel();
                                 finish();
                             } catch (Exception e) {
@@ -256,11 +255,9 @@ public class CreateUserActivity extends AppCompatActivity {
                 });
     }
 
-    public void sendEmailVerification() {
+    public void sendEmailVerification(FirebaseUser userCreate) {
 
-        FirebaseUser user = mAuth.getCurrentUser();
-
-        user.sendEmailVerification()
+        userCreate.sendEmailVerification()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -268,6 +265,7 @@ public class CreateUserActivity extends AppCompatActivity {
                             Log.d("EMAIL", "Email sent.");
                             Toast.makeText(CreateUserActivity.this, "Email send to verify!",
                                     Toast.LENGTH_LONG).show();
+                            authCreate.signOut();
                         }
                     }
                 });
