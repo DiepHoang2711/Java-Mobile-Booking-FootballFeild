@@ -18,6 +18,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class BookingAdapterOfAField extends BaseAdapter {
@@ -27,7 +28,6 @@ public class BookingAdapterOfAField extends BaseAdapter {
     private LayoutInflater layoutInflater;
     private List<String> timeBookingAtList;
     private static final SimpleDateFormat dfFull = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-    private static final SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
 
     public List<String> getTimeBookingAtList() {
         return timeBookingAtList;
@@ -96,8 +96,6 @@ public class BookingAdapterOfAField extends BaseAdapter {
                 }else{
                     bookingAt=calendarNow.get(Calendar.HOUR_OF_DAY)-calendarBookingAt.get(Calendar.HOUR_OF_DAY)+" hours ago";
                 }
-            }else{
-                bookingAt=calendarBookingAt.get(Calendar.DAY_OF_WEEK)+", "+  df.format(bookingAt);
             }
         } catch (ParseException e) {
             e.printStackTrace();
