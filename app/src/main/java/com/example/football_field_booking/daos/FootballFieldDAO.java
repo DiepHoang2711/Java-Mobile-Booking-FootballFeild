@@ -212,7 +212,7 @@ public class FootballFieldDAO {
 
     public Task<QuerySnapshot> getRating(String fieldID) {
         return db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID)
-                .collection(SUB_COLLECTION_RATING).get();
+                .collection(SUB_COLLECTION_RATING).orderBy("date", Query.Direction.DESCENDING).get();
     }
 
     public List<Task<QuerySnapshot>> searchNearMe (GeoLocation geoMe, double radiusInM) {
