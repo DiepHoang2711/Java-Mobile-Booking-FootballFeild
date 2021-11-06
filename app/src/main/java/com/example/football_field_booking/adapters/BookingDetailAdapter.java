@@ -44,7 +44,7 @@ public class BookingDetailAdapter extends BaseAdapter {
     private LayoutInflater layoutInflater;
     private String bookingID;
     private static final SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
-    private static final SimpleDateFormat dfFull = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+    private static final SimpleDateFormat dfFull = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     public BookingDetailAdapter(Context context) {
         this.context = context;
@@ -179,8 +179,6 @@ public class BookingDetailAdapter extends BaseAdapter {
         }catch (Exception e) {
             e.printStackTrace();
         }
-
-
         return rowView;
     }
 }
