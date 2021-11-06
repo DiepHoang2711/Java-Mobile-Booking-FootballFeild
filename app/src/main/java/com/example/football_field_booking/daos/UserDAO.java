@@ -104,8 +104,7 @@ public class UserDAO {
 
     }
 
-    public Task<Void> updatePassword(String password) {
-        FirebaseUser user = mAuth.getCurrentUser();
+    public Task<Void> updatePassword(String password, FirebaseUser user) {
         return user.updatePassword(password);
     }
 
@@ -263,6 +262,10 @@ public class UserDAO {
                 .whereGreaterThanOrEqualTo("userInfo.fullName",name)
                 .whereLessThanOrEqualTo("userInfo.fullName", name + "\uf8ff")
                 .get();
+    }
+
+    public Task<QuerySnapshot> searchByRole (String role) {
+        return db.collection(COLLECTION_USERS).whereEqualTo("userInfo.role", role).get();
     }
 
 }

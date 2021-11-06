@@ -297,7 +297,7 @@ public class LoginActivity extends AppCompatActivity {
         util.clearError(txtPassword);
         boolean result = true;
         if (!val.isValidPassword(password)) {
-            util.showError(txtPassword, "Password must be 8 character");
+            util.showError(txtPassword, "Password must be more than 8 character");
             result = false;
         }
         if (!val.isValidEmail(email)) {
