@@ -97,7 +97,7 @@
                             android:layout_marginLeft="40dp">
 
                             <ImageView
-                                android:id="@+id/imageView6"
+                                android:id="@+id/imgLocation"
                                 android:layout_width="31dp"
                                 android:layout_height="match_parent"
                                 android:src="@drawable/outline_location_on_24" />

@@ -67,6 +67,7 @@ public class UserAdapter extends BaseAdapter {
 
         UserDTO user = listUser.get(i);
 
+
         if (user.getPhotoUri() != null) {
             Uri uri = Uri.parse(user.getPhotoUri());
             Glide.with(imgUser.getContext())

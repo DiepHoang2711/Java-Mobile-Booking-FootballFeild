@@ -233,10 +233,11 @@ public class UserDAO {
         DocumentReference docUser = db.collection(COLLECTION_USERS).document(ratingDTO.getUserInfo().getUserID())
                 .collection(SUB_COLLECTION_RATING).document();
         DocumentReference docField = db.collection(COLLECTION_FOOTBALL_FIELD).document(ratingDTO.getFieldInfo().getFieldID())
-                .collection(SUB_COLLECTION_RATING).document();
+                .collection(SUB_COLLECTION_RATING).document(docUser.getId());
         DocumentReference docBooking = db.collection(COLLECTION_USERS).document(ratingDTO.getUserInfo().getUserID())
                 .collection(SUB_COLLECTION_BOOKING_INFO).document(bookingID)
                 .collection(SUB_COLLECTION_BOOKING_DETAIL).document(bookingDetailID);
+        ratingDTO.setRatingID(docUser.getId());
         return db.runTransaction(new Transaction.Function<Void>() {
             @Nullable
             @Override
@@ -269,4 +270,19 @@ public class UserDAO {
         return db.collection(COLLECTION_USERS).whereEqualTo("userInfo.role", role).get();
     }
 
+    public Task<Void> deleteRating(RatingDTO ratingDTO){
+        DocumentReference docUserRating = db.collection(COLLECTION_USERS).document(ratingDTO.getUserInfo().getUserID())
+                .collection(SUB_COLLECTION_RATING).document(ratingDTO.getRatingID());
+        DocumentReference docFieldRating = db.collection(COLLECTION_FOOTBALL_FIELD).document(ratingDTO.getFieldInfo().getFieldID())
+                .collection(SUB_COLLECTION_RATING).document(ratingDTO.getRatingID());
+       return db.runTransaction(new Transaction.Function<Void>() {
+           @Nullable
+           @Override
+           public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+               transaction.delete(docUserRating);
+               transaction.delete(docFieldRating);
+               return null;
+           }
+       });
+    }
 }

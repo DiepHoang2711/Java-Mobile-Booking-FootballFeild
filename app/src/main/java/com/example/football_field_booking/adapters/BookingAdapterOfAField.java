@@ -29,9 +29,6 @@ public class BookingAdapterOfAField extends BaseAdapter {
     private List<String> timeBookingAtList;
     private static final SimpleDateFormat dfFull = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
-    public List<String> getTimeBookingAtList() {
-        return timeBookingAtList;
-    }
 
     public void setTimeBookingAtList(List<String> timeBookingAtList) {
         this.timeBookingAtList = timeBookingAtList;
@@ -65,48 +62,89 @@ public class BookingAdapterOfAField extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         View rowView = view;
-        if(rowView == null) {
+        if (rowView == null) {
             rowView = layoutInflater.inflate(R.layout.item_booking_of_a_field, viewGroup, false);
         }
         TextView txtDate = rowView.findViewById(R.id.txtDate);
         TextView txtTotal = rowView.findViewById(R.id.txtTotal);
-        TextView txtUserName=rowView.findViewById(R.id.txtUserName);
-        TextView txtBookingAt=rowView.findViewById(R.id.txtBookingAt);
+        TextView txtUserName = rowView.findViewById(R.id.txtUserName);
+        TextView txtBookingAt = rowView.findViewById(R.id.txtBookingAt);
         GridLayout gridLayout = rowView.findViewById(R.id.gridLayoutTimePicker);
         gridLayout.removeAllViewsInLayout();
 
         CartItemDTO bookingOfAField = listBooking.get(i);
         txtUserName.setText(bookingOfAField.getUserInfo().getFullName());
         txtDate.setText(bookingOfAField.getDate());
-        txtTotal.setText("$"+bookingOfAField.getTotal());
+        txtTotal.setText("$" + bookingOfAField.getTotal());
 
         Calendar calendarNow = Calendar.getInstance();
-        calendarNow.getTime().getDay();
-        String bookingAt=timeBookingAtList.get(i);
-        Calendar calendarBookingAt=Calendar.getInstance();
+        String bookingAt = timeBookingAtList.get(i);
+
+        Calendar calendarBookingAt = Calendar.getInstance();
         try {
             calendarBookingAt.setTime(dfFull.parse(bookingAt));
-            if(calendarNow.get(Calendar.DAY_OF_MONTH) == calendarBookingAt.get(Calendar.DAY_OF_MONTH)){
-                if(calendarNow.get(Calendar.HOUR_OF_DAY) == calendarBookingAt.get(Calendar.HOUR_OF_DAY)){
-                    if(calendarNow.get(Calendar.MINUTE)==calendarBookingAt.get(Calendar.MINUTE)){
-                        bookingAt=calendarNow.get(Calendar.SECOND)-calendarBookingAt.get(Calendar.SECOND)+" seconds ago";
-                    }else {
-                        bookingAt=calendarNow.get(Calendar.MINUTE)-calendarBookingAt.get(Calendar.MINUTE)+" minutes ago";
+
+            int yearOfNow = calendarNow.get(Calendar.YEAR);
+            int yearOfBookingAt = calendarBookingAt.get(Calendar.YEAR);
+            int monthOfNow = calendarNow.get(Calendar.MONTH);
+            int monthOfBookingAt = calendarBookingAt.get(Calendar.MONTH);
+            int dayOfNow = calendarNow.get(Calendar.DAY_OF_MONTH);
+            int dayOfBookingAt = calendarBookingAt.get(Calendar.DAY_OF_MONTH);
+            int hourOfNow = calendarNow.get(Calendar.HOUR_OF_DAY);
+            int hourOfBookingAt = calendarBookingAt.get(Calendar.HOUR_OF_DAY);
+            int minuteOfNow = calendarNow.get(Calendar.MINUTE);
+            int minuteOfBookingAt = calendarBookingAt.get(Calendar.MINUTE);
+            int secondOfNow = calendarNow.get(Calendar.SECOND);
+            int secondOfBookingAt = calendarBookingAt.get(Calendar.SECOND);
+
+            int minuteAgo=0;
+            if (yearOfNow == yearOfBookingAt) {
+                if (monthOfNow == monthOfBookingAt) {
+                    if (dayOfNow == dayOfBookingAt) {
+                        if (hourOfNow == hourOfBookingAt) {
+                            if (minuteOfNow == minuteOfBookingAt) {
+                                bookingAt = secondOfNow - secondOfBookingAt + " seconds ago";
+                            } else {
+                                minuteAgo=minuteOfNow - minuteOfBookingAt;
+                                if(minuteAgo==1){
+                                    bookingAt =minuteAgo + " minute ago";
+                                }else{
+                                    bookingAt =minuteAgo + " minutes ago";
+                                }
+                            }
+                        } else {
+                            int hoursAgo = ((hourOfNow * 60 + minuteOfNow)-(hourOfBookingAt * 60 + minuteOfBookingAt))/60;
+                            if (hoursAgo >= 1) {
+                                if(hoursAgo==1){
+                                    bookingAt = hoursAgo + " hour ago";
+                                }else{
+                                    bookingAt = hoursAgo + " hours ago";
+                                }
+
+                            } else {
+                                minuteAgo=(hourOfNow * 60 + minuteOfNow) - (hourOfBookingAt * 60 + minuteOfBookingAt);
+                                if(minuteAgo==1){
+                                    bookingAt = minuteAgo + " minute ago";
+                                }else{
+                                    bookingAt = minuteAgo + " minutes ago";
+                                }
+
+                            }
+                        }
                     }
-                }else{
-                    bookingAt=calendarNow.get(Calendar.HOUR_OF_DAY)-calendarBookingAt.get(Calendar.HOUR_OF_DAY)+" hours ago";
                 }
             }
+
         } catch (ParseException e) {
             e.printStackTrace();
         }
         txtBookingAt.setText(bookingAt);
 
-        for (TimePickerDTO dto: bookingOfAField.getTimePicker()) {
+        for (TimePickerDTO dto : bookingOfAField.getTimePicker()) {
             TextView txtTime = new TextView(context);
             TextView txtPrice = new TextView(context);
-            txtTime.setText(dto.getStart()+"h "+"- " + dto.getEnd()+ "h");
-            txtPrice.setText("               $"+dto.getPrice());
+            txtTime.setText(dto.getStart() + "h " + "- " + dto.getEnd() + "h");
+            txtPrice.setText("               $" + dto.getPrice());
             gridLayout.addView(txtTime);
             gridLayout.addView(txtPrice);
         }

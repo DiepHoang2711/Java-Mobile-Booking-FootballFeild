@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="10dp"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:id="@+id/lnItemField">
 
 
     <ImageView
@@ -102,6 +103,7 @@
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
+                android:layout_gravity="center"
                 android:src="@drawable/ic_baseline_star_rate_24" />
 
             <TextView

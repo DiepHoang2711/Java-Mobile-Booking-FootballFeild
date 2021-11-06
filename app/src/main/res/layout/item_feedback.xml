@@ -1,57 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginHorizontal="15dp"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            app:cardCornerRadius="15dp">
+
+            <ImageView
+                android:id="@+id/imgAvatar"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="bottom"
+                android:scaleType="centerCrop"
+                android:src="@drawable/outline_account_circle_24" />
+        </androidx.cardview.widget.CardView>
+
+
+        <TextView
+            android:id="@+id/txtFullName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:paddingTop="5dp"
+            android:textSize="16dp" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="right"
             android:orientation="horizontal">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/outline_account_circle_24" />
+                android:layout_gravity="end"
+                android:src="@drawable/ic_baseline_star_rate_24" />
 
             <TextView
-                android:id="@+id/txtFullName"
+                android:id="@+id/txtRating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:paddingTop="5dp"
-                android:textSize="16dp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:src="@drawable/ic_baseline_star_rate_24" />
-
-                <TextView
-                    android:id="@+id/txtRating"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    />
-            </LinearLayout>
+                android:layout_gravity="bottom" />
         </LinearLayout>
+    </LinearLayout>
 
+    <TextView
+        android:id="@+id/txtComment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
+        android:background="#f5f5f5"
+        android:padding="5dp"
+        android:textSize="14dp" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:orientation="horizontal">
+        <Button
+            android:visibility="gone"
+            android:id="@+id/txtDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="10sp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:text="Delete rate and comment"/>
         <TextView
-            android:id="@+id/txtComment"
+            android:id="@+id/txtDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="5dp"
-            android:padding="5dp"
-            android:textSize="14dp" />
+            android:gravity="right"
+            android:text="Date Rate"
+            android:textColor="@android:color/holo_blue_light" />
+    </LinearLayout>
+
 
 </LinearLayout>
