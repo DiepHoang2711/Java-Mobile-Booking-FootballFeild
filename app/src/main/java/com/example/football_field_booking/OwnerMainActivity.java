@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -57,7 +58,14 @@ public class OwnerMainActivity extends AppCompatActivity {
                 bottomNavigationView.setSelectedItemId(R.id.pageField);
             }
         } else {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new OwnerHomeFragment()).commit();
+            String fieldID=intent.getStringExtra("fieldID");
+            if(fieldID!=null){
+                Intent intent1=new Intent(OwnerMainActivity.this,ViewListBookingOfAFieldActivity.class);
+                intent1.putExtra("fieldID",fieldID);
+                startActivity(intent1);
+            }else{
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new OwnerHomeFragment()).commit();
+            }
         }
 
 

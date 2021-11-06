@@ -234,6 +234,7 @@ public class FootballFieldDAO {
     public Task<QuerySnapshot> getListBookingByFieldID(String fieldID) {
         return db.collection(COLLECTION_FOOTBALL_FIELD).document(fieldID)
                 .collection(SUB_COLLECTION_BOOKING)
+                .orderBy("bookingAt",Query.Direction.DESCENDING)
                 .get();
     }
 }

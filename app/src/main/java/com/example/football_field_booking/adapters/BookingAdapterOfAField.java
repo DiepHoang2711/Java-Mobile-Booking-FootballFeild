@@ -1,6 +1,7 @@
 package com.example.football_field_booking.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +14,11 @@ import com.example.football_field_booking.dtos.CartItemDTO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.TimePickerDTO;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class BookingAdapterOfAField extends BaseAdapter {
@@ -23,6 +26,16 @@ public class BookingAdapterOfAField extends BaseAdapter {
     private Context context;
     private List<CartItemDTO> listBooking;
     private LayoutInflater layoutInflater;
+    private List<String> timeBookingAtList;
+    private static final SimpleDateFormat dfFull = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+
+    public List<String> getTimeBookingAtList() {
+        return timeBookingAtList;
+    }
+
+    public void setTimeBookingAtList(List<String> timeBookingAtList) {
+        this.timeBookingAtList = timeBookingAtList;
+    }
 
     public BookingAdapterOfAField(Context context) {
         this.context = context;
@@ -58,6 +71,7 @@ public class BookingAdapterOfAField extends BaseAdapter {
         TextView txtDate = rowView.findViewById(R.id.txtDate);
         TextView txtTotal = rowView.findViewById(R.id.txtTotal);
         TextView txtUserName=rowView.findViewById(R.id.txtUserName);
+        TextView txtBookingAt=rowView.findViewById(R.id.txtBookingAt);
         GridLayout gridLayout = rowView.findViewById(R.id.gridLayoutTimePicker);
         gridLayout.removeAllViewsInLayout();
 
@@ -66,6 +80,27 @@ public class BookingAdapterOfAField extends BaseAdapter {
         txtDate.setText(bookingOfAField.getDate());
         txtTotal.setText("$"+bookingOfAField.getTotal());
 
+        Calendar calendarNow = Calendar.getInstance();
+        calendarNow.getTime().getDay();
+        String bookingAt=timeBookingAtList.get(i);
+        Calendar calendarBookingAt=Calendar.getInstance();
+        try {
+            calendarBookingAt.setTime(dfFull.parse(bookingAt));
+            if(calendarNow.get(Calendar.DAY_OF_MONTH) == calendarBookingAt.get(Calendar.DAY_OF_MONTH)){
+                if(calendarNow.get(Calendar.HOUR_OF_DAY) == calendarBookingAt.get(Calendar.HOUR_OF_DAY)){
+                    if(calendarNow.get(Calendar.MINUTE)==calendarBookingAt.get(Calendar.MINUTE)){
+                        bookingAt=calendarNow.get(Calendar.SECOND)-calendarBookingAt.get(Calendar.SECOND)+" seconds ago";
+                    }else {
+                        bookingAt=calendarNow.get(Calendar.MINUTE)-calendarBookingAt.get(Calendar.MINUTE)+" minutes ago";
+                    }
+                }else{
+                    bookingAt=calendarNow.get(Calendar.HOUR_OF_DAY)-calendarBookingAt.get(Calendar.HOUR_OF_DAY)+" hours ago";
+                }
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        txtBookingAt.setText(bookingAt);
 
         for (TimePickerDTO dto: bookingOfAField.getTimePicker()) {
             TextView txtTime = new TextView(context);
