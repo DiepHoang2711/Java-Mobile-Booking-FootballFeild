@@ -15,15 +15,19 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.football_field_booking.adapters.UserAdapter;
 import com.example.football_field_booking.daos.FootballFieldDAO;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -54,8 +58,13 @@ public class SearchUserActivity extends AppCompatActivity {
         Intent intent = this.getIntent();
         role = intent.getStringExtra("role");
         if (role != null) {
-            txtTitle.setText("Role: "+role);
-//            searchByRole();
+            if(role.equals("")){
+                Toast.makeText(this, getResources().getString(R.string.something_went_wrong)
+                        , Toast.LENGTH_SHORT).show();
+                finish();
+            }else {
+                searchByRole();
+            }
         }
 
         lvUser.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -127,6 +136,26 @@ public class SearchUserActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception e) {
                 e.printStackTrace();
+            }
+        });
+    }
+
+    private void searchByRole() {
+        UserDAO userDAO = new UserDAO();
+        userDAO.searchByRole(role).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()){
+                    QuerySnapshot queryDocumentSnapshots = task.getResult();
+                    if(queryDocumentSnapshots.size() > 0){
+                        txtTitle.setText("Role: "+role);
+                    }else {
+                        txtTitle.setText("--Empty--");
+                    }
+                    loadSearchData(queryDocumentSnapshots);
+                }else {
+                    task.getException().printStackTrace();
+                }
             }
         });
     }

@@ -22,6 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Football_Field_Booking">
         <activity
+            android:name=".ChangePasswordActivity"
+            android:exported="true" />
+        <activity
             android:name=".SearchUserActivity"
             android:exported="true" />
         <activity

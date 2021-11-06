@@ -10,19 +10,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
+import com.example.football_field_booking.CreateFootballFieldActivity;
 import com.example.football_field_booking.CreateUserActivity;
 import com.example.football_field_booking.EditProfileByAdminActivity;
 import com.example.football_field_booking.R;
+import com.example.football_field_booking.SearchUserActivity;
 import com.example.football_field_booking.adapters.UserAdapter;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.UserDTO;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -33,6 +40,8 @@ public class AdminHomeFragment extends Fragment {
 
     private ListView listViewUser;
     private FloatingActionButton btnCreateUser;
+    private AutoCompleteTextView auComTxtRole;
+    private ImageButton btnSearchByRole;
 
     public AdminHomeFragment() {
     }
@@ -45,6 +54,8 @@ public class AdminHomeFragment extends Fragment {
 
         listViewUser = view.findViewById(R.id.listViewUser);
         btnCreateUser = view.findViewById(R.id.btnCreateUser);
+        auComTxtRole = view.findViewById(R.id.auComTxtRole);
+        btnSearchByRole = view.findViewById(R.id.btnSearchByRole);
 
         listViewUser.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -69,6 +80,18 @@ public class AdminHomeFragment extends Fragment {
             }
         });
 
+        btnSearchByRole.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String role = auComTxtRole.getText().toString();
+                Intent intent = new Intent(getActivity(), SearchUserActivity.class);
+                intent.putExtra("role", role);
+                startActivity(intent);
+            }
+        });
+
+        loadDataRoles();
+
         // Inflate the layout for this fragment
         return view;
     }
@@ -77,6 +100,11 @@ public class AdminHomeFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+        loadData();
+
+    }
+
+    private void loadData() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         UserDAO userDAO = new UserDAO();
@@ -97,6 +125,21 @@ public class AdminHomeFragment extends Fragment {
             }
         });
         Log.d("USER", "Size : " + listUser.size());
+    }
 
+    private void loadDataRoles() {
+        UserDAO userDAO = new UserDAO();
+        userDAO.getConstOfUser().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                List<String> listRole = (ArrayList<String>) documentSnapshot.get("roles");
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, listRole);
+                auComTxtRole.setAdapter(adapter);
+                if(!listRole.isEmpty()){
+                    auComTxtRole.setText(listRole.get(0), false);
+                }
+
+            }
+        });
     }
 }

@@ -161,7 +161,7 @@ public class RegisterActivity extends AppCompatActivity {
         boolean result = true;
 
         if(!val.isValidPassword(password)) {
-            util.showError(txtPassword, "Password must be 8 character");
+            util.showError(txtPassword, "Password must be more than 8 character");
             result = false;
         }
         if(val.isEmpty(confirm) || !confirm.equals(password)) {
