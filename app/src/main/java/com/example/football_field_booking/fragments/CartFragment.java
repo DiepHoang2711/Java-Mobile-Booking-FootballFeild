@@ -59,6 +59,7 @@ import com.paypal.checkout.order.AppContext;
 import com.paypal.checkout.order.CaptureOrderResult;
 import com.paypal.checkout.order.OnCaptureComplete;
 import com.paypal.checkout.order.Order;
+import com.paypal.checkout.order.Payee;
 import com.paypal.checkout.order.PurchaseUnit;
 import com.paypal.checkout.paymentbutton.PayPalButton;
 import com.squareup.okhttp.ResponseBody;
@@ -163,6 +164,7 @@ public class CartFragment extends Fragment {
                                         )
                                         .build()
                         );
+
                         Order order = new Order(
                                 OrderIntent.CAPTURE,
                                 new AppContext.Builder()
@@ -218,7 +220,7 @@ public class CartFragment extends Fragment {
                                                         }
                                                     }
                                                 });
-                                            }else{
+                                            } else {
                                                 Toast.makeText(getContext(), "Check out fail", Toast.LENGTH_LONG).show();
                                                 prdCheckout.cancel();
                                             }
@@ -302,7 +304,6 @@ public class CartFragment extends Fragment {
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
                         for (CartItemDTO cartItemDTO : cart) {
-                            Log.e("MY_NOTIFICATION_FIELD",cartItemDTO.getFieldInfo().getName()+"HELLO");
                             fieldDAO.getFieldByID(cartItemDTO.getFieldInfo().getFieldID())
                                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                         @Override
@@ -347,7 +348,7 @@ public class CartFragment extends Fragment {
 
     private void sendNotification(String token, Data data) {
         Sender sender = new Sender(data, token);
-        Log.e("MY_NOTIFICATION",data.getBody());
+        Log.e("MY_NOTIFICATION", data.getBody());
         apiservice.sendNotification(sender)
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
@@ -364,7 +365,6 @@ public class CartFragment extends Fragment {
                     }
                 });
     }
-
 
     private boolean isValidBookingDate(List<CartItemDTO> cart) throws Exception {
         boolean result = true;
