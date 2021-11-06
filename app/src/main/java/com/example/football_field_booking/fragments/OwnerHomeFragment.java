@@ -12,7 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.football_field_booking.R;
-import com.example.football_field_booking.ViewListBookingOfAFieldActivity;
+import com.example.football_field_booking.AFieldDetailForOwnerActivity;
 import com.example.football_field_booking.adapters.FootballFieldAdapter;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
@@ -64,8 +64,9 @@ public class OwnerHomeFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
                     FootballFieldDTO dto = (FootballFieldDTO) lvFootballFieldOwner.getItemAtPosition(i);
-                    Intent intent = new Intent(getActivity(), ViewListBookingOfAFieldActivity.class);
+                    Intent intent = new Intent(getActivity(), AFieldDetailForOwnerActivity.class);
                     intent.putExtra("fieldID", dto.getFieldID());
+                    intent.putExtra("fieldName",dto.getName());
                     startActivity(intent);
                 } catch (Exception e) {
                     e.printStackTrace();

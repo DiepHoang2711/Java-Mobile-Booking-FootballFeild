@@ -239,19 +239,21 @@ public class UserHomeFragment extends Fragment {
                                 QuerySnapshot snap = task.getResult();
                                 for (DocumentSnapshot doc : snap.getDocuments()) {
                                     FootballFieldDTO fieldDTO = doc.get("fieldInfo", FootballFieldDTO.class);
-                                    GeoPoint geoPoint = fieldDTO.getGeoPoint();
-                                    double lat = geoPoint.getLatitude();
-                                    double lng = geoPoint.getLongitude();
+                                    if(fieldDTO.getStatus().equals("active")){
+                                        GeoPoint geoPoint = fieldDTO.getGeoPoint();
+                                        double lat = geoPoint.getLatitude();
+                                        double lng = geoPoint.getLongitude();
 
-                                    // We have to filter out a few false positives due to GeoHash
-                                    // accuracy, but most will match
-                                    GeoLocation docLocation = new GeoLocation(lat, lng);
-                                    double distanceInM = GeoFireUtils.getDistanceBetween(docLocation, geoLocation);
-                                    if (distanceInM <= RADIUS_IN_M) {
-                                        distanceInM = distanceInM/1000;
-                                        distanceInM = Math.round(distanceInM*10.0)/10.0;
-                                        fieldNearMeList.add(fieldDTO);
-                                        distanceList.add(distanceInM);
+                                        // We have to filter out a few false positives due to GeoHash
+                                        // accuracy, but most will match
+                                        GeoLocation docLocation = new GeoLocation(lat, lng);
+                                        double distanceInM = GeoFireUtils.getDistanceBetween(docLocation, geoLocation);
+                                        if (distanceInM <= RADIUS_IN_M) {
+                                            distanceInM = distanceInM/1000;
+                                            distanceInM = Math.round(distanceInM*10.0)/10.0;
+                                            fieldNearMeList.add(fieldDTO);
+                                            distanceList.add(distanceInM);
+                                        }
                                     }
                                 }
                             }

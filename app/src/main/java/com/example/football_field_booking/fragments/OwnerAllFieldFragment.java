@@ -22,6 +22,7 @@ import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.UserDocument;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,7 +35,7 @@ import java.util.List;
 
 public class OwnerAllFieldFragment extends Fragment {
 
-    private FloatingActionButton btnCreate;
+    private ExtendedFloatingActionButton btnCreate;
     private ListView lvFootballFieldOwner;
 //    private FootballFieldAdapter fieldAdapter;
 //    private List<FootballFieldDTO> fieldDTOList;

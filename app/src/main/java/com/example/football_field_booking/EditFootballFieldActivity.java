@@ -154,7 +154,9 @@ public class EditFootballFieldActivity extends AppCompatActivity {
                         } catch (Exception e) {
                             imgFootBallField.setImageResource(R.drawable.myfield);
                         }
-
+                        if(fieldDTO.getStatus().equals("inactive")){
+                            btnDeleteField.setVisibility(View.GONE);
+                        }
                         List<TimePickerDTO> timePickerDTOList = doc.toObject(FootballFieldDocument.class).getTimePicker();
                         timePickerAdapter = new TimePickerAdapter(EditFootballFieldActivity.this, timePickerDTOList);
                         lvTimePickerWorking.setAdapter(timePickerAdapter);

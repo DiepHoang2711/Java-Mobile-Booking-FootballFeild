@@ -2,12 +2,12 @@ package com.example.football_field_booking.adapters;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
@@ -66,6 +66,7 @@ public class FootballFieldAdapter extends BaseAdapter {
         TextView txtLocation = rowView.findViewById(R.id.txtLocation);
         TextView txtType=rowView.findViewById(R.id.txtType);
         TextView txtRate=rowView.findViewById(R.id.txtRate);
+        LinearLayout lnItemField=rowView.findViewById(R.id.lnItemField);
         FootballFieldDTO dto = fieldDTOList.get(i);
 
         if (dto.getImage() != null) {
@@ -74,12 +75,18 @@ public class FootballFieldAdapter extends BaseAdapter {
                     .load(uri)
                     .into(imgField);
         }
+
         txtFieldName.setText(dto.getName());
         txtLocation.setText(dto.getLocation());
         txtType.setText(dto.getType());
         float rate = Math.round(dto.getRate() * 10f) / 10f;
         txtRate.setText(rate+"");
-        Log.d("FootballFieldAdapter",fieldDTOList.size()+"");
+
+        if(dto.getStatus().equals("inactive")){
+            lnItemField.setAlpha(0.3F);
+        }else{
+            lnItemField.setAlpha(1);
+        }
 
         if(distanceList != null) {
             CardView cardDistance = rowView.findViewById(R.id.cardDistance);

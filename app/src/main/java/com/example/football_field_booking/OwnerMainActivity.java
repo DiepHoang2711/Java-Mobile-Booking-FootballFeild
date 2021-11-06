@@ -4,32 +4,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.example.football_field_booking.daos.FootballFieldDAO;
-import com.example.football_field_booking.daos.UserDAO;
-import com.example.football_field_booking.fragments.CartFragment;
-import com.example.football_field_booking.fragments.HistoryFragment;
 import com.example.football_field_booking.fragments.OwnerAllFieldFragment;
 import com.example.football_field_booking.fragments.OwnerHomeFragment;
 import com.example.football_field_booking.fragments.ProfileFragment;
-import com.example.football_field_booking.fragments.UserHomeFragment;
 import com.example.football_field_booking.validations.Validation;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 public class OwnerMainActivity extends AppCompatActivity {
 
@@ -60,7 +45,7 @@ public class OwnerMainActivity extends AppCompatActivity {
         } else {
             String fieldID=intent.getStringExtra("fieldID");
             if(fieldID!=null){
-                Intent intent1=new Intent(OwnerMainActivity.this,ViewListBookingOfAFieldActivity.class);
+                Intent intent1=new Intent(OwnerMainActivity.this, AFieldDetailForOwnerActivity.class);
                 intent1.putExtra("fieldID",fieldID);
                 startActivity(intent1);
             }else{

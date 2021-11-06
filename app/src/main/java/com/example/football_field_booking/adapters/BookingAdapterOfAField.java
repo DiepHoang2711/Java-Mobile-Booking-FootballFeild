@@ -113,8 +113,7 @@ public class BookingAdapterOfAField extends BaseAdapter {
                                 }
                             }
                         } else {
-                            int hoursAgo = (hourOfNow * 60 + minuteOfNow)
-                                    / (hourOfBookingAt * 60 + minuteOfBookingAt);
+                            int hoursAgo = ((hourOfNow * 60 + minuteOfNow)-(hourOfBookingAt * 60 + minuteOfBookingAt))/60;
                             if (hoursAgo >= 1) {
                                 if(hoursAgo==1){
                                     bookingAt = hoursAgo + " hour ago";

@@ -143,7 +143,7 @@ public class BookingDetailAdapter extends BaseAdapter {
                         Calendar calendar = Calendar.getInstance();
                         String now = dfFull.format(calendar.getTime());
                         String comment = tlComment.getEditText().getText().toString();
-                        RatingDTO ratingDTO = new RatingDTO(bookingDetailDTO.getUserInfo(), fieldDTO, comment, rating, now);
+                        RatingDTO ratingDTO = new RatingDTO(bookingDetailDTO.getUserInfo(), fieldDTO, comment, rating, dfFull.format(calendar.getTime()));
                         UserDAO userDAO = new UserDAO();
                         Log.d("USER", "onClickSubmit: ");
                         userDAO.rating(ratingDTO, bookingID, bookingDetailDTO.getID()).addOnCompleteListener(new OnCompleteListener<Void>() {
