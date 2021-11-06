@@ -39,15 +39,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Map<String, String> stringMap = remoteMessage.getData();
         String title = stringMap.get("title");
         String body = stringMap.get("body");
-        sendNotification(title, body);
+        String fieldID=stringMap.get("fieldID");
+        sendNotification(title, body,fieldID);
     }
 
 
-    private void sendNotification(String title, String message) {
+    private void sendNotification(String title, String message,String fieldID) {
 
         try {
             intent = new Intent(MyFirebaseMessagingService.this, OwnerMainActivity.class);
-
+            intent.putExtra("fieldID",fieldID);
             PendingIntent pendingIntent = PendingIntent.getActivity(MyFirebaseMessagingService.this, 0
                     , intent, PendingIntent.FLAG_UPDATE_CURRENT);
 

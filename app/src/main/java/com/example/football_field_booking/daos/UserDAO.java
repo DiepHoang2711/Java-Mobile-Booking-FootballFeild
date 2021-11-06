@@ -205,6 +205,7 @@ public class UserDAO {
                     data.put("alreadyRating", false);
                     transaction.set(docUser, bookingItem);
                     transaction.set(docField, bookingItem);
+                    transaction.update(docField,"bookingAt",bookingDTO.getBookingDate());
                     transaction.set(docUser, data, SetOptions.merge());
                     transaction.delete(docCart);
                 }

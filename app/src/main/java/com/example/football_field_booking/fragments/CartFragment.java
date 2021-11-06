@@ -82,7 +82,7 @@ public class CartFragment extends Fragment {
     private Float total = 0f;
     private CartAdapter cartAdapter;
     private static final SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
-    private static final SimpleDateFormat dfBooking = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+    private static final SimpleDateFormat dfBooking = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     PayPalButton payPalButton;
 
@@ -315,9 +315,10 @@ public class CartFragment extends Fragment {
                                                     List<String> tokens = task.getResult().toObject(UserDocument.class).getTokens();
                                                     if (tokens != null) {
                                                         for (String token : tokens) {
+                                                            String fieldID=cartItemDTO.getFieldInfo().getFieldID();
                                                             String title = "You have a new booking";
                                                             String body = cartItemDTO.getFieldInfo().getName() + " is booked by " + user.getDisplayName();
-                                                            Data data = new Data(body, title);
+                                                            Data data = new Data(body, title,fieldID);
                                                             sendNotification(token, data);
                                                         }
                                                     }
