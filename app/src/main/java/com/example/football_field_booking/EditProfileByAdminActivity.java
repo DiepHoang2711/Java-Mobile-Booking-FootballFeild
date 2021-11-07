@@ -129,6 +129,10 @@ public class EditProfileByAdminActivity extends AppCompatActivity {
                                     imgUser.setImageResource(R.drawable.outline_account_circle_24);
                                 }
 
+                                if(userDTO.getStatus().equals("inactive")){
+                                    btnDelete.setVisibility(View.GONE);
+                                }
+
                                 if(userDTO.getRole().equals("owner")){
                                     fieldDTOList = task.getResult().toObject(UserDocument.class).getFieldsInfo();
                                 }
