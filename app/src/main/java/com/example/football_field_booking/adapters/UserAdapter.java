@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -52,9 +53,9 @@ public class UserAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int i, View  view, ViewGroup viewGroup) {
+    public View getView(int i, View view, ViewGroup viewGroup) {
         View rowView = view;
-        if(rowView == null) {
+        if (rowView == null) {
             rowView = layoutInflater.inflate(R.layout.item_user, viewGroup, false);
         }
         ImageView imgUser = rowView.findViewById(R.id.imgUser);
@@ -63,11 +64,16 @@ public class UserAdapter extends BaseAdapter {
         TextView txtStatus = rowView.findViewById(R.id.txtStatus);
         TextView txtPhone = rowView.findViewById(R.id.txtPhone);
         TextView txtRole = rowView.findViewById(R.id.txtRole);
+        LinearLayout lnListUser = rowView.findViewById(R.id.lnListUser);
 
 
         UserDTO user = listUser.get(i);
 
-
+        if (user.getStatus().equals("inactive")) {
+            lnListUser.setAlpha(0.3F);
+        }else{
+            lnListUser.setAlpha(1);
+        }
         if (user.getPhotoUri() != null) {
             Uri uri = Uri.parse(user.getPhotoUri());
             Glide.with(imgUser.getContext())
@@ -80,10 +86,10 @@ public class UserAdapter extends BaseAdapter {
         txtFullName.setText(user.getFullName());
         txtStatus.setText(user.getStatus());
 
-        String phone=user.getPhone();
-        if(phone!=null){
+        String phone = user.getPhone();
+        if (phone != null) {
             txtPhone.setText(phone);
-        }else{
+        } else {
             txtPhone.setText("empty");
         }
         txtRole.setText(user.getRole());
