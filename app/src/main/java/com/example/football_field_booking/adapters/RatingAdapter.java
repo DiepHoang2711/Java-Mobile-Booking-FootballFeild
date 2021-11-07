@@ -14,7 +14,9 @@ import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.example.football_field_booking.R;
+import com.example.football_field_booking.daos.FootballFieldDAO;
 import com.example.football_field_booking.daos.UserDAO;
+import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.RatingDTO;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,6 +33,11 @@ public class RatingAdapter extends BaseAdapter {
     private Context context;
     private LayoutInflater layoutInflater;
     private String role;
+    private String userID;
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
 
     private static final SimpleDateFormat dfFull = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
@@ -92,8 +99,14 @@ public class RatingAdapter extends BaseAdapter {
                     userDAO.deleteRating(dto).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
-                            ratingDTOList.remove(dto);
-                            RatingAdapter.this.notifyDataSetChanged();
+                            FootballFieldDAO fieldDAO=new FootballFieldDAO();
+                            try {
+                                fieldDAO.countRating(dto.getFieldInfo(),userID);
+                                ratingDTOList.remove(dto);
+                                RatingAdapter.this.notifyDataSetChanged();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
