@@ -16,6 +16,7 @@ import com.example.football_field_booking.adapters.RatingAdapter;
 import com.example.football_field_booking.daos.FootballFieldDAO;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.CartItemDTO;
+import com.example.football_field_booking.dtos.FootballFieldDTO;
 import com.example.football_field_booking.dtos.RatingDTO;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -68,9 +69,12 @@ public class ListRateAndCommentForOwnerFragment extends Fragment {
                                                 ratingDTOList.add(ratingDTO);
 
                                             }
+
                                             adapter = new RatingAdapter(getContext());
                                             adapter.setRatingDTOList(ratingDTOList);
                                             adapter.setRole(role);
+                                            adapter.setUserID(user.getUid());
+
                                             lvRateAndComment.setAdapter(adapter);
                                         }
                                     })
