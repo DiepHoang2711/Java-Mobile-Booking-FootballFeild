@@ -17,9 +17,11 @@ import com.example.football_field_booking.R;
 import com.example.football_field_booking.daos.FootballFieldDAO;
 import com.example.football_field_booking.daos.UserDAO;
 import com.example.football_field_booking.dtos.FootballFieldDTO;
+import com.example.football_field_booking.dtos.FootballFieldDocument;
 import com.example.football_field_booking.dtos.RatingDTO;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -101,9 +103,26 @@ public class RatingAdapter extends BaseAdapter {
                         public void onSuccess(Void unused) {
                             FootballFieldDAO fieldDAO=new FootballFieldDAO();
                             try {
-                                fieldDAO.countRating(dto.getFieldInfo(),userID);
-                                ratingDTOList.remove(dto);
-                                RatingAdapter.this.notifyDataSetChanged();
+                                fieldDAO.getFieldByID(dto.getFieldInfo().getFieldID())
+                                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                FootballFieldDocument document = documentSnapshot.toObject(FootballFieldDocument.class);
+                                                try {
+                                                    fieldDAO.countRating(document.getFieldInfo(),document.getOwnerInfo().getUserID());
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                                ratingDTOList.remove(dto);
+                                                RatingAdapter.this.notifyDataSetChanged();
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+
+                                            }
+                                        });
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
